@@ -11,25 +11,51 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Get Started",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Getting Started",
             "pages": [
-              "introduction",
+              "welcome",
               "quickstart",
-              "development"
+              "plan-integration",
+              "support"
             ]
           },
           {
-            "group": "Essentials",
+            "group": "Developers",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "developers/concepts",
+              "developers/environments",
+              "developers/authentication",
+              "developers/pagination",
+              "developers/request-identification",
+              "developers/date-time",
+              "developers/rate-limit",
+              "developers/webhooks",
+              "developers/webhooks/authentication",
+              "developers/webhooks/content-structure",
+              "developers/webhooks/events",
+              "developers/webhooks/events/collecting-document",
+              "developers/webhooks/events/collecting-document-refund",
+              "developers/webhooks/events/payment-document",
+              "developers/webhooks/events/payment-document-refund",
+              "developers/webhooks/events/transfer-document"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Developer guides",
+            "pages": [
+              "guides/developer-guides/sandbox-account",
+              "guides/developer-guides/server-side",
+              "guides/developer-guides/server-side/pay-in-pix-key",
+              "guides/developer-guides/server-side/pay-in-qrcode",
+              "guides/developer-guides/server-side/payout-pix-key"
             ]
           }
         ]
@@ -44,11 +70,22 @@
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Entities",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete"
+              "api-reference/entities/list",
+              "api-reference/entities/show",
+            ]
+          },
+          {
+            "group": "Counterparties",
+            "pages": [
+              "api-reference/counterparties/list",
+              "api-reference/counterparties/show",
+              "api-reference/counterparties/create",
+              "api-reference/counterparties/put",
+              "api-reference/counterparties/bank-accounts/list",
+              "api-reference/counterparties/bank-accounts/show",
+              "api-reference/counterparties/bank-accounts/create",
             ]
           }
         ]
