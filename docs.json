@@ -73,7 +73,7 @@
             "group": "Entities",
             "pages": [
               "api-reference/entities/list",
-              "api-reference/entities/show",
+              "api-reference/entities/show"
             ]
           },
           {
@@ -82,10 +82,102 @@
               "api-reference/counterparties/list",
               "api-reference/counterparties/show",
               "api-reference/counterparties/create",
-              "api-reference/counterparties/put",
+              "api-reference/counterparties/update",
               "api-reference/counterparties/bank-accounts/list",
               "api-reference/counterparties/bank-accounts/show",
-              "api-reference/counterparties/bank-accounts/create",
+              "api-reference/counterparties/bank-accounts/create"
+            ]
+          },
+          {
+            "group": "Institutions",
+            "pages": [
+              "api-reference/institutions/list"
+            ]
+          },
+          {
+            "group": "Bank accounts",
+            "pages": [
+              "api-reference/bank-accounts/list",
+              "api-reference/bank-accounts/show",
+              "api-reference/bank-accounts/create",
+              "api-reference/bank-accounts/transactions",
+              "api-reference/bank-accounts/balances"
+            ]
+          },
+          {
+            "group": "Virtual accounts",
+            "pages": [
+              "api-reference/virtual-accounts/list",
+              "api-reference/virtual-accounts/show",
+              "api-reference/virtual-accounts/create",
+              "api-reference/virtual-accounts/update",
+              "api-reference/virtual-accounts/transactions",
+              "api-reference/virtual-accounts/balances"
+            ]
+          },
+          {
+            "group": "Collecting",
+            "pages": [
+              "api-reference/collecting/pix/dynamic-qrcode/create",
+              "api-reference/collecting/pix/dynamic-qrcode/show",
+              "api-reference/collecting/pix/dynamic-qrcode/hash/show",
+              "api-reference/collecting/pix/dynamic-qrcode/image/show",
+              "api-reference/collecting/pix/static-qrcode/create",
+              "api-reference/collecting/pix/static-qrcode/show",
+              "api-reference/collecting/pix/static-qrcode/hash/show",
+              "api-reference/collecting/pix/static-qrcode/image/show",
+              "api-reference/collecting/pix/refund"
+            ]
+          },
+          {
+            "group": "Payment",
+            "pages": [
+              "api-reference/payment/pix/key/check",
+              "api-reference/payment/pix/key/create",
+              "api-reference/payment/pix/key/create-v2",
+              "api-reference/payment/pix/brcode/check",
+              "api-reference/payment/pix/brcode/create"
+            ]
+          },
+          {
+            "group": "Transfer",
+            "pages": [
+              "api-reference/transfer"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "api-reference/documents/collecting/list",
+              "api-reference/documents/collecting/show",
+              "api-reference/documents/collecting/search",
+              "api-reference/documents/collecting-refund/list",
+              "api-reference/documents/collecting-refund/show",
+              "api-reference/documents/collecting-refund/search",
+              "api-reference/documents/payment/list",
+              "api-reference/documents/payment/show",
+              "api-reference/documents/payment/search",
+              "api-reference/documents/payment-refund/list",
+              "api-reference/documents/payment-refund/show",
+              "api-reference/documents/payment-refund/search",
+              "api-reference/documents/transfer/list",
+              "api-reference/documents/transfer/show"
+            ]
+          },
+          {
+            "group": "Checkout",
+            "pages": [
+              "api-reference/checkout"
+            ]
+          }
+          {
+            "group": "Developers",
+            "pages": [
+              "api-reference/developers/webhooks/list",
+              "api-reference/developers/webhooks/show",
+              "api-reference/developers/webhooks/create",
+              "api-reference/developers/webhooks/update",
+              "api-reference/developers/webhooks/delete"
             ]
           }
         ]
