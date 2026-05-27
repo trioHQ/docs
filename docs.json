@@ -82,7 +82,7 @@
     "links": [
       {
         "href": "https://suporte.trio.com.br/",
-        "label": "Support site"
+        "label": "Support"
       }
     ],
     "primary": {
@@ -96,12 +96,8 @@
      "copy",
      "view",
      "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    "claude"
+  ]
   },
   "footer": {
     "socials": {
