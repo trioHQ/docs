@@ -80,8 +80,8 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:suporte@trio.com.br"
+        "href": "https://suporte.trio.com.br/",
+        "label": "Support site"
       }
     ],
     "primary": {
