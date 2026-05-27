@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Documentation",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -74,8 +74,9 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/images/LOGO_TRIO-02.png",
+    "dark": "/images/LOGO_TRIO_Prancheta1.png",
+    "href": "https://www.trio.com.br/"
   },
   "navbar": {
     "links": [
