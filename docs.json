@@ -87,8 +87,8 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "App Trio",
+      "href": "https://app.trio.com.br/"
     }
   },
   "contextual": {
