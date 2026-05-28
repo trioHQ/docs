@@ -1,9 +1,0 @@
-Most of the transactions at Trio's integration are asynchronous, which means that we have some process in background to finish and commit the transaction. In order to effective communicate with external systems and customers, we use [webhooks](https://pt.wikipedia.org/wiki/Webhook).
-
-### **Technical details**
-
-All registered endpoints must be configured to receive an HTTP POST with JSON payload. We have a default timeout configured of 3 seconds waiting a 2XX HTTP status code in order to mark the payload as delivered.
-
-We have a special failure schema, our systems will try 5 times, with a retry configure for 16 seconds for the first failure and doubling the time each failure: 16s, 32s, 104s, 208s, etc.
-
-Furthermore, we recommend that all registered endpoints uses the HTTPS protocol to secure the in-transit payload.

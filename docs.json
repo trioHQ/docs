@@ -80,6 +80,10 @@
         "tab": "Guides",
         "pages": [
           "guides/sandbox_account",
+          "guides/creating-your-first-api-credential",
+          "guides/qr-codes",
+          "guides/cash-in",
+          "guides/cash-out",
           {
             "group": "Getting started",
             "pages": [

@@ -1,0 +1,152 @@
+QR Codes in the Pix ecosystem provide a fast, secure, and efficient way to process payments and collections.
+
+There are two primary categories of Pix QR Codes: **Static QR Codes** and **Dynamic QR Codes**.
+
+As most Trio customers are online merchants and PSPs, this guide focuses on the use of Dynamic QR Codes for automated integrations.
+
+---
+
+## Static QR Code
+
+A Static QR Code contains fixed payment information that does not change between transactions.
+
+It is recommended for recurring or standardized payments where the amount and payment details remain the same.
+
+### Main Characteristics
+
+- Fixed and reusable payment information;
+- Suitable for recurring collections;
+- Can be permanently displayed or printed.
+
+---
+
+## Dynamic QR Code
+
+A Dynamic QR Code is uniquely generated for each transaction and contains transaction-specific information.
+
+It is recommended for e-commerce platforms, PSPs, and automated payment flows.
+
+### Main Characteristics
+
+- Unique transaction information for each payment;
+- Supports custom identifiers and metadata;
+- Enables automated reconciliation and tracking.
+
+---
+
+# Generating a Dynamic QR Code
+
+To generate a Dynamic QR Code, you must provide the required transaction information, including:
+
+- `virtual_account_id`: the virtual account that will receive the funds;
+- `external_id`: your internal transaction reference;
+- `amount`: transaction amount in cents (example: `1200` = BRL 12.00);
+- `counterparty`: payer information, including `tax_number` and `name`;
+- `expiration_datetime`: QR Code expiration date in ISO 8601 format.
+
+The default expiration time is 1 day, and the minimum allowed expiration time is 5 minutes.
+
+---
+
+## Create QR Code Endpoint
+
+To generate a Dynamic QR Code, send a `POST` request to the endpoint below:
+
+```http id="4jk0we"
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
+```
+
+Example request payload:
+
+```json id="hvwh1r"
+{
+  "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+  "counterparty": {
+    "tax_number": "70004764005",
+    "name": "Jhon Doe"
+  },
+  "amount": 1200,
+  "external_id": "01HBSXY7GN8V6NHJ51Z0NX8QK9",
+  "description": "Pay in Sandbox",
+  "expiration_datetime": "2023-10-04T20:00:00.000000Z",
+  "options": {
+    "allow_change_the_amount_on_payment": false,
+    "show_qrcode_image": false
+  }
+}
+```
+
+---
+
+## Successful Response
+
+If the request is successfully processed, the API will return a `201 Created` response similar to the example below:
+
+```json id="9yasa8"
+{
+  "data": {
+    "allow_change_the_amount_on_payment": false,
+    "amount": {
+      "amount": 1200,
+      "currency": "BRL"
+    },
+    "bank_account_id": "018af380-ced7-436a-b118-1cf3bd54243f",
+    "counterparty_id": "018af3e0-63b4-d4fc-9c84-459314081895",
+    "description": "Pay in Sandbox",
+    "entity_id": "018af380-789f-4c52-fb8a-8160ad66182a",
+    "expiration_datetime": "2023-10-04T20:00:00.000000Z",
+    "external_id": "01HBSXY7GN8V6NHJ51Z0NX8QK9",
+    "hash": "00020101021126640014br.gov.bcb.pix0114041715452853610224018afba3-4924-6ed6-7847-520400005303986540412.05802BR5907Capstan6008Curitiba61088025010462070503***63043277",
+    "id": "018afba3-491b-4fd2-e8e2-edee87faab18",
+    "pix_key_id": "018af380-eb7e-93a9-4b9f-c08af1d7772f",
+    "status": "created",
+    "timestamp": "2023-10-04T17:01:36.923773Z",
+    "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b"
+  }
+}
+```
+
+---
+
+# Payment Methods
+
+After generating the QR Code, you can provide the payment information to the user using:
+
+- **Pix Copy and Paste**: send the generated `hash` value so the user can paste it into their banking application;
+- **QR Code Image**: generate a QR Code image using the `hash` value so the user can scan it with their banking application.
+
+---
+
+# Document Lifecycle
+
+Each QR Code transaction progresses through the following lifecycle stages:
+
+- `created`: transaction received and queued for processing;
+- `registering`: transaction is being processed;
+- `settled`: transaction successfully processed and settled (final state);
+- `failed`: transaction refused due to validation or compliance rules (final state).
+
+---
+
+# Webhook Events
+
+Trio sends webhook notifications only for final transaction states.
+
+## `collecting_document.settled`
+
+Triggered when the QR Code payment is successfully completed.
+
+- Category: `collecting_document`
+- Type: `settled`
+
+## `collecting_document.failed`
+
+Triggered when the payment attempt is refused.
+
+- Category: `collecting_document`
+- Type: `failed`
+
+To simulate successful and failed QR Code payment flows in Sandbox, refer to the guides:
+
+- Simulating Deposit Success
+- Simulating Deposit Failures

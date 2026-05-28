@@ -1,0 +1,103 @@
+The term **Cash In** refers to all incoming transactions or deposits into an account — for example, when a Dynamic QR Code is generated and successfully paid.
+
+Now that you are familiar with the core concepts such as QR Codes, Entities, Organizations, Bank Accounts, and Virtual Accounts, you can generate your first Dynamic QR Code using the Trio API.
+
+---
+
+## Before You Start
+
+With your API credentials already generated, we recommend reviewing the API Reference for Dynamic QR Code creation, where all request parameters, attributes, and behaviors are fully documented.
+
+Documentation:
+
+https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes
+
+To help you get started faster, the example below demonstrates a real Dynamic QR Code creation request using the Sandbox API.
+
+---
+
+## Endpoint
+
+```http id="2j3h8a"
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
+```
+
+---
+
+## Request Example
+
+```json id="7f2ka1"
+{
+  "virtual_account_id": "0196346c-ffa2-e861-be85-3c2736d0005f",
+  "counterparty": {
+    "tax_number": "12385407400",
+    "name": "Payer Name"
+  },
+  "amount": 320000,
+  "external_id": "{{$randomUUID}}",
+  "description": "Pay in Sandbox",
+  "options": {
+    "show_qrcode_image": false
+  }
+}
+```
+
+### Field Description
+
+- `virtual_account_id`: ID of the Virtual Account that will receive the funds. Always use the Virtual Account ID, not the Bank Account ID;
+- `counterparty`: payer information, including tax number and name;
+- `amount`: transaction amount in cents (`10000` = BRL 100.00);
+- `external_id`: external transaction identifier used for reconciliation and webhook tracking;
+- `description`: transaction description;
+- `options.show_qrcode_image`: when set to `true`, the API also returns the QR Code image in Base64 format.
+
+---
+
+## Response Example
+
+```json id="k92hd3"
+{
+  "data": {
+    "id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "status": "created",
+    "timestamp": "2024-10-24T13:34:03.739892Z",
+    "description": "Pago a trio.com.br",
+    "hash": "00020101021226790014br.gov.bcb.pix2557brcode-h.trio.com.br/check/cob/01JAZBQYYVPVSPQRBHAFHQ7DG95204000053039865802BR5906BRCODE6008Curitiba62070503***6304736E",
+    "amount": {
+      "currency": "BRL",
+      "amount": 100
+    },
+    "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
+    "stages": [
+      {
+        "id": "0192bebb-fbdb-3375-5e39-90152c82abeb",
+        "timestamp": "2024-10-24T13:34:03.739892Z",
+        "type": "created"
+      }
+    ],
+    "virtual_account_id": "019296ff-1f72-2ad7-0201-41de08355fda",
+    "origin_id": "01929738-5e7e-46d1-d8af-ea9629302b80",
+    "origin_type": "api_client",
+    "counterparty_id": "0013ebcc-d457-e4f8-0079-4e996002d082",
+    "pix_key_id": "019296ff-1f94-ecec-2220-96bfd06e8e59",
+    "expiration_datetime": null,
+    "allow_change_the_amount_on_payment": false
+  }
+}
+```
+
+---
+
+## Using Pix Copy and Paste
+
+If the QR Code image was not requested, you can use the `hash` field returned by the API.
+
+This value represents the Pix “Copy and Paste” payload that can be shared directly with the payer.
+
+---
+
+## Learn More
+
+For additional details about Dynamic QR Code creation, including all attributes, response structures, and error messages, refer to the API Reference:
+
+https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes

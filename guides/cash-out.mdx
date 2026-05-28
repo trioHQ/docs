@@ -1,0 +1,72 @@
+Cash Out operations represent outgoing transfers from your Virtual Account, allowing you to perform payments and withdrawals directly through the Trio API.
+
+Compared to QR Code generation, Cash Out operations are simpler and require fewer parameters, making them ideal for automated payouts and transfers.
+
+The most important requirement is informing the `virtual_account_id` that will be debited during the transaction.
+
+---
+
+## Documentation
+
+For complete details about Cash Out operations, refer to the official API Reference:
+
+https://docs.trio.com.br/api_reference/banking-api/payment/pix-key
+
+---
+
+## Cash Out Example
+
+The example below demonstrates a Cash Out request using the Sandbox environment.
+
+### Endpoint
+
+```http id="8w3k1p"
+POST https://api.sandbox.trio.com.br/banking/cashout/pix/v2
+```
+
+---
+
+## Request Body
+
+```json id="2j8hs7"
+{
+  "virtual_account_id": "{{virtual_account_id_out}}",
+  "type": "key",
+  "reference": "*5541900000000",
+  "external_id": "{{$randomUUID}}",
+  "amount": 50000,
+  "description": "Withdrawal test"
+}
+```
+
+### Field Description
+
+- `virtual_account_id`: ID of the Virtual Account that will be debited;
+- `type`: destination payment type:
+  - `key` → Pix Key payment;
+  - `bank_account` → direct bank account transfer;
+  - `brcode` → Pix Copy and Paste payment;
+- `reference`: destination Pix Key, such as CPF, CNPJ, email, phone number, or random key;
+- `external_id`: external transaction identifier used for reconciliation and webhook tracking;
+- `amount`: transaction amount in cents (`10000` = BRL 100.00);
+- `description`: transaction description stored for history and reporting purposes.
+
+---
+
+## Successful Response
+
+After the request is processed, the API immediately returns a transaction identifier (`payment_document_id`).
+
+This identifier can be used to track the transaction status through webhooks or by querying the payment endpoint directly.
+
+```json id="9w2ja0"
+{
+  "data": {
+    "payment_document_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
+  }
+}
+```
+
+---
+
+After creation, the transaction status can be monitored through webhook notifications or direct payment status queries using the returned `payment_document_id`.
