@@ -88,7 +88,9 @@
               "guides/cash-in",
               "guides/using-pix-key",
               "guides/cash-out",
-              "guides/webhook"
+              "guides/webhook",
+              "guides/simulating-deposit-success",
+              "guides/simulating-deposit-failures"
             ]
           }
         ]

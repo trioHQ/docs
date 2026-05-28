@@ -1,0 +1,74 @@
+To proceed effectively, it is essential to understand the two-account mechanism used to create and simulate QR Code payments.
+
+If you need a refresher on this topic, please review the previous guide before continuing:
+
+[Simulating Deposit Success](/guides/deposits/simulating-deposit-success.md)
+
+### Account Configuration for Transaction Restrictions
+
+To ensure security and data integrity, you can configure account settings to restrict specific transaction types, such as invalid third-party payments.
+
+It is also important to test scenarios involving incorrect or incomplete data, including:
+
+- Invalid CPF or CNPJ values
+- Incomplete tax numbers
+- Malformed strings or invalid values
+
+When testing failure scenarios, you can follow two approaches:
+
+1. **Enforce Data Validation**  
+   Implement validation rules to prevent and properly handle invalid input.
+
+2. **Simulate Invalid Scenarios**  
+   Create test cases using incomplete or malformed data to observe how the system behaves.
+
+The second approach requires changes to the account configuration in order to reproduce specific failure scenarios and explore a broader range of possibilities.
+
+The following sections explain the configurations required to test these scenarios and better understand the system’s capabilities and limitations.
+
+---
+
+## Configuring the Account
+
+To test failure scenarios, start by configuring your account settings.
+
+First, list your virtual accounts and click the **Actions** button to open the virtual account details. This account will be used to generate the QR Code for the payment.
+
+![Virtual Account Details](/files/oEHJMHsBO3Uo5nPoF9KS)
+
+At the bottom of the details page, you will find a set of security and compliance rules available for the virtual Pix account.
+
+These rules apply business logic and fraud-prevention measures to incoming and outgoing transactions.
+
+Understanding these rules is essential both for your integration and for properly testing different transaction scenarios.
+
+| Rule ID | Rule | Description |
+|---|---|---|
+| **1** | **Block payins from unidentified individuals** | Rejects payments where the sender's identity could not be verified. |
+| **2** | **Block duplicated QR Code payins** | Prevents repeated payments using the same QR Code. |
+| **3** | **Block payins with a different amount from the dynamic QR Code amount** | Ensures that the received amount matches the amount defined in the dynamic QR Code. |
+| **4** | **Block payins from legal entities** | Prevents receiving funds from companies (CNPJ), allowing only individuals (CPF). |
+| **5** | **Block payins from tax numbers different from the dynamic QR Code tax number** | Ensures that the payer’s tax ID matches the one associated with the QR Code. |
+| **6** | **Block payins from unauthorized participants** | Blocks payments from blacklisted participants. |
+| **7** | **Block payins from counterparty bank accounts different from the QR Code** | Verifies that the sender’s bank account matches the account expected for the QR Code payment. |
+| **8** | **Automatic refund for deposits incoming from minors** | Automatically refunds deposits made by individuals under 18 years old. |
+| **9** | **Automatic refund for deposits incoming from deceased individuals** | Automatically refunds payments made by individuals marked as deceased in official records. |
+| **10** | **Automatic refund for deposits incoming from individuals with invalid tax numbers** | Automatically refunds payments from individuals with invalid CPF or CNPJ values. |
+| **11** | **Block payouts to legal entities (CNPJ)** | Prevents outgoing payouts to companies, allowing payouts only to individuals. |
+
+By enabling or disabling these rules, you can simulate different failure scenarios during testing.
+
+> **Note**  
+> Most payment failures occur during the initial validation process, and the error is immediately returned to the payer’s banking application.
+>
+> In these cases, no transaction record is created on the Trio side, and no additional integration handling is required.
+>
+> This early rejection behavior applies to rules **#1**, **#2**, **#5**, **#6**, **#8**, **#9**, and **#10**.
+
+When an invalid payment is attempted, the following error message will appear in the banking application:
+
+`Invalid Pix Key/Copy & Paste`
+
+This behavior is similar to what end users experience in production environments.
+
+![Invalid Pix Payment Example](/files/H88dalNu4gxxKKWCQDAw)
