@@ -1,0 +1,117 @@
+# **Payout**
+
+The payout session type shall be used whenever you want users to cash out their data.
+
+In order to generate a payout through our Checkout SDK, you must create a Checkout Session. In it, there are some parameters that you will need to pay attention to (\* for required fields):
+
+- **options**
+  - `session_type`\*: session type, in this case **payout**.
+  - `expiration_in_seconds`: integer value. If set, the Checkout session will only remain active up until this time. If not, the default time is 300 seconds (5 minutes).
+  - `allow_other_pix_key`: boolean value. If true, the Checkout will allow for a Pix Key different from the ones informed in the Session creation to be input. At the Cash-Out step, they will be verified and only successfully paid if the pix key belongs to the tax number initially provided. If not, the payment will fail.
+- **transaction**
+  - `tax_number`\*: the document/tax number (CPF/CNPJ) that represents the person you intend to pay money to.
+  - `phone_number`: a Pix key in the format of a _phone number_ that you would like to allow the user to select. Optional.
+  - `email`: a Pix key in the format of an _email_ that you would like to allow the user to select. Optional.
+  - `available_withdraw_amount`\*: the maximum quantity you would like to allow your client to withdraw in this transaction. Keep in mind that the user can choose to withdraw less than the available you set.
+  - `amount`: This amount will be the value pre-set on the user's input field, if this amount is set larger than the available withdrawal amount, the session will be created utilizing the `available_withdraw_amount` field as the correct amount.
+
+#### **White label**
+
+You can also customize your end-user experience by utilizing the Checkout as a _white label_. You can do so by utilizing the `options` field, with the respective `xxxx_color` fields. Below, you can see an example of a wholly implemented customization:
+
+![](/images/image-\(1\).jpeg)
+
+#### **Create Session**
+
+In order to create a session, you must make a `POST` request to `/checkout/sessions` with the following payload:
+
+Copy
+
+```json
+{
+    "transaction": {
+        "tax_number": "23725474028", // John Doe's document/tax number
+      	"phone_number": "+5541999999999", // John Doe's phone Pix key
+      	"email": "user@trio.com.br", // John Doe's e-mail Pix key 
+        "name": "John Doe", // Customer name
+		"available_withdraw_amount": 100, // maximum withdraw amount in cents, integer value 
+        "amount": 1, // total amount in cents
+        "external_id": "01H7DKA58YDWPA7ZBCCAVWFM5E", // reference for your system
+        "description": "Paid to example.com" // additional information about the transaction
+    },
+    "receiver": {
+        "virtual_account_id": "018a66ca-0451-9cd7-1cfa-8dca325db29f" // unique identifier for the virtual account that will receive the money 
+    },
+    "options": {
+      	"session_type": "payout", // Session type (must be payout)
+      	"allow_other_pix_key": false, // boolean
+      	"expiration_in_seconds": "86400", // session expiration time, integer value
+        "theme": {
+            "colors": {
+                "backdrop_color": "#ffffff", //hex color for the background (optional, accepts any color)
+                "button_color": "#f6df69", //hex color for the interface primary action button (optional, accepts any color)
+                "button_label_color": "#000000", //hex color for the interface primary action text (optional, accepts only #000000 or #ffffff)
+                "link_color": "#426b55", //hex color for links (optional, accepts any color)
+                "navbar_action_color": "#ffffff", //hex color for the background (optional, accepts only #000000 or #ffffff)
+                "navbar_color": "#426b55" //hex color for top navbar background color (optional, accepts any color)
+            },
+            "logo_url": "https://linktologo.com/link.png" //url for the logo that will be added to the initiation flow
+        }
+    }
+}
+```
+
+If you input the correct parameters, you will receive a _HTTP 200_ response akin to:
+
+Copy
+
+```json
+{
+  "data": {
+    "company_id": "018da8cb-17da-5287-40c4-724ed90e2a0e",
+    "expiration_timestamp": "2024-05-04T19:44:11.960965Z",
+    "id": "018f4002-6d38-7d42-7c5f-c2dd50842d51",
+    "options": {
+      "allow_other_pix_key": false,
+      "session_type": "payout",
+      "theme": {
+        "colors": {
+          "backdrop_color": "#888888",
+          "button_color": "#15294B",
+          "button_label_color": "#FFFFFF",
+          "link_color": "#15294B",
+          "navbar_action_color": "#000000",
+          "navbar_color": "#FFFFFF"
+        },
+        "logo_url": "https://www.trio.com.br/_next/static/media/Logo.341273f5.svg"
+      }
+    },
+    "participants": null,
+    "receiver": {
+      "virtual_account_id": "018e3df6-d70f-9489-2c7e-ca880a25ea46"
+    },
+    "timestamp": "2024-05-03T19:50:51.960965Z",
+    "transaction": {
+      "amount": {
+        "amount": 1,
+        "currency": "BRL"
+      },
+      "available_withdraw_amount": 100,
+      "description": "Paid to example.com",
+      "email": null,
+      "expiration_in_seconds": 86000,
+      "external_id": "Sessão de Teste",
+      "name": null,
+      "phone_number": null,
+      "redirect_url": "http://your.url.here",
+      "tax_number": null
+    }
+  }
+}
+```
+
+#### **Flow**
+
+When making use of the Checkout, the following screens will appear:
+
+![](/images/image-\(18\).png)
