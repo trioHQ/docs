@@ -17,10 +17,10 @@
         "tab": "Guides",
         "pages": [
           "index",
+          "quickstart",
           {
             "group": "Getting started",
             "pages": [
-              "quickstart",
               "plan-your-integration",
               "support"
             ]
