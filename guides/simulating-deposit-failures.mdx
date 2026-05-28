@@ -1,3 +1,7 @@
+---
+title: "simulating-deposit-failures"
+---
+
 To proceed effectively, it is essential to understand the two-account mechanism used to create and simulate QR Code payments.
 
 If you need a refresher on this topic, please review the previous guide before continuing:
@@ -16,10 +20,9 @@ It is also important to test scenarios involving incorrect or incomplete data, i
 
 When testing failure scenarios, you can follow two approaches:
 
-1. **Enforce Data Validation**  
+1. **Enforce Data Validation**\
    Implement validation rules to prevent and properly handle invalid input.
-
-2. **Simulate Invalid Scenarios**  
+2. **Simulate Invalid Scenarios**\
    Create test cases using incomplete or malformed data to observe how the system behaves.
 
 The second approach requires changes to the account configuration in order to reproduce specific failure scenarios and explore a broader range of possibilities.
@@ -43,7 +46,7 @@ These rules apply business logic and fraud-prevention measures to incoming and o
 Understanding these rules is essential both for your integration and for properly testing different transaction scenarios.
 
 | Rule ID | Rule | Description |
-|---|---|---|
+| --- | --- | --- |
 | **1** | **Block payins from unidentified individuals** | Rejects payments where the sender's identity could not be verified. |
 | **2** | **Block duplicated QR Code payins** | Prevents repeated payments using the same QR Code. |
 | **3** | **Block payins with a different amount from the dynamic QR Code amount** | Ensures that the received amount matches the amount defined in the dynamic QR Code. |
@@ -58,7 +61,7 @@ Understanding these rules is essential both for your integration and for properl
 
 By enabling or disabling these rules, you can simulate different failure scenarios during testing.
 
-> **Note**  
+> **Note**\
 > Most payment failures occur during the initial validation process, and the error is immediately returned to the payer’s banking application.
 >
 > In these cases, no transaction record is created on the Trio side, and no additional integration handling is required.
@@ -71,4 +74,4 @@ When an invalid payment is attempted, the following error message will appear in
 
 This behavior is similar to what end users experience in production environments.
 
-![Invalid Pix Payment Example](/files/H88dalNu4gxxKKWCQDAw)
+![Image (36)](/images/image-\(36\).png)
