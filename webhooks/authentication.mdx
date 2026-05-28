@@ -1,3 +1,28 @@
 ---
-title: "authentication"
+title: "Authentication"
 ---
+
+When you create a webhook, it's necessary to fill the `Secret`field, this information will be sent through as the HTTP header `x-webhook-secret`. You can use the to authenticate at your side.
+
+And to verify that a webhook was actually sent by Trio, every payload is signed with a signature that is passed through as the HTTP header `x-webhook-signature`. The signature is encoded and can be replicated by applying HMAC-SHA-256 to the body of the webhook with your specific webhook key, which can be found in your webhook settings page. Below, a simple example of how to generate the signature using Node.js:
+
+```text
+import { createHmac, timingSafeEqual } from "crypto"
+
+const expectedSignature = req.headers["x-webhook-signature"]
+const algorithm = "sha256"
+const signatureKey = "your_signature_key"
+const message = JSON.stringify(req.body)
+
+const computedSignature = createHmac(algorithm, signatureKey)
+	.update(message)
+	.digest("hex")
+	.toUpperCase()
+
+const isValid = timingSafeEqual(
+	Buffer.from(expectedSignature), 
+  Buffer.from(computedSignature)
+)
+```
+
+Please contact support if your webhook key is accidentally made public. We will rotate the key and coordinate the change with you.
