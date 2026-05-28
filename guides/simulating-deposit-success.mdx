@@ -1,10 +1,12 @@
+---
+title: "Simulating deposit-success"
+---
+
 Next, we present a step-by-step approach for you to complete (**settle**) your deposits. To simulate a complete transaction flow, you'll need two accounts: one to create payments and another to process them.
 
 First, you need to create a secondary virtual account. Access the menu and click on **Account \> Virtual Accounts**. In the listing page, at the top right, click on **Create Virtual Account.**
 
-<img
-  src="/images/image-(30).png"
-/>
+![](/images/image-\(30\).png)
 
 Select your real bank account (typically there will be only one) and provide a simple description for this account.
 
@@ -15,8 +17,7 @@ Once created, this new account will appear in the listing interface, with its ow
 ### **Paying a Deposit**
 
 1. Create a new payment with QR code pointing to the new account. In the request body, specify the newly created account ID in the virtual\_account\_id, as shown below.
-   - POST [https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes](https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes)
-   Copy
+   - POST [https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes](https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes) Copy
    ```text
    {
        "virtual_account_id": "0196102e-f67b-d5f9-300c-f587094bfc5a",

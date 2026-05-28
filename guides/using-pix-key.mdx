@@ -1,9 +1,13 @@
+---
+title: "Using PIX key"
+---
+
 Considering that a Pix key represents a bank account within the Pix ecosystem, this is the most straightforward way to complete a payout using Pix.
 
 The only information required from the customer is their Pix key. Currently, we support 5 different key types, and we use **RegEx** validation to verify the format.
 
 | Type | Regex | Example |
-|---|---|---|
+| --- | --- | --- |
 | Email | `^[a-z0-9.!#$%&'*+/=?^_{}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*$` | `johndoe@example.com` |
 | Phone Number | `^\+[1-9][0-9]\d{1,14}$` | `+5510998765432` |
 | CPF (Tax Number) | `^[0-9]{11}$` | `12345678901` |
@@ -14,14 +18,14 @@ The only information required from the customer is their Pix key. Currently, we 
 
 When creating a new payout, pay attention to the following parameters (`*` indicates required fields):
 
-- **Virtual Account ID***: Unique identifier of the virtual account that will send the funds.
-- **Type***: Type of reference being used. Possible values: `"key"`, `"brcode"`, or `"manual"`.
-- **Reference***: The reference value you want to pay to. For Pix keys, this should be the Pix key itself. Example: `johndoe@example.com`
+- **Virtual Account ID**\*: Unique identifier of the virtual account that will send the funds.
+- **Type**\*: Type of reference being used. Possible values: `"key"`, `"brcode"`, or `"manual"`.
+- **Reference**\*: The reference value you want to pay to. For Pix keys, this should be the Pix key itself. Example: `johndoe@example.com`
 - **Reference Tax Number**: Tax number of the recipient. This field is optional.
   - If you do not provide the reference tax number, the payout will be sent to the owner of the Pix key.
   - If you provide the reference tax number, we will validate whether it matches the owner of the Pix key. If the values match, the payment is processed; otherwise, it is rejected.
 - **External ID**: Your internal reference for the transaction. It must be unique for every payout and is used for idempotency control.
-- **Amount***: Transaction amount represented in cents.
+- **Amount**\*: Transaction amount represented in cents.
 - **Description**: Description of the transaction.
 
 To generate the payout, send a `POST` request to the **Pix Payout** endpoint using the following payload:
@@ -57,7 +61,7 @@ If the request fails, you will receive an HTTP `400` response containing the err
 
 You can check the complete list of errors here:
 
-https://developers.trio.com.br/reference/errors
+[https://developers.trio.com.br/reference/errors](https://developers.trio.com.br/reference/errors)
 
 ```json
 {
@@ -96,7 +100,7 @@ A payment document will be created to represent the payout transaction, and a we
 
 Webhook example:
 
-https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.created
+[https://docs.trio.com.br/developers/webooks/events/payment-document#payment\_document.created](https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.created)
 
 ### Settled
 
@@ -109,7 +113,7 @@ The payment document will be updated, and a webhook will be sent with:
 
 Webhook example:
 
-https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.settled
+[https://docs.trio.com.br/developers/webooks/events/payment-document#payment\_document.settled](https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.settled)
 
 ### Failed
 
@@ -122,4 +126,4 @@ The payment document will be updated, and a webhook will be sent with:
 
 Webhook example:
 
-https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.failed
+[https://docs.trio.com.br/developers/webooks/events/payment-document#payment\_document.failed](https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.failed)
