@@ -1,3 +1,7 @@
+---
+title: "Cash-out"
+---
+
 Cash Out operations represent outgoing transfers from your Virtual Account, allowing you to perform payments and withdrawals directly through the Trio API.
 
 Compared to QR Code generation, Cash Out operations are simpler and require fewer parameters, making them ideal for automated payouts and transfers.
@@ -10,7 +14,7 @@ The most important requirement is informing the `virtual_account_id` that will b
 
 For complete details about Cash Out operations, refer to the official API Reference:
 
-https://docs.trio.com.br/api_reference/banking-api/payment/pix-key
+[https://docs.trio.com.br/api\_reference/banking-api/payment/pix-key](https://docs.trio.com.br/api_reference/banking-api/payment/pix-key)
 
 ---
 
@@ -20,7 +24,7 @@ The example below demonstrates a Cash Out request using the Sandbox environment.
 
 ### Endpoint
 
-```http id="8w3k1p"
+```http
 POST https://api.sandbox.trio.com.br/banking/cashout/pix/v2
 ```
 
@@ -28,7 +32,7 @@ POST https://api.sandbox.trio.com.br/banking/cashout/pix/v2
 
 ## Request Body
 
-```json id="2j8hs7"
+```json
 {
   "virtual_account_id": "{{virtual_account_id_out}}",
   "type": "key",
@@ -59,7 +63,7 @@ After the request is processed, the API immediately returns a transaction identi
 
 This identifier can be used to track the transaction status through webhooks or by querying the payment endpoint directly.
 
-```json id="9w2ja0"
+```json
 {
   "data": {
     "payment_document_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"

@@ -1,3 +1,7 @@
+---
+title: "QR codes"
+---
+
 QR Codes in the Pix ecosystem provide a fast, secure, and efficient way to process payments and collections.
 
 There are two primary categories of Pix QR Codes: **Static QR Codes** and **Dynamic QR Codes**.
@@ -52,13 +56,13 @@ The default expiration time is 1 day, and the minimum allowed expiration time is
 
 To generate a Dynamic QR Code, send a `POST` request to the endpoint below:
 
-```http id="4jk0we"
+```http
 POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
 ```
 
 Example request payload:
 
-```json id="hvwh1r"
+```json
 {
   "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
   "counterparty": {
@@ -82,7 +86,7 @@ Example request payload:
 
 If the request is successfully processed, the API will return a `201 Created` response similar to the example below:
 
-```json id="9yasa8"
+```json
 {
   "data": {
     "allow_change_the_amount_on_payment": false,

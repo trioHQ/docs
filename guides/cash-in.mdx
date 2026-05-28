@@ -1,3 +1,7 @@
+---
+title: "Cash-in"
+---
+
 The term **Cash In** refers to all incoming transactions or deposits into an account — for example, when a Dynamic QR Code is generated and successfully paid.
 
 Now that you are familiar with the core concepts such as QR Codes, Entities, Organizations, Bank Accounts, and Virtual Accounts, you can generate your first Dynamic QR Code using the Trio API.
@@ -10,7 +14,7 @@ With your API credentials already generated, we recommend reviewing the API Refe
 
 Documentation:
 
-https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes
+[https://docs.trio.com.br/api\_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes](https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes)
 
 To help you get started faster, the example below demonstrates a real Dynamic QR Code creation request using the Sandbox API.
 
@@ -18,7 +22,7 @@ To help you get started faster, the example below demonstrates a real Dynamic QR
 
 ## Endpoint
 
-```http id="2j3h8a"
+```http
 POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
 ```
 
@@ -26,7 +30,7 @@ POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
 
 ## Request Example
 
-```json id="7f2ka1"
+```json
 {
   "virtual_account_id": "0196346c-ffa2-e861-be85-3c2736d0005f",
   "counterparty": {
@@ -55,7 +59,7 @@ POST https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes
 
 ## Response Example
 
-```json id="k92hd3"
+```json
 {
   "data": {
     "id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
@@ -100,4 +104,4 @@ This value represents the Pix “Copy and Paste” payload that can be shared di
 
 For additional details about Dynamic QR Code creation, including all attributes, response structures, and error messages, refer to the API Reference:
 
-https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes
+[https://docs.trio.com.br/api\_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes](https://docs.trio.com.br/api_reference/banking-api/collecting/dynamic-qr-codes#post-banking-cashin-pix-qrcodes)
