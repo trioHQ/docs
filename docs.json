@@ -20,36 +20,28 @@
           {
             "group": "Getting started",
             "pages": [
+              "welcome",
               "quickstart",
-              "plan-your-integration"
+              "plan-your-integration",
+              "support"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Developers",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "concepts",
+              "environments",
+              "authentication",
+              "pagination",
+              "request-identification",
+              "date-and-time",
+              "rate-limit"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Webhooks",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/components",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "Agent ready",
-            "pages": [
-              "agent-ready/prompt",
-              "agent-ready/visibility",
-              "agent-ready/contextual",
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "webhooks/introduction"
             ]
           }
         ]
