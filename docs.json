@@ -79,20 +79,19 @@
       {
         "tab": "Guides",
         "pages": [
-          "guides/sandbox_account",
-          "guides/creating-your-first-api-credential",
-          "guides/qr-codes",
-          "guides/cash-in",
-          "guides/cash-out",
           {
-            "group": "Getting started",
+            "group": "Practical Guide",
             "pages": [
-              "plan-your-integration",
-              "support"
+              "guides/sandbox_account",
+              "guides/creating-your-first-api-credential",
+              "guides/qr-codes",
+              "guides/cash-in",
+              "guides/cash-out"
             ]
           }
         ]
-      },
+      }
+      ,
       {
         "tab": "API reference",
         "groups": [
