@@ -40,7 +40,21 @@
           {
             "group": "Webhooks",
             "pages": [
-              "webhooks/introduction"
+              "webhooks/authentication",
+              "webhooks/content-and-structure",
+              {
+                "group": "Events",
+                "pages": [
+                  "webhooks/events/collecting-document",
+                  "webhooks/events/collecting-document-refund",
+                  "webhooks/events/payment-document",
+                  "webhooks/events/payment-document-refund",
+                  "webhooks/events/transfer-document",
+                  "webhooks/events/recurrence",
+                  "webhooks/events/recurrences-collection",
+                  "webhooks/events/recurrence-collections-attempt"
+                ]
+              }
             ]
           }
         ]
