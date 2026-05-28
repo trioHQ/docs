@@ -1,3 +1,25 @@
 ---
-title: "concepts"
+title: "Concepts"
 ---
+
+Before we get into on how to programmatically move money, it's important that you learn some core concepts and aspects of our API and how your business could fit within our solution.
+
+### **Company**
+
+A company object represents a top-level structure from your business and can be composed by one or more legal entities. As a company, you are able to add multiple users with varying permissions, monitor API logs and so on.
+
+### **Entity**
+
+The entity object represents a legal entity from your company, it represents a Brazilian entity with their own CNPJ. Each entity may hold one or more bank accounts.
+
+### **Bank account**
+
+A bank account is a valid account that holds and moves money. Throughout our bank accounts, it is possible to look at balances, transactions and movement in real time. In order to move money within a bank account.
+
+### **Virtual account**
+
+A virtual account is the core of everything we do at Trio. It's a layer below the standard bank account. It can receive incoming payments in place of a bank account, and divide up the balance of the linked bank account. Moreover, a virtual account reports its own balance and transactions.
+
+### **Documents**
+
+A document can be interpreted as a transaction inside Trio. It can be a payment or collecting document. Every time that there is money movement in your account, this transaction will have a document representing it.
