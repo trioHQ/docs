@@ -1,0 +1,125 @@
+Webhooks allow Trio to send automatic notifications to your system whenever an important event occurs, such as a successful Cash In or Cash Out transaction.
+
+Notifications are typically triggered when a transaction reaches a final state such as `settled` or `failed`.
+
+---
+
+## Webhook Structure
+
+All webhook events sent by Trio follow the same JSON structure:
+
+```json id="3ja82h"
+{
+  "ref_id": "",
+  "category": "",
+  "type": "",
+  "timestamp": "",
+  "data": {}
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `ref_id` | Unique identifier of the event. |
+| `category` | Main event category (example: `collecting_document`, `payment_document`). |
+| `type` | Event type within the category (example: `created`, `settled`, `failed`). |
+| `timestamp` | Event creation timestamp. |
+| `data` | Object containing transaction-specific information. |
+
+---
+
+## Available Event Categories
+
+| Category | Description |
+| --- | --- |
+| `collecting_document` | Cash In and deposit lifecycle events. |
+| `collecting_document_refund` | Deposit refund events. |
+| `payment_document` | Cash Out and payment lifecycle events. |
+| `payment_document_refund` | Payment refund events. |
+| `transfer_document` | Transfer lifecycle events. |
+| `recurrence` | Recurrence creation and update events. |
+| `recurrence_collection` | Recurring collection lifecycle events. |
+| `recurrence_collection_attempt` | Recurring collection attempt events. |
+
+---
+
+## Cash In Webhook Example
+
+Category: `collecting_document`  
+Type: `settled`
+
+```json id="7sja91"
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311822NX1S6J7KaOm",
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "transaction_date": "2025-01-31T18:22:14.510717Z",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:22:14.477163Z",
+  "type": "settled",
+  "category": "collecting_document",
+  "ref_id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41"
+}
+```
+
+This event indicates that a Cash In transaction was successfully processed and the funds are available in the Virtual Account.
+
+---
+
+## Cash Out Webhook Example
+
+Category: `payment_document`  
+Type: `settled`
+
+```json id="8shs2k"
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "transaction_date": "2025-02-03T12:48:21.405797Z",
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "settled",
+  "category": "payment_document",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
+
+This event indicates that a Cash Out transaction was successfully processed and the funds were debited from the Virtual Account.
+
+---
+
+These are the primary webhook events used in most integrations.
+
+For the complete list of supported webhook events, access:
+
+https://docs.trio.com.br/developers/webooks/events

@@ -1,0 +1,125 @@
+Considering that a Pix key represents a bank account within the Pix ecosystem, this is the most straightforward way to complete a payout using Pix.
+
+The only information required from the customer is their Pix key. Currently, we support 5 different key types, and we use **RegEx** validation to verify the format.
+
+| Type | Regex | Example |
+|---|---|---|
+| Email | `^[a-z0-9.!#$%&'*+/=?^_{}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*$` | `johndoe@example.com` |
+| Phone Number | `^\+[1-9][0-9]\d{1,14}$` | `+5510998765432` |
+| CPF (Tax Number) | `^[0-9]{11}$` | `12345678901` |
+| CNPJ (Tax Number) | `^[0-9]{14}$` | `12345678901234` |
+| Random Key | `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$` | `123e4567-e89b-12d3-a456-426655440000` |
+
+## Generating a New Payout
+
+When creating a new payout, pay attention to the following parameters (`*` indicates required fields):
+
+- **Virtual Account ID***: Unique identifier of the virtual account that will send the funds.
+- **Type***: Type of reference being used. Possible values: `"key"`, `"brcode"`, or `"manual"`.
+- **Reference***: The reference value you want to pay to. For Pix keys, this should be the Pix key itself. Example: `johndoe@example.com`
+- **Reference Tax Number**: Tax number of the recipient. This field is optional.
+  - If you do not provide the reference tax number, the payout will be sent to the owner of the Pix key.
+  - If you provide the reference tax number, we will validate whether it matches the owner of the Pix key. If the values match, the payment is processed; otherwise, it is rejected.
+- **External ID**: Your internal reference for the transaction. It must be unique for every payout and is used for idempotency control.
+- **Amount***: Transaction amount represented in cents.
+- **Description**: Description of the transaction.
+
+To generate the payout, send a `POST` request to the **Pix Payout** endpoint using the following payload:
+
+```http
+POST https://api.sandbox.trio.com.br/banking/cashout/pix/v2
+```
+
+```json
+{
+  "virtual_account_id": "c6377347-7891-46ac-ac2e-368d01ac0305",
+  "type": "key",
+  "reference": "60772568030",
+  "reference_tax_number": "39801903969",
+  "external_id": "950806b3-2f34-449d-86b6-437dafb625fc",
+  "amount": 1,
+  "description": "Payout using Pix key"
+}
+```
+
+If the request is successful, you will receive an HTTP `201` response, indicating that the payout has been successfully scheduled.
+
+```json
+{
+  "data": {
+    "payment_document_id": "018b480d-8da8-374a-6dd5-83b81788c605",
+    "scheduled_at": "2023-10-19T12:59:34.947655Z"
+  }
+}
+```
+
+If the request fails, you will receive an HTTP `400` response containing the error details.
+
+You can check the complete list of errors here:
+
+https://developers.trio.com.br/reference/errors
+
+```json
+{
+  "error": {
+    "error_code": "PAYMENT_ACCOUNT_WITHOUT_BALANCE",
+    "error_message": "Saldo insuficiente. Saldo atual R$ 3,13."
+  }
+}
+```
+
+## Document Lifecycle
+
+Every payout processed by Trio goes through a sequence of stages that represent the transaction lifecycle in our system.
+
+- **Created** — The transaction was received and queued for processing.
+- **Registering** — The settlement process has started.
+- **Settled** — The transaction was successfully processed and settled. The balance is deducted from your account. This is a final status.
+- **Failed** — The transaction could not be processed due to invalid information or because it was rejected by the bank. This is a final status.
+
+The following diagram illustrates the transaction flow:
+
+![Pix Payout Lifecycle](/files/69PfMn5OEljKFTC6zAa8)
+
+## Webhook Events
+
+To avoid unnecessary communication, we only send webhook notifications for final transaction stages.
+
+### Created
+
+This event is triggered when the payout transaction is successfully received and registered in our system for processing.
+
+A payment document will be created to represent the payout transaction, and a webhook will be sent with:
+
+- Category: `payment_document`
+- Type: `created`
+
+Webhook example:
+
+https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.created
+
+### Settled
+
+This event is triggered when the payout transaction is successfully completed.
+
+The payment document will be updated, and a webhook will be sent with:
+
+- Category: `payment_document`
+- Type: `settled`
+
+Webhook example:
+
+https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.settled
+
+### Failed
+
+This event is triggered when the payout transaction is rejected, declined, or cannot be processed.
+
+The payment document will be updated, and a webhook will be sent with:
+
+- Category: `payment_document`
+- Type: `failed`
+
+Webhook example:
+
+https://docs.trio.com.br/developers/webooks/events/payment-document#payment_document.failed

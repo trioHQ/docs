@@ -86,12 +86,13 @@
               "guides/creating-your-first-api-credential",
               "guides/qr-codes",
               "guides/cash-in",
-              "guides/cash-out"
+              "guides/using-pix-key",
+              "guides/cash-out",
+              "guides/webhook"
             ]
           }
         ]
-      }
-      ,
+      },
       {
         "tab": "API reference",
         "groups": [
