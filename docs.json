@@ -30,11 +30,26 @@
             "pages": [
               "concepts",
               "environments",
+              "error-table",
               "authentication",
               "pagination",
               "request-identification",
               "date-and-time",
               "rate-limit"
+            ]
+          },
+                    {
+            "group": "Trio SDK",
+            "pages": [
+              "trio-sdk/introduction",
+              "trio-sdk/using-the-sdk",
+              "trio-sdk/local-example",
+               {
+                "group": "Flows",
+                "pages": [
+                  "trio-sdk/"
+                ]
+              }
             ]
           },
           {

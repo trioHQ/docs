@@ -1,0 +1,50 @@
+We try to handle the errors and mistakes beautifully as possible. So we use HTTP codes convention to group the errors:
+
+* `2xx` status codes confirm that your request worked as expected
+* `4xx` status codes indicate that the request failed due some invalid information or a validation error
+* `5xx` status codes are use when something went wrong at Trio servers and systems.
+
+To better error handling during the integration, we always return the errors in the response body using the following fields:
+
+Example for credentials erros
+
+```json
+{
+    "error": "Invalid credentials"
+}
+```
+
+All erros example
+
+```json
+{
+    "error": {
+        "error_code": "UNAUTHORIZED_RESOURCE",
+        "error_message": "Resource being accessed is unauthorized."
+    }
+}
+```
+
+### HTTP status codes summary
+
+<table><thead><tr><th width="83.7337646484375">Code</th><th width="171.9088134765625">Type</th><th>Description</th></tr></thead><tbody><tr><td>200</td><td>Success</td><td>Everything worked as expected.</td></tr><tr><td>201</td><td>Success</td><td>Resource created successfully.</td></tr><tr><td>204</td><td>Success</td><td>Everything worked as expected with empty body</td></tr><tr><td>400</td><td>Bad request</td><td>Request returned an error, detail in content.</td></tr><tr><td>401</td><td>Unauthorized</td><td>Invalid authentication credentials.</td></tr><tr><td>404</td><td>Not Found</td><td>The requested resource was not found.</td></tr><tr><td>408</td><td>Timeout</td><td>The request timed out and was terminated by the server.</td></tr><tr><td>429</td><td>Too Many Requests</td><td>Too many concurrent requests</td></tr><tr><td>500</td><td>Server Error</td><td>Something went wrong in Trio's infrastructure.</td></tr></tbody></table>
+
+### General error handling
+
+<table><thead><tr><th width="333.1929931640625">Code</th><th width="92.5452880859375">Status</th><th>Message</th></tr></thead><tbody><tr><td>TRIO_SERVICE_UNAVAILABLE</td><td>503</td><td>Serviço indisponível</td></tr><tr><td>TRIO_SERVICE_REQUEST_TIMED_OUT</td><td>408</td><td>Timeout</td></tr><tr><td>TRIO_SERVICE_REQUEST_METHOD_FORBIDDEN</td><td>405</td><td>Método não permitido</td></tr><tr><td>ALREADY_EXISTS_RESOURCE</td><td>400</td><td>Já existe um {recurso} para a referência informada.</td></tr><tr><td>INVALID_RESOURCE</td><td>400</td><td>{recurso} é inválido.</td></tr><tr><td>NOT_FOUND_RESOURCE</td><td>404</td><td>{resource} não foi encontrado.</td></tr><tr><td>INVALID_PARAMETER</td><td>400</td><td>Campo {parameter} é inválido.</td></tr><tr><td>REQUIRED_PARAMETER</td><td>400</td><td>Campo {parameter} é obrigatório.</td></tr></tbody></table>
+
+### Authentication error handling
+
+| Code                          | Status | Message                 |
+| ----------------------------- | ------ | ----------------------- |
+| UNAUTHORIZED\_RESOURCE        | 403    | Recurso não autorizado  |
+| TRIO\_CLIENT\_SECRET\_INVALID | 401    | Client secret inválida. |
+| TRIO\_CLIENT\_ID\_INVALID     | 404    | Client id inválida.     |
+
+### Integrations error handling
+
+<table><thead><tr><th width="237.9307861328125">Code</th><th width="90.572265625">Status</th><th>Message</th></tr></thead><tbody><tr><td>INTEGRATION_ERROR</td><td>500</td><td>Ocorreu um erro inesperado na integração bancária.</td></tr><tr><td>INTEGRATION_TIMEOUT</td><td>408</td><td>O tempo de integração bancária foi maior que o esperado.</td></tr></tbody></table>
+
+### Business error handling
+
+<table><thead><tr><th width="293.9296875">Code</th><th width="92.6024169921875">Status</th><th>Message</th></tr></thead><tbody><tr><td>ENTITY_IN_ANALYSIS</td><td>404</td><td>Entidade está em análise, aguarde a aprovação. Referência: #{id}.</td></tr><tr><td>ENTITY_INVALID_CURRENCY</td><td>400</td><td>Moeda da transação diferente da informada na entidade. Utilize a moeda #{currency}.</td></tr><tr><td>ENTITY_INVALID_ADDRESS</td><td>404</td><td>Entidade não possui endereço válido. Referência: #{id}.</td></tr><tr><td>BANK_ACCOUNT_IN_ANALYSIS</td><td>404</td><td>Conta bancária está em análise, aguarde a aprovação. Referência: #{id}.</td></tr><tr><td>BANK_ACCOUNT_DAILY_TRANS_LIMIT_REACHED</td><td>400</td><td>Limite diário de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_DAILY_AMOUNT_LIMIT_REACHED</td><td>400</td><td>Limite diário de valor de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_OVERNIGHT_TRANS_LIMIT_REACHED</td><td>400</td><td>Limite noturno de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_OVERNIGHT_AMOUNT_LIMIT_REACHED</td><td>400</td><td>Limite noturo de valor de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_MIN_SINGLE_TRANS_AMOUNT_REACHED</td><td>400</td><td>Limite mínimo do valor da transação não foi atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_SINGLE_TRANS_AMOUNT_REACHED</td><td>400</td><td>Limite máximo do valor da transação atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_COUNTERPARTY_TRANS_REACHED</td><td>400</td><td>Limite diário de transações para uma contrapartida atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_COUNTERPARTY_AMOUNT_REACHED</td><td>400</td><td>Limite diário de valor de transações para uma contrapartida atingido.</td></tr><tr><td>PIX_KEY_CANCELED</td><td>400</td><td>Chave pix está cancelada. Referência: #{id}.</td></tr><tr><td>PIX_KEY_CONFIRMED</td><td>400</td><td>Chave pix já foi confirmada. Referência: #{id}.</td></tr><tr><td>PIX_KEY_ALREADY_EXISTS</td><td>400</td><td>Já existe uma chave pix criada ou confirmada. Referência: #{key}.</td></tr><tr><td>PIX_KEY_INVALID_KEY</td><td>400</td><td>--</td></tr><tr><td>PIX_KEY_REQUIRED</td><td>400</td><td>A chave deve ser informada quando o tipo é 'random_key'.</td></tr><tr><td>PIX_KEY_INVALID_TYPE</td><td>400</td><td>O tipo deve ser: 'tax_number', 'email', 'phone' ou 'random_key.'</td></tr><tr><td>PIX_KEY_CONFIRMATION_TYPE_INVALID</td><td>400</td><td>Confirmação com código deve ser executada somente para chaves pix do tipo: 'email' ou 'phone'.</td></tr><tr><td>PIX_KEY_PENDING</td><td>404</td><td>Chave pix não foi confirmada. Referência: #{id}.</td></tr><tr><td>COLLECTING_DOCUMENT_NOT_SETTLED</td><td>400</td><td>Documento de recebimento não está liquidado. Referência: #{id}.</td></tr><tr><td>COLLECTING_DOCUMENT_WITHOUT_BALANCE</td><td>400</td><td>Valor da devolução #{amount}, maior que o saldo #{balance} do documento de recebimento.</td></tr><tr><td>PAYMENT_BRCODE_ALREADY_USED</td><td>400</td><td>Brcode #{id}, já possui um documento vinculado #{id}.</td></tr><tr><td>PAYMENT_AMOUNT_ERROR</td><td>400</td><td>Valor de pagamento #{amount} deve ser igual ao valor do brcode #{id}, valor #{amount}.</td></tr><tr><td>PAYMENT_ACCOUNT_WITHOUT_BALANCE</td><td>400</td><td>Saldo insuficiente para executar o pagamento. Saldo atual #{amount}.</td></tr><tr><td>QUERY_LIMIT_REACHED</td><td>400</td><td>Limite de consultas atingido. Tente novamente em 1 minuto.</td></tr><tr><td>KEY_NOT_FOUND</td><td>404</td><td>Chave pix não foi encontrada. Referência: {key}.</td></tr><tr><td>BRCODE_NOT_FOUND</td><td>404</td><td>Brcode não foi encontrado. Referência: {brcode}.</td></tr><tr><td>KEY_NOT_FOUND_MULTI_ATTEMPTS</td><td>404</td><td>Chave pix não foi encontrada. Crie a chave e tente novamente em 1 hora. Referência: {key}.</td></tr><tr><td>VIRTUAL_TRANSFER_DIFFERENT_BANK_ACCOUNT</td><td>400</td><td>Conta bancária das contas virtuais origem e destino são diferentes. Para transferências virtuais devem ser a mesma.</td></tr></tbody></table>

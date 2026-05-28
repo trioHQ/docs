@@ -1,0 +1,246 @@
+# Trio Checkout SDK Example
+
+This project demonstrates how to integrate the Trio Checkout SDK using:
+
+- A local Node.js backend (`server.js`)
+- A local frontend (`index.html`)
+- Python HTTP Server for frontend hosting
+
+---
+
+# Requirements
+
+Before starting, make sure you have installed:
+
+- Node.js (v18+ recommended)
+- npm
+- Python 3
+
+---
+
+# Project Structure
+
+```bash
+local-example/
+├── server.js
+├── package.json
+└── index.html
+```
+
+---
+
+# 1. Install Backend Dependencies
+
+Create a `package.json` file:
+
+```bash
+npm init -y
+```
+
+Install the required dependencies:
+
+```bash
+npm install express cors
+```
+
+---
+
+# 2. Configure Credentials
+
+Inside `server.js`, replace the following values:
+
+```js
+const CLIENT_ID = "YOUR_CLIENT_ID";
+const CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+```
+
+With your Trio Sandbox credentials.
+
+---
+
+# 3. Run the Backend Server
+
+Start the server using:
+
+```bash
+node server.js
+```
+
+You should see:
+
+```bash
+Servidor rodando na porta 3000
+```
+
+The backend will now be available at:
+
+```bash
+http://localhost:3000
+```
+
+---
+
+# 4. Run the Frontend Locally
+
+The frontend uses the browser SDK and must be served through an HTTP server.
+
+Open a new terminal in the project folder and run:
+
+```bash
+python3 -m http.server 8080
+```
+
+If `python3` does not work, try:
+
+```bash
+python -m http.server 8080
+```
+
+The frontend will now be available at:
+
+```bash
+http://localhost:8080
+```
+
+---
+
+# 5. Open the Application
+
+Open your browser and access:
+
+```bash
+http://localhost:8080
+```
+
+---
+
+# How It Works
+
+1. The frontend collects:
+   - Transaction type
+   - CPF
+   - Amount
+
+2. The frontend sends a request to:
+
+```bash
+POST http://localhost:3000/create-session
+```
+
+3. The backend creates a Trio Checkout Session using the Trio API.
+
+4. The backend returns the `session_id`.
+
+5. The frontend initializes the Trio SDK:
+
+```js
+Trio.create({
+  environment: "sandbox",
+  session: session_id
+});
+```
+
+6. The checkout modal opens automatically.
+
+---
+
+# Available Transaction Types
+
+```txt
+payin
+payout
+```
+
+---
+
+# Sandbox Environment
+
+This example uses the Trio Sandbox API:
+
+```bash
+https://api.sandbox.trio.com.br
+```
+
+---
+
+# Important Notes
+
+- Make sure port `3000` is available for the backend.
+- Make sure port `8080` is available for the frontend.
+- CORS is enabled in the backend for local development.
+- Never expose production credentials publicly.
+
+---
+
+# Example Request Payload
+
+```json
+{
+  "type": "payin",
+  "cpf": "12345678900",
+  "amount": 15000
+}
+```
+
+Amount must be sent in cents.
+
+Example:
+
+```txt
+150.00 BRL = 15000
+```
+
+---
+
+# Troubleshooting
+
+## Port already in use
+
+Change the port in `server.js`:
+
+```js
+const PORT = 3000;
+```
+
+And update the frontend request URL if necessary.
+
+---
+
+## Python command not found
+
+Install Python 3 or use:
+
+```bash
+python3 -m http.server 8080
+```
+
+---
+
+## CORS errors
+
+Ensure the backend server is running before opening the frontend.
+
+---
+
+# Support
+
+For integration support, contact:
+
+- support@trio.com.br
+- https://suporte.trio.com.br
+
+---
+
+# Download Example Project
+
+You can download the complete local example project here:
+
+[Download the ZIP file](./local-example.zip)
+
+The ZIP package includes:
+
+- `server.js`
+- `index.html`
+- Local backend example
+- Frontend checkout example
+- SDK integration example
