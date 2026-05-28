@@ -20,7 +20,6 @@
           {
             "group": "Getting started",
             "pages": [
-              "welcome",
               "quickstart",
               "plan-your-integration",
               "support"
