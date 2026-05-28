@@ -128,29 +128,12 @@ Each QR Code transaction progresses through the following lifecycle stages:
 - `created`: transaction received and queued for processing;
 - `registering`: transaction is being processed;
 - `settled`: transaction successfully processed and settled (final state);
-- `failed`: transaction refused due to validation or compliance rules (final state).
+- `failed`: transaction refused due to validation or compliance rules (final state for cash out).
+
+Follow a diagram that represents the flow:
+
+<Frame>
+  ![Image (29)](/images/image-\(29\).png)
+</Frame>
 
 ---
-
-# Webhook Events
-
-Trio sends webhook notifications only for final transaction states.
-
-## `collecting_document.settled`
-
-Triggered when the QR Code payment is successfully completed.
-
-- Category: `collecting_document`
-- Type: `settled`
-
-## `collecting_document.failed`
-
-Triggered when the payment attempt is refused.
-
-- Category: `collecting_document`
-- Type: `failed`
-
-To simulate successful and failed QR Code payment flows in Sandbox, refer to the guides:
-
-- Simulating Deposit Success
-- Simulating Deposit Failures

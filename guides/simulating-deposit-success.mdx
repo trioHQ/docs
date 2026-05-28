@@ -1,0 +1,73 @@
+# Simulating Deposit Success
+
+Next, we present a step-by-step approach for you to complete (**settle**) your deposits. To simulate a complete transaction flow, you'll need two accounts: one to create payments and another to process them.
+
+First, you need to create a secondary virtual account. Access the menu and click on **Account \> Virtual Accounts**. In the listing page, at the top right, click on **Create Virtual Account.**
+
+<img
+  src="/images/image-(30).png"
+/>
+
+Select your real bank account (typically there will be only one) and provide a simple description for this account.
+
+![](/images/image-\(31\).png)
+
+Once created, this new account will appear in the listing interface, with its own ID and balance. By default, your first account starts with 1,000,000 BRL, while the new account starts with 0 BRL.
+
+### **Paying a Deposit**
+
+1. Create a new payment with QR code pointing to the new account. In the request body, specify the newly created account ID in the virtual\_account\_id, as shown below.
+   - POST [https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes](https://api.sandbox.trio.com.br/banking/cashin/pix/qrcodes)
+   Copy
+   ```text
+   {
+       "virtual_account_id": "0196102e-f67b-d5f9-300c-f587094bfc5a",
+       "counterparty": {
+           "tax_number": "41.491.440/0000-11",
+           "name": "My Test Company"
+       },
+       "amount": 5000,
+       "external_id": "{{$randomUUID}}",
+       "description": "Test Payment in Sandbox",
+       "options": {
+           "allow_change_the_amount_on_payment": false,
+           "show_qrcode_image": false
+       }
+   }
+   ```
+2. The account with a 0.00 BRL balance will receive a deposit of 50 BRL. To pay this deposit, you'll use your first account that has the full balance. To do this, go to **Move your account \> Pix**.
+
+![](/images/image-\(32\).png)
+
+1. Select the origin account, which should be the first one, with full balance.
+
+<img
+  src="/images/image-(33).png"
+  className="dark:hidden"
+/>
+<img
+  src="images/image-(33).png"
+  className="hidden dark:block"
+/>
+
+1. Paste que hash code created in your Deposit Request, via API.
+
+<img
+  src="/images/image-(34).png"
+  className="dark:hidden"
+/>
+<img
+  src="images/image-(34).png"
+  className="hidden dark:block"
+/>
+
+1. Follow a few completion steps, and you will have your deposit Completed, with webhook sent and the transaction listed in your transactions list.
+
+<img
+  src="/images/image-(35).png"
+  className="dark:hidden"
+/>
+<img
+  src="images/image-(35).png"
+  className="hidden dark:block"
+/>

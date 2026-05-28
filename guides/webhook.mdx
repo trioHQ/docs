@@ -1,3 +1,7 @@
+---
+title: "Webhooks"
+---
+
 Webhooks allow Trio to send automatic notifications to your system whenever an important event occurs, such as a successful Cash In or Cash Out transaction.
 
 Notifications are typically triggered when a transaction reaches a final state such as `settled` or `failed`.
@@ -8,7 +12,7 @@ Notifications are typically triggered when a transaction reaches a final state s
 
 All webhook events sent by Trio follow the same JSON structure:
 
-```json id="3ja82h"
+```json
 {
   "ref_id": "",
   "category": "",
@@ -45,10 +49,10 @@ All webhook events sent by Trio follow the same JSON structure:
 
 ## Cash In Webhook Example
 
-Category: `collecting_document`  
+Category: `collecting_document`\
 Type: `settled`
 
-```json id="7sja91"
+```json
 {
   "data": {
     "amount": {
@@ -82,10 +86,10 @@ This event indicates that a Cash In transaction was successfully processed and t
 
 ## Cash Out Webhook Example
 
-Category: `payment_document`  
+Category: `payment_document`\
 Type: `settled`
 
-```json id="8shs2k"
+```json
 {
   "data": {
     "amount": {
@@ -122,4 +126,4 @@ These are the primary webhook events used in most integrations.
 
 For the complete list of supported webhook events, access:
 
-https://docs.trio.com.br/developers/webooks/events
+[https://docs.trio.com.br/developers/webooks/events](https://docs.trio.com.br/developers/webooks/events)
