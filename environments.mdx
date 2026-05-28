@@ -1,3 +1,29 @@
 ---
-title: "environments"
+title: "Environments"
 ---
+
+In order to better serve your development team and facilitate a smooth development and testing process, we offer two distinct environments: `production` and `sandbox`.
+
+Each environment has its own base URL, which is used when making API requests.
+
+### **Production Environment**
+
+The `production` environment is the live environment where your application will interact with our API when it is deployed and running for end users. This environment provides access to real data and should be used with care to prevent unintended actions or data manipulation.
+
+#### **Base URL:**
+
+> [https://api.trio.com.br](https://api.trio.com.br)
+
+### **Sandbox Environment**
+
+The `sandbox` environment is a separate, isolated environment designed specifically for development, testing, and experimentation purposes. This environment allows your development team to work with our API without affecting real data or causing unintended consequences in the production environment.
+
+#### **Base URL:**
+
+> [https://api.sandbox.trio.com.br](https://api.sandbox.trio.com.br)
+
+### **Switching Between Environments**
+
+When developing your application, it is crucial to ensure that the appropriate base URL is used for each environment. Typically, this can be achieved by using environment-specific configuration files or environment variables.
+
+When transitioning from development and testing to deployment, make sure to update your application's configuration to use the production environment's base URL. This ensures that your application interacts with the correct environment and real data when it is live.

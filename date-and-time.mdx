@@ -1,3 +1,30 @@
 ---
-title: "date-and-time"
+title: "Date & Time"
 ---
+
+All dates and times managed and returned by our API are represented in the Coordinated Universal Time (UTC) timezone and adhere to the ISO 8601 format. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) is an internationally recognized standard for representing date and time in a human-readable and machine-parsable manner.
+
+### **Format**
+
+The ISO 8601 format for date and time representation follows this pattern:
+
+`YYYY-MM-DDTHH:mm:ssZ`
+
+Where:
+
+- YYYY represents the 4-digit year
+- MM represents the 2-digit month (01-12)
+- DD represents the 2-digit day of the month (01-31)
+- T is the separator between the date and time components
+- HH represents the 2-digit hour (00-23)
+- mm represents the 2-digit minute (00-59)
+- ss represents the 2-digit second (00-59)
+- Z indicates that the date and time are in the Coordinated Universal Time (UTC)
+
+#### **Example**
+
+An example of a date and time represented in the ISO 8601 format:
+
+`2023-03-21T14:30:00Z`
+
+This represents the date and time: March 21, 2023, 14:30:00 (UTC).

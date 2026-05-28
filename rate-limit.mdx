@@ -1,3 +1,46 @@
 ---
-title: "rate-limit"
+title: "Rate limit "
 ---
+
+There are some rate limiting policies implemented in our API to ensure fair usage and prevent abuse. It is important to understand and respect these rate limits when interacting with our API to avoid disruptions in service.
+
+### **Default Rate Limits**
+
+Our API enforces the following default rate limits:
+
+- Production environment: 60 requests per second
+- Sandbox environment: 5 requests per second
+
+These limits apply to each individual account and **to each endpoint**, and are enforced on a per-second basis.
+
+### **Rate Limit Exceeded**
+
+When an account exceeds the allowed rate limit, our API will respond with a `429` status code, indicating that the rate limit has been reached. This response will be accompanied by a message in the body, providing more information about the exceeded rate limit.
+
+#### **Example**
+
+A sample response when the rate limit has been exceeded:
+
+```text
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+
+{
+  "error": "Rate limit exceeded",
+  "message": "You have reached the maximum allowed requests per second. If you need more bandwidth request to our support team."
+}
+```
+
+### **Handling Rate Limit Exceeded Errors**
+
+When receiving a `429` status code in response to an API request, it is crucial to implement a back-off strategy in your application. This may include:
+
+- Retrying the request after a short delay
+- Implementing an exponential back-off algorithm to gradually increase the delay between retries
+- Using a queue system to manage requests and distribute them evenly over time
+
+By implementing a back-off strategy, you can ensure that your application gracefully handles rate limit exceeded errors and continues to function correctly.
+
+### **Upgrading Rate Limits**
+
+If your application requires a higher rate limit, you may be eligible for an upgrade. Please contact our support team to discuss your requirements and explore the available options for increasing your account's rate limits.

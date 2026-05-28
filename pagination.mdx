@@ -1,3 +1,40 @@
 ---
-title: "pagination"
+title: "Pagination"
 ---
+
+In order to enhance the performance of our API and to ensure the scalability and stability of our services, we use cursor-based pagination for navigating large data sets. This document will guide you through the process of understanding and implementing cursor-based pagination for our API.
+
+### **Cursor-based Pagination**
+
+Cursor-based pagination allows for efficient traversal through large data sets by using a pointer (a.k.a. cursor) to a specific item in the data set. Instead of relying on numbered pages, cursor-based pagination focuses on a unique identifier for each item, making it possible to fetch subsequent items without duplicating or missing any results.
+
+### **How It Works**
+
+When making a request to an API endpoint that supports pagination, the API will return a set of results along with two cursor values and one helper variable:
+
+- `after`: A value that points to the next item in the data set.
+- `before`: A value that points to the previous item in the data set.
+- `has_next`: Indicate if the next cursor has value in the data set.
+
+By default our endpoints have a max limit of 50 records per page.
+
+These cursor values can then be passed as query parameters in the subsequent API requests to fetch the next or previous set of results. They are mutually exclusive, meaning that only one of them can be set at the time to iterate through the results.
+
+```text
+curl https://api.sandbox.trio.com.br/banking/cashin/documents?after=g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw== \ 
+  -H "Content-Type: application/json" \ 
+  -u {client_id}:{client_secret}
+```
+
+The cursor values are encapsulated at `metadata` object on responses that supports pagination. The `metadata` and will look like this:
+
+```text
+{
+  "data": "",
+  "metadata": {
+    "before": null,
+    "after": "g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw==",
+    "has_next": true
+  }
+}
+```

@@ -1,3 +1,13 @@
 ---
-title: "authentication"
+title: "Authentication"
 ---
+
+Trio uses [basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) to authenticate the API. You can create `sandbox` and `production` client secret keys in the developer console. We're also offering a company unique identifier to be used as username in the authentication process.
+
+Use your company unique identifier (client\_id) as username and generated secret key (client\_secret) as password to authenticate:
+
+```text
+curl https://api.sandbox.trio.com.br/banking/entities \ 
+  -H "Content-Type: application/json" \ 
+  -u {client_id}:{client_secret}
+```
