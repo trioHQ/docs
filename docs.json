@@ -79,8 +79,7 @@
       {
         "tab": "Guides",
         "pages": [
-          "guides/teste",
-          "quickstart",
+          "guides/sandbox_account",
           {
             "group": "Getting started",
             "pages": [
