@@ -3,7 +3,7 @@ This is a step-by-step guide on how to integrate the **Checkout** SDK within you
 Some requirements for this tutorial are:
 
 * Make sure you have created your API Keys through our console ([API Keys page](https://app.trio.com.br/developers/api_keys)), and the `client_id` and `client_secret` that belongs to your company from either in a sandbox or production environment.
-* Read the API Reference on how to create a [Checkout Session](https://docs.trio.com.br(trocar após publicação da doc)/reference/banking-api/checkout).
+* Read the API Reference on how to create a [Checkout Session](#/reference/banking-api/checkout).
 
 ### 1. Embed the SDK
 
@@ -22,8 +22,8 @@ In case you have a mobile application, it is also possible to embed our tag by m
 Since all payment information is sensitive, we allow ourselves to handle information that will be used in the front-end in the back-end beforehand. In order to use the SDK, then, we offer the creation of a session, which represents an instance of a transaction inside our front-end application. All sessions must be created with a payload, and the payload will vary depending on the type of session you want to create.\
 The field **"options.session\_type"** defines which type will be created, and must be one of the four available "pay in", "payout", "guest\_onboarding", "user\_onboarding". To understand more about each type, its use cases and how to create a session for each one, please follow the links below:
 
-* [Pay-in](https://docs.trio.com.br(trocar após publicação da doc)/guides/sdk/flows/pay-in)
-* [Payout](https://docs.trio.com.br(trocar após publicação da doc)/guides/sdk/flows/payout)
+* [Pay-in](#/guides/sdk/flows/pay-in)
+* [Payout](#/guides/sdk/flows/payout)
 
 After creating a session, make sure that you saved the `id` returned. It will be necessary in order to instance the SDK interface. After the expiration time ends, a created session automatically expires, and cannot be used again.
 
@@ -113,8 +113,8 @@ Then open by running `Trio.open()`
 
 Every payment processed by Trio will generate a new document. You can handle the transactions either by dealing with the `onEvent` callback, or by receiving webhooks for the document:
 
-* [Pay-in webhook (collecting document)](https://docs.trio.com.br(trocar após publicação da doc)/developers/webooks/events/collecting-document)
-* [Payout webhook (payment document)](https://docs.trio.com.br(trocar após publicação da doc)/developers/webooks/events/payment-document)
+* [Pay-in webhook (collecting document)](#/developers/webooks/events/collecting-document)
+* [Payout webhook (payment document)](#/developers/webooks/events/payment-document)
 
 You can also access the documents inside our Dashboard:
 
