@@ -1,3 +1,130 @@
----
-title: "collecting-document"
----
+Events that belong to the category `collecting_document`.
+
+<table>
+  <thead>
+    <tr>
+      <th width="180">Event Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <a href="#collecting_document-settled">
+          <code>settled</code>
+        </a>
+      </td>
+      <td>
+        A collecting document (<strong>cash-in</strong>) was successfully received and registered in the system.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <a href="#collecting_document-failed">
+          <code>failed</code>
+        </a>
+      </td>
+      <td>
+        A collecting document (<strong>cash-in</strong>) was received but could not be processed and was refused.
+      </td>
+    </tr>
+  </tbody>
+</table>
+### Examples
+
+#### collecting\_document.settled
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "5",
+      "id": "29b6d0bc-7226-5af3-c274-d4242429236f",
+      "ispb": "49931906",
+      "number": "47919554",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311822NX1S6J7KaOm",
+    "external_id": null,
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "reconciliation_id": "0194bd99-65cd-b51d-4f8f-78735341777b",
+    "ref_id": "0194bd96-9e39-2a47-9420-1e047cb762b3",
+    "ref_type": "pix_qrcode",
+    "transaction_date": "2025-01-31T18:22:14.510717Z",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:22:14.477163Z",
+  "type": "settled",
+  "category": "collecting_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41"
+}
+```
+
+#### collecting\_document.failed
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "5",
+      "id": "29b6d0bc-7226-5af3-c274-d4242429236f",
+      "ispb": "49931906",
+      "number": "47919554",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311825zSQGRMknozm",
+    "error_code": "BE17",
+    "error_message": ""Brcode possui contrapartida diferente"",
+    "external_id": "1",
+    "id": "0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+    "reconciliation_id": "0194bd9c-90b4-7202-dd06-65685ce89efb",
+    "ref_id": "0194bd9b-d0c1-8201-f41c-15d69a2d5e6b",
+    "ref_type": "pix_qrcode",
+    "rule": "pix_qrcode_different_tax_number",
+    "transaction_date": null,
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:25:42.068091Z",
+  "type": "failed",
+  "category": "collecting_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "ref_id": "0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+  "context_type": "internet_banking"
+}
+```

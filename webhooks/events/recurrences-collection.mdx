@@ -1,3 +1,48 @@
----
-title: "recurrences-collection"
----
+Events that belong to the category `recurrence's collections`.
+
+<table><thead><tr><th width="113">Type</th><th>Description</th></tr></thead><tbody><tr><td>created</td><td>A recurrence's collection was created.</td></tr><tr><td>active</td><td>A recurrence's collection  was active.</td></tr><tr><td>settled</td><td>A recurrence's collection  was settled.</td></tr><tr><td>expired</td><td>A recurrence's collection  was expired.</td></tr><tr><td>rejected</td><td>A recurrence's collection  was rejected.</td></tr><tr><td>cancelled</td><td>A recurrence's collection  was cancelled.</td></tr></tbody></table>
+
+### Examples
+
+#### recurrence.action
+
+```json
+{
+  "event": {
+    "data": {
+      "id": "019a0222-6580-e104-fce2-957756930115",
+      "status": "active",
+      "timestamp": "2025-10-20T15:00:00.000000Z",
+      "version": 2,
+      "sign": null,
+      "amount": 1000,
+      "group_id": "0198af49-717e-6f67-19d4-2e6cc84f498d",
+      "inserted_at": "2025-10-09T00:15:01.773766Z",
+      "updated_at": "2025-10-11T03:15:01.397667Z",
+      "stages": "[]",
+      "transaction_date": null,
+      "company_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+      "org_id": "e370408d-9a0e-490b-92b1-8c4a0055dec2",
+      "entity_id": "0198af47-e620-1507-295a-d96017946693",
+      "recurrence_id": "0199c598-fee6-4c6b-5d6b-6cc86f2b0677",
+      "bank_account_id": "0198af49-718a-a5e3-6c22-f1baabc1698c",
+      "txid": "01K8124SC0W42FSRMNEXB9608N",
+      "counterparty_info_id": "00016a74-c182-75ab-8d51-de42181733a3",
+      "next_working_day": false,
+      "aditional_info": null,
+      "final_date": null,
+      "recurrence_timestamp": "2025-10-08T20:52:42.342331Z",
+      "attempts": "[]"
+    },
+    "timestamp": "2025-10-20T15:00:00.000000Z",
+    "type": "active",
+    "category": "recurrence_collection",
+    "inserted_at": "2025-10-11T03:15:07.680130Z",
+    "origin_type": null,
+    "ref_stage_id": null,
+    "ref_id": "019a0222-6580-e104-fce2-957756930115",
+    "context_type": "bacen",
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0"
+  }
+}
+```

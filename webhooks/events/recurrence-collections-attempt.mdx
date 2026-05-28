@@ -1,3 +1,43 @@
----
-title: "recurrence-collections-attempt"
----
+Events that belong to the category `recurrence's collections`.
+
+<table><thead><tr><th width="113">Type</th><th>Description</th></tr></thead><tbody><tr><td>requested</td><td>A recurrence collection's attempt was created.</td></tr><tr><td>scheduled</td><td>A recurrence collection's attempt  was scheduled.</td></tr><tr><td>settled</td><td>A recurrence collection's attempt  was settled.</td></tr><tr><td>cancelled</td><td>A recurrence collection's attempt  was cancelled.</td></tr><tr><td>rejected</td><td>A recurrence collection's attempt was rejected.</td></tr><tr><td>expired</td><td>A recurrence collection's attempt was expired.</td></tr><tr><td>failed</td><td>A recurrence collection's attempt was failed.</td></tr></tbody></table>
+
+### Examples
+
+#### recurrence.scheduled
+
+```json
+{
+  "event": {
+    "data": {
+      "id": "019a0222-6580-a64a-cfca-408b51642e22",
+      "status": "scheduled",
+      "timestamp": "2025-10-20T15:00:00.000000Z",
+      "type": "AGND",
+      "version": 2,
+      "sign": null,
+      "inserted_at": "2025-10-11T03:15:01.370394Z",
+      "updated_at": "2025-10-11T03:15:07.623385Z",
+      "external_id": "external_id",
+      "stages": "[]",
+      "end_to_end_id": "E49931906202510201500ReKBJaYDKWA",
+      "transaction_date": null,
+      "txid": "01K8124SC0MS5CZJJ0HD8P8BH2",
+      "out_document_id": null,
+      "out_document_timestamp": null,
+      "due_date": "2025-10-20T15:00:00.000000Z",
+      "collection_id": "019a0222-6580-e104-fce2-957756930115",
+      "collection_timestamp": "2025-10-20T15:00:00.000000Z"
+    },
+    "timestamp": "2025-10-20T15:00:00.000000Z",
+    "type": "scheduled",
+    "category": "recurrence_collection_attempt",
+    "inserted_at": "2025-10-11T03:15:07.680443Z",
+    "origin_type": null,
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+    "ref_stage_id": null,
+    "ref_id": "019a0222-6580-a64a-cfca-408b51642e22",
+    "context_type": "bacen"
+  }
+}
+```

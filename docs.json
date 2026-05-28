@@ -14,7 +14,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Get Started",
         "pages": [
           "index",
           "quickstart",
@@ -61,6 +61,20 @@
         ]
       },
       {
+        "tab": "Guides",
+        "pages": [
+          "guides/teste",
+          "quickstart",
+          {
+            "group": "Getting started",
+            "pages": [
+              "plan-your-integration",
+              "support"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API reference",
         "groups": [
           {
@@ -102,11 +116,11 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-    "claude"
-  ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "footer": {
     "socials": {

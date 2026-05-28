@@ -1,3 +1,36 @@
----
-title: "payment-document-refund"
----
+Events that belong to the category `payment_document_refund`.
+
+<table><thead><tr><th width="114">Type</th><th>Description</th></tr></thead><tbody><tr><td><a href="#payment_document.settled">settled</a></td><td>A refund payment document was successfully settled.</td></tr></tbody></table>
+
+### Examples
+
+#### payment\_document.settled
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "description": null,
+    "end_to_end_id": "D49931906202502031257bAqO8f0YhUH",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbe3-63ea-e00f-3749-044a4e1b673c",
+    "origin_id": null,
+    "origin_type": "none",
+    "payment_document_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out_refund/0194cbe3-63ea-e00f-3749-044a4e1b673c",
+    "reconciliation_id": "0194cbe3-63ea-c748-90b0-7ddb1a193acb",
+    "rule": "manual",
+    "transaction_date": "2025-02-03T12:57:44.787470Z",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:57:44.682219Z",
+  "type": "settled",
+  "category": "payment_document_refund",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe3-63ea-e00f-3749-044a4e1b673c"
+}
+```

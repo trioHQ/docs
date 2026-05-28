@@ -1,3 +1,33 @@
----
-title: "transfer-document"
----
+Events that belong to the category `transfer_document`.
+
+<table><thead><tr><th width="113">Type</th><th>Description</th></tr></thead><tbody><tr><td><a href="#transfer_document.settled">settled</a></td><td>A transfer document was confirmed and successfully registered.</td></tr></tbody></table>
+
+### Examples
+
+#### transfer\_document.settled
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 1000,
+      "currency": "BRL"
+    },
+    "description": "Transferência interna",
+    "external_id": "Transferência interna - Console 0194cbe1-5b88-9057-b3d6-315c1451a699",
+    "from_virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48",
+    "id": "0194cbe1-a7bf-e03f-6fa7-79c432da1481",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "reconciliation_id": "0194cbe1-a7bf-73dd-e543-ac26409707bf",
+    "to_virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666",
+    "transaction_date": "2025-02-03T12:55:51.178153Z"
+  },
+  "timestamp": "2025-02-03T12:55:50.975833Z",
+  "type": "settled",
+  "category": "transfer_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe1-a7bf-e03f-6fa7-79c432da1481"
+}
+```

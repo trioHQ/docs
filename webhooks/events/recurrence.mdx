@@ -1,3 +1,68 @@
----
-title: "recurrence"
----
+Events that belong to the category `recurrence`.
+
+<table><thead><tr><th width="113">Type</th><th>Description</th></tr></thead><tbody><tr><td>created</td><td>A recurrence was created.</td></tr><tr><td>approved</td><td>A recurrence was approved.</td></tr><tr><td>rejected</td><td>A recurrence was rejected.</td></tr><tr><td>expired</td><td>A recurrence was expired.</td></tr><tr><td>cancelled</td><td>A recurrence was cancelled.</td></tr></tbody></table>
+
+### Examples
+
+#### recurrence.approved
+
+```json
+{
+  "event": {
+    "data": {
+      "retry_policy": "3r_7d",
+      "stages": "[{\"id\":\"0199d478-de39-e970-7b2b-d643b148340d\",\"status\":\"created\",\"timestamp\":\"2025-10-11T18:11:55.065746Z\",\"request_id\":null,\"error_code\":null,\"error_message\":null,\"inserted_at\":\"2025-10-11T18:11:55.079001Z\",\"updated_at\":\"2025-10-11T18:11:55.079001Z\",\"request_timestamp\":null,\"recurrence_id\":\"0199d478-de39-fcf3-87a9-e8bded7db468\",\"bank_account_id\":null,\"reference_type\":\"qrdn\",\"reference_id\":null,\"collection_id\":null,\"collection_timestamp\":null,\"cancelation_code\":null,\"cancelation_description\":null,\"cancelation_origin\":null,\"rejection_code\":null,\"rejection_description\":null,\"journey\":\"aut3\"},{\"id\":\"0199d478-de39-957a-43b6-19c19f5f7620\",\"status\":\"approved\",\"timestamp\":\"2025-10-11T18:11:55.065746Z\",\"request_id\":null,\"error_code\":null,\"error_message\":null,\"inserted_at\":\"2025-10-11T18:13:28.874345Z\",\"updated_at\":\"2025-10-11T18:13:28.874345Z\",\"request_timestamp\":null,\"recurrence_id\":\"0199d478-de39-fcf3-87a9-e8bded7db468\",\"bank_account_id\":null,\"reference_type\":\"qrdn\",\"reference_id\":null,\"collection_id\":null,\"collection_timestamp\":null,\"cancelation_code\":null,\"cancelation_description\":null,\"cancelation_origin\":null,\"rejection_code\":null,\"rejection_description\":null,\"journey\":\"aut3\"}]",
+      "end_date": null,
+      "number_of_collections": null,
+      "contract_number": "565d00c968754605b41e122e7679d260",
+      "type": "in",
+      "reference_type": "qrdn",
+      "authorization_date": "2025-10-11T18:13:27.000000Z",
+      "org_id": "34713ca3-0b83-47d8-a173-cdc26609edbc",
+      "description": "Obrigado por sua doação",
+      "next_working_day": false,
+      "id": "0199d478-de39-fcf3-87a9-e8bded7db468",
+      "periodicity": "mnth",
+      "txid": "01K7A7HQHSZKSRFAF8QQPQVD38",
+      "version": 3,
+      "timestamp": "2025-10-11T18:11:55.065746Z",
+      "bank_account_id": "019953b0-535d-e973-4334-aa0f29ac9441",
+      "automated_collecting": false,
+      "counterparty_seq": 11,
+      "reference_id": null,
+      "start_date": "2025-11-11T18:11:54.433341Z",
+      "status": "approved",
+      "maximum_amount": null,
+      "external_id": "565d00c968754605b41e122e7679d260",
+      "origin_id": "01985b9a-2a0b-e7ca-954b-acfe68553971",
+      "counterparty_id": "0002b135-5463-763d-55a8-7ad885f521d7",
+      "origin_type": "api_client",
+      "company_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+      "journey": "aut3",
+      "updated_at": "2025-10-11T18:13:28.887893Z",
+      "first_payment_amount": null,
+      "first_payment_date": "2025-11-11T15:00:00.000000Z",
+      "counterparty_bank_account_id": "0002b135-5463-379f-c7ea-941f1f02841f",
+      "update_date": "2025-10-11T18:13:26.000000Z",
+      "fixed_amount": 2000,
+      "inserted_at": "2025-10-11T18:11:55.070544Z",
+      "id_rec": "RR4993190620251011181155657BH",
+      "minimum_amount": null,
+      "entity_id": "019953ad-1738-b094-097c-7941a0c642a5",
+      "sign": null,
+      "counterparty_info_id": "0002b135-5463-e469-ce49-dc8f22ba6b0c",
+      "group_id": "019953b0-5338-8673-88a4-cdee1b24de3c",
+      "ispb": "49931906"
+    },
+    "timestamp": "2025-10-11T18:11:55.065746Z",
+    "type": "approved",
+    "category": "recurrence",
+    "inserted_at": "2025-10-11T18:13:29.350461Z",
+    "origin_type": null,
+    "ref_stage_id": null,
+    "ref_id": "0199d478-de39-fcf3-87a9-e8bded7db468",
+    "context_type": "bacen",
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0"
+  }
+}
+```

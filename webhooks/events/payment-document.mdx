@@ -1,3 +1,97 @@
----
-title: "payment-document"
----
+Events that belong to the category `payment_document`.
+
+<table><thead><tr><th width="119">Type</th><th>Description</th></tr></thead><tbody><tr><td><a href="#payment_document.created">created</a></td><td>A payment document has been created.</td></tr><tr><td><a href="#payment_document.settled">settled</a></td><td>A payment document was confirmed and successfully registered.</td></tr><tr><td><a href="#payment_document.failed">failed</a></td><td>A payment document was sent and not processed due to invalid information or declined by the bank.</td></tr></tbody></table>
+
+### Examples
+
+#### payment\_document.created
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "0",
+      "id": "29b6d0bc-7226-22d9-d45f-71d7d25e2d4c",
+      "ispb": "49931906",
+      "number": "54455708",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "origin_id": null,
+    "origin_type": "none",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "reconciliation_id": "0194cbda-a2ca-e301-d18f-6775388a2c8f",
+    "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "ref_type": "pix_qrcode",
+    "transaction_date": null,
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "created",
+  "category": "payment_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
+
+#### payment\_document.settled
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "0",
+      "id": "29b6d0bc-7226-22d9-d45f-71d7d25e2d4c",
+      "ispb": "49931906",
+      "number": "54455708",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "origin_id": null,
+    "origin_type": "none",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "reconciliation_id": "0194cbda-a2ca-e301-d18f-6775388a2c8f",
+    "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "ref_type": "pix_qrcode",
+    "transaction_date": "2025-02-03T12:48:21.405797Z",
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "settled",
+  "category": "payment_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
