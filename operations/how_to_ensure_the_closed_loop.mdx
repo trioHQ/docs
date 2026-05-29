@@ -1,3 +1,7 @@
+---
+title: "How to ensure the closed loop?"
+---
+
 When sending or receiving transactions, one might ask oneself how Trio manages to offer a fully secure closed loop, without any hiccuping or missing transactions, whilst also providing protection against frauds.
 
 For this sort of control, we offer plentiful parameterization aligned with compliance rules when making any movement, so you know exactly what happened throughout your operation.
@@ -22,4 +26,4 @@ Here you can see the payout related compliance rules that are enabled for a virt
 
 <table><thead><tr><th width="288.2109375">Compliance rule</th><th width="91.375">Editable?</th><th>Possible situation</th></tr></thead><tbody><tr><td>Block payouts to legal entities</td><td>Yes</td><td>When attempting to make a payment to an account that belongs to a legal entity represented by a legal tax number (CNPJ in Brasil).</td></tr><tr><td>Block payouts to different tax number</td><td>Yes</td><td>When attempting to pay out an account that not belongs to the tax number informed on the payload field: <em>reference_tax_number</em></td></tr><tr><td>Block payouts to different bank accounts</td><td>Yes</td><td>When attempting to pay out an account that not informed on the payload field: <em>reference_bank_accounts</em></td></tr></tbody></table>
 
-&#x20;A complete guide of implementation can be found here: Payout using a pix key.
+ A complete guide of implementation can be found here: Payout using a pix key.
