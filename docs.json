@@ -92,6 +92,13 @@
               "guides/simulating-deposit-success",
               "guides/simulating-deposit-failures"
             ]
+          },
+          {
+            "group": "Operations",
+            "pages": [
+              "operations/best_practices_for_integration",
+              "operations/how_to_ensure_the_closed_loop"
+            ]
           }
         ]
       },

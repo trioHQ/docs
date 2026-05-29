@@ -1,0 +1,384 @@
+## Understanding Cash In and Cash Out IDs
+
+During the integration process with the **Trio API**, it is essential to understand the difference between the identifiers returned in **Cash In** and **Cash Out** operations.
+
+These identifiers are fundamental for:
+
+- Transaction tracking;
+- Financial reconciliation;
+- Idempotency validation;
+- Duplicate payment prevention;
+- API transaction queries;
+- Transaction lookup in the Trio App.
+
+---
+
+## Difference Between IDs
+
+| Transaction Type | ID returned upon creation | When the `document_id` becomes available | Purpose |
+| --- | --- | --- | --- |
+| Cash Out | `data.out_document_id` | Immediately in the creation response | Reconciliation and transaction lookup |
+| Cash In | `data.id` (`ref_id`) | After the `settled` webhook | QR Code identification and later reconciliation |
+
+---
+
+## Cash Out Example
+
+When creating a Cash Out transaction, the `document_id` is immediately returned in the response.
+
+```json
+{
+  "data": {
+    "out_document_id": "0192057d-ab3f-3651-f054-6ef9c8e68f20"
+  }
+}
+```
+
+The returned identifier can immediately be used for:
+
+- Transaction status queries;
+- Financial reconciliation;
+- Receipt validation;
+- Support investigations.
+
+---
+
+## Cash In Example (QR Code Creation)
+
+When creating a Cash In operation, the transaction has not yet been settled.
+
+At this stage, the response contains only the QR Code identifier (`ref_id`), represented by `data.id`.
+
+```json
+{
+  "data": {
+    "id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "status": "created",
+    "description": "Paid to merchant.com",
+    "hash": "00020101021226790014br.gov.bcb.pix2557brcode-h.trio.com.br/...",
+    "amount": {
+      "currency": "BRL",
+      "amount": 100
+    },
+    "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
+    "virtual_account_id": "019296ff-1f72-2ad7-0201-41de08355fda",
+    "origin_type": "api_client",
+    "pix_key_id": "019296ff-1f94-ecec-2220-96bfd06e8e59"
+  }
+}
+```
+
+The `id` returned in this response represents the generated QR Code and not the final financial transaction.
+
+The final `document_id` is generated only after the payment is completed and confirmed.
+
+---
+
+## Linking the QR Code to the Confirmed Deposit
+
+When a Cash In payment reaches the `settled` status, Trio sends a webhook containing:
+
+- `external_id` → identifier originally sent by your platform;
+- `ref_id` → QR Code identifier returned during creation;
+- `id` → final `document_id` of the settled transaction.
+
+This structure allows the association between:
+
+```text
+QR Code Request → Payment Confirmation → Final Financial Transaction
+```
+
+---
+
+## Cash In Webhook Example (`settled`)
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/.../in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "ref_id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "type": "settled",
+  "category": "collecting_document",
+  "timestamp": "2025-01-31T18:22:14.477163Z"
+}
+```
+
+---
+
+## `external_id` and Idempotency
+
+The `external_id` field must be unique for each operation created by your platform.
+
+Both Cash In and Cash Out operations enforce an idempotency window of:
+
+```text
+24 hours (1 day)
+```
+
+During this period:
+
+- The same `external_id` cannot be reused;
+- Duplicate requests using the same identifier may return the previous operation;
+- This protection exists to prevent duplicate payments and accidental retries.
+
+---
+
+## Best Practices for `external_id`
+
+Recommended:
+
+- Use UUIDs or unique internal transaction identifiers;
+- Persist the `external_id` in your database;
+- Associate the identifier with your internal payment/order;
+- Query transactions using the `external_id` before retrying requests.
+
+Avoid:
+
+- Reusing identifiers for different transactions;
+- Sequential or predictable identifiers;
+- Automatic retries without previous status validation.
+
+---
+
+## Cash Out Response Time and Timeout Handling
+
+### Expected Response Time
+
+| Scenario | Expected Time |
+| --- | --- |
+| Stable environment average | `200ms ~ 280ms` |
+| Maximum expected during oscillation | Up to `1000ms` |
+
+---
+
+### Timeout Handling
+
+If a Cash Out request times out:
+
+```text
+Do not immediately create a new withdrawal request.
+```
+
+The transaction may still have been processed successfully.
+
+Before retrying:
+
+1. Validate the transaction status with Trio support;
+2. Query the transaction using the same `external_id`;
+3. Validate webhook notifications and reconciliation status.
+
+Creating a second request without validation may generate duplicate payouts.
+
+---
+
+## Cash In Response Time and Retry Guidance
+
+### Expected Response Time
+
+| Scenario | Expected Time |
+| --- | --- |
+| Stable environment average | `80ms ~ 100ms` |
+| Maximum recommended waiting time | Up to `500ms` |
+
+---
+
+### QR Code Retry Recommendation
+
+If no response is received within `500ms` during QR Code generation:
+
+- A new QR Code request may be created;
+- The new request must use a different `external_id`.
+
+---
+
+## Webhook Processing Recommendations
+
+For production environments, the following practices are recommended:
+
+- Process webhooks asynchronously;
+- Return HTTP `200 OK` immediately after receipt;
+- Persist webhook payloads for auditability;
+- Avoid long-running processing during webhook delivery.
+
+---
+## Transaction Lifecycle
+
+The transaction lifecycle behaves differently for Cash In and Cash Out operations and should be interpreted carefully during integration.
+
+---
+
+## Cash In Lifecycle
+
+```text
+created → failed → settled
+```
+
+For Cash In operations, the `failed` status does not necessarily mean that the QR Code failed permanently.
+
+A Cash In QR Code may receive one or multiple payment attempts before a payment is successfully completed.
+
+---
+
+### Understanding `failed` in Cash In
+
+When a user attempts to pay a QR Code, Trio performs initial business rule validations before accepting the payment.
+
+If the payment attempt is rejected during these validations, a `failed` webhook may be sent.
+
+Common examples, Third-party payments.
+
+In this scenario:
+
+- The QR Code remains active;
+- The QR Code is not expired;
+- The QR Code can still receive new payment attempts;
+- A future `settled` event may still happen.
+
+This means that:
+
+```text
+Cash In failed != Final transaction failure
+```
+
+The `failed` status for Cash In should be interpreted only as:
+
+```text
+"A payment attempt was rejected"
+```
+
+It does not mean that the QR Code was canceled or expired.
+
+---
+
+### Understanding `settled` in Cash In
+
+The `settled` status represents the final successful payment confirmation.
+
+Once a Cash In receives `settled`:
+
+- The payment is confirmed;
+- The `document_id` is generated;
+- The QR Code is finalized automatically;
+- The QR Code can no longer receive payments;
+- No additional `failed` events will occur afterward.
+
+---
+
+### Important Lifecycle Rules for Cash In
+
+Possibles sequence:
+
+```text
+created → failed → settled
+```
+
+```text
+created → settled
+```
+
+Possible sequence with multiple attempts:
+
+```text
+created → failed → failed → settled
+```
+
+Not possible:
+
+```text
+created → settled → failed
+```
+
+If a `failed` event is received, a future `settled` may still occur.
+
+If a `settled` event is received, the transaction is finalized and no further events are expected.
+
+---
+
+## Cash Out Lifecycle
+
+```text
+processing → settled / failed
+```
+
+For Cash Out operations, both `failed` and `settled` are final statuses.
+
+Unlike Cash In, a Cash Out transaction does not remain open after a `failed`.
+
+---
+
+### Understanding `failed` in Cash Out
+
+If a Cash Out reaches `failed`:
+
+- The withdrawal was not completed;
+- The transaction lifecycle ends immediately;
+- No further status updates will occur for that transaction.
+
+Examples may include:
+
+- Invalid Pix key;
+- Banking rejection;
+- Insufficient balance;
+- Banking processing errors.
+
+---
+
+### Understanding `settled` in Cash Out
+
+The `settled` status confirms that the withdrawal was successfully completed.
+
+Once `settled` is received:
+
+- The transfer is finalized;
+- The funds were successfully delivered;
+- No additional lifecycle events will occur.
+
+---
+
+## Summary
+
+### Cash In
+
+- `failed` is not a final status;
+- `failed` means that a payment attempt was rejected;
+- The QR Code remains active after `failed`;
+- A `settled` may still occur after a `failed`;
+- `settled` is the final successful state;
+- After `settled`, no further events will occur.
+
+### Cash Out
+
+- `failed` is a final status;
+- `settled` is a final status;
+- No additional events occur after either status.
+---
+
+## Additional Notes
+
+- If a QR Code is never paid, the `document_id` will not be generated;
+- The `ref_id` identifies only the QR Code request;
+- The `document_id` represents the actual financial transaction;
+- `receipt_url` becomes available only after settlement;
+- Webhooks should be treated as the source of truth for final transaction status updates.
+
+---
+
+## Summary
+
+1. Cash Out returns the `document_id` immediately;
+2. Cash In initially returns only the QR Code `ref_id`;
+3. The final Cash In `document_id` is received through webhook after settlement;
+4. `external_id` is the primary reconciliation identifier between your platform and Trio;
+5. `external_id` has a 24-hour idempotency window for both Cash In and Cash Out;
+6. Cash Out operations should not be retried blindly after timeouts;
+7. Cash In QR Code requests may be recreated after `500ms` timeout using a new `external_id`;
+8. All identifiers should be persisted for reconciliation and auditability purposes.

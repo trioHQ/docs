@@ -1,0 +1,25 @@
+When sending or receiving transactions, one might ask oneself how Trio manages to offer a fully secure closed loop, without any hiccuping or missing transactions, whilst also providing protection against frauds.
+
+For this sort of control, we offer plentiful parameterization aligned with compliance rules when making any movement, so you know exactly what happened throughout your operation.
+
+### Deposits
+
+Regarding money coming in, we apply some compliance rules that decide whether money from a single transaction will be received or not.
+
+Whenever a compliance rule is being infringed in a transaction, we take it upon ourselves to receive the money and automatically refuse it back to the sender's account. A refused transaction will generate a failed event, so you can handle the experience and show the information to your users.
+
+Here you can see the pay-in related compliance rules that can be enabled for a virtual account:
+
+<table><thead><tr><th width="288.40625">Compliance rule</th><th width="99.25390625">Editable?</th><th>Possible situation</th></tr></thead><tbody><tr><td>Unidentified deposits</td><td>Yes</td><td>When a payment is done via the bank account directly or via the bank account's pix key, we block the payment so you can know exactly who the money came from.</td></tr><tr><td>Deposits from duplicated QR code payments</td><td>Yes</td><td>When a payment is done twice to the same QR Code, we block the payment, so each payment can be received separately in order to avoid confusion.</td></tr><tr><td>Deposits with value different from dynamic QR code</td><td>Yes</td><td>When a payment is done with an amount different from the initially stated in the QR Code. Useful for controlling the exact amount of transactions, and avoiding the need to create two QR Codes for the same transaction. We tend to recommend clients to always leave this parameter on.</td></tr><tr><td>Deposits with tax number different from dynamic QR code</td><td>Yes</td><td>When a payment is done by an individual with a tax number different from the tax number initially set in the QR Code creation.</td></tr><tr><td>Deposits with bank accounts different from dynamic QR code</td><td>Yes</td><td>When a payment is done by a bank account different from the bank accounts initially set in the QR Code creation.</td></tr><tr><td>Deposits from legal entities</td><td>Yes</td><td>When a payment is not done by an individual with a natural person tax number (CPF in Brazil), but from a legal entity with a legal tax number (CNPJ in Brazil).</td></tr><tr><td>Deposits from unauthorized participants</td><td>Yes</td><td>When payment is done by an institution that is not authorized by the Central Bank of Brazil</td></tr></tbody></table>
+
+A complete guide of implementation can be found here: Pay-in using a QR Code.
+
+### Payout
+
+Regarding money going out, we also apply some compliance rules and control cash out processes that decide whether a payment will be transferred, only as a form of protecting our client base.
+
+Here you can see the payout related compliance rules that are enabled for a virtual account:
+
+<table><thead><tr><th width="288.2109375">Compliance rule</th><th width="91.375">Editable?</th><th>Possible situation</th></tr></thead><tbody><tr><td>Block payouts to legal entities</td><td>Yes</td><td>When attempting to make a payment to an account that belongs to a legal entity represented by a legal tax number (CNPJ in Brasil).</td></tr><tr><td>Block payouts to different tax number</td><td>Yes</td><td>When attempting to pay out an account that not belongs to the tax number informed on the payload field: <em>reference_tax_number</em></td></tr><tr><td>Block payouts to different bank accounts</td><td>Yes</td><td>When attempting to pay out an account that not informed on the payload field: <em>reference_bank_accounts</em></td></tr></tbody></table>
+
+&#x20;A complete guide of implementation can be found here: Payout using a pix key.
