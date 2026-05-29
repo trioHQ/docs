@@ -21,21 +21,21 @@
           {
             "group": "Getting started",
             "pages": [
-              "plan-your-integration",
-              "support"
+              "getting_started/plan-your-integration",
+              "getting_started/support"
             ]
           },
           {
             "group": "Developers",
             "pages": [
-              "concepts",
-              "environments",
-              "error-table",
-              "authentication",
-              "pagination",
-              "request-identification",
-              "date-and-time",
-              "rate-limit"
+              "developers/concepts",
+              "developers/environments",
+              "developers/error-table",
+              "developers/authentication",
+              "developers/pagination",
+              "developers/request-identification",
+              "developers/date-and-time",
+              "developers/rate-limit"
             ]
           },
           {
