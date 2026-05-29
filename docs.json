@@ -134,8 +134,13 @@
       {
         "href": "https://suporte.trio.com.br/",
         "label": "Support"
+      },
+      {
+        "href": "https://suporte.trio.com.br/manual-de-uso-trio",
+        "label": "User Manual"
       }
     ],
+    
     "primary": {
       "type": "button",
       "label": "App Trio",
