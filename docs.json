@@ -86,6 +86,7 @@
               "guides/creating-your-first-api-credential",
               "guides/qr-codes",
               "guides/using-pix-key",
+              "guides/using-pix-automatic",
               "guides/cash-in",
               "guides/cash-out",
               "guides/webhook",
@@ -140,7 +141,6 @@
         "label": "User Manual"
       }
     ],
-    
     "primary": {
       "type": "button",
       "label": "App Trio",
