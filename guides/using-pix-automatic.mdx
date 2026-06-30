@@ -1,314 +1,490 @@
----
-title: "Using PIX Automatic"
----
+# Using Pix Automatico
 
-Pix Automatic allows you to charge your customers on a recurring basis (subscriptions, monthly fees, services) without requiring the payer to authorize each individual charge. The customer authorizes the recurrence only once in their bank's app, and from that point on, each charge (called a "collection") is automatically debited on the scheduled date, within the authorized limits.
+O **Pix Automático** permite que você cobre seus clientes de forma recorrente (assinaturas, mensalidades, serviços) sem que o pagador precise autorizar cada cobrança individualmente. O cliente autoriza **uma única vez** a recorrência no app do próprio banco e, a partir daí, cada cobrança (chamada de *collection*) é debitada automaticamente na data combinada, dentro dos limites que foram autorizados.
 
-At Trio, Pix Automatic is composed of three linked objects:
+Na Trio, o Pix Automático é composto por três objetos encadeados:
 
-- Recurrence (`recurrence`): the authorization "contract" between you and the payer. It defines the frequency, amount (fixed or variable), dates, and retry rules.
-- Collection (`collection`): each charge occurrence generated from the recurrence (for example, the October subscription payment).
-- Attempt (`attempt`): each settlement attempt for a collection. A single collection may have multiple attempts according to the configured retry policy.
+* **Recorrência (`recurrence`)**: o "contrato" de autorização entre você e o pagador. Define periodicidade, valor (fixo ou variável), datas e regras de retentativa.
+* **Cobrança (`collection`)**: cada ocorrência de cobrança gerada a partir da recorrência (por exemplo, a mensalidade de outubro).
+* **Tentativa (`attempt`)**: cada tentativa de liquidação de uma cobrança. Uma mesma cobrança pode ter mais de uma tentativa, de acordo com a política de retentativa configurada.
 
-This guide covers the complete lifecycle: recurrence creation and its authorization flow variations, creation-time settings, automatic and manual collection management, amount updates, cancellations, queries, and the webhooks triggered at each stage.
+Este guia cobre o ciclo completo: criação da recorrência e suas variações de jornada, configurações no momento da criação, gestão automática e manual das cobranças, atualização de valor, cancelamentos, consultas e os webhooks disparados em cada etapa.
 
-All examples use the sandbox environment (`[https://api.sandbox.trio.com.br\`\]([https://api.sandbox.trio.com.br\\\`](https://api.sandbox.trio.com.br\`))). In production, replace the base URL with `[https://api.trio.com.br\`\]([https://api.trio.com.br\\\`](https://api.trio.com.br\`)).
+> Todos os exemplos usam o ambiente de **sandbox** (`https://api.sandbox.trio.com.br`). Em produção, troque a base para `https://api.trio.com.br`.
+
+***
 
 ### Endpoints
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create recurrence | `POST` | `/recurrences` |
-| List recurrences | `GET` | `/recurrences` |
-| Get recurrence | `GET` | `/recurrences/{id}` |
-| Cancel recurrence | `POST` | `/recurrences/{id}/cancel` |
-| Get authorization request | `GET` | `/recurrences/requests/{id}` |
-| List collections | `GET` | `/recurrences/collections` |
-| Get collection | `GET` | `/recurrences/collections/{id}` |
-| Create next collection (manual management) | `POST` | `/recurrences/collections/create_next_collection` |
-| Update collection amount | `PUT` | `/recurrences/collections/{id}` |
-| Schedule collection (manual management) | `POST` | `/recurrences/collections/{id}/schedule` |
-| Cancel collection | `POST` | `/recurrences/collections/{id}/cancel` |
-| List attempts | `GET` | `/recurrences/collections/attempts` |
-| Get attempt | `GET` | `/recurrences/collections/attempts/{id}` |
+| Ação                                   | Método | Endpoint                                          |
+| -------------------------------------- | ------ | ------------------------------------------------- |
+| Criar recorrência                      | `POST` | `/recurrences`                                    |
+| Listar recorrências                    | `GET`  | `/recurrences`                                    |
+| Consultar recorrência                  | `GET`  | `/recurrences/{id}`                               |
+| Cancelar recorrência                   | `POST` | `/recurrences/{id}/cancel`                        |
+| Consultar solicitação de autorização   | `GET`  | `/recurrences/requests/{id}`                      |
+| Listar cobranças                       | `GET`  | `/recurrences/collections`                        |
+| Consultar cobrança                     | `GET`  | `/recurrences/collections/{id}`                   |
+| Criar próxima cobrança (gestão manual) | `POST` | `/recurrences/collections/create_next_collection` |
+| Atualizar valor da cobrança            | `PUT`  | `/recurrences/collections/{id}`                   |
+| Agendar cobrança (gestão manual)       | `POST` | `/recurrences/collections/{id}/schedule`          |
+| Cancelar cobrança                      | `POST` | `/recurrences/collections/{id}/cancel`            |
+| Listar tentativas                      | `GET`  | `/recurrences/collections/attempts`               |
+| Consultar tentativa                    | `GET`  | `/recurrences/collections/attempts/{id}`          |
+
+***
+
+### Criando uma recorrência
+
+A recorrência é criada com um `POST` para o endpoint de criação. Antes de ver as variações por jornada, conheça os parâmetros que você sempre precisa enviar.
+
+`POST: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences`
+
+Campos obrigatórios:
+
+* **`virtual_account_id`**: conta virtual que receberá as cobranças.
+* **`counterparty`**: dados do pagador. `tax_number` e `name` são obrigatórios. Para autorização via app (jornada `app`), também é obrigatório o `bank_account` do pagador.
+* **`description`**: descrição da recorrência (máx. 35 caracteres). Aparece para o pagador na autorização.
+* **`periodicity`**: frequência da cobrança.
+* **`contract_number`**: número do contrato/assinatura no seu sistema (máx. 35 caracteres).
+* **`start_date`**: data de início da recorrência (ISO 8601).
+
+Valores possíveis de **`periodicity`**:
+
+| Valor  | Significado    |
+| ------ | -------------- |
+| `week` | A cada semana  |
+| `mnth` | A cada mês     |
+| `qurt` | A cada 3 meses |
+| `mian` | A cada 6 meses |
+| `year` | A cada ano     |
+
+Campos opcionais relevantes:
+
+* **`end_date`**: data final da recorrência. Se omitido, a recorrência não tem prazo de término.
+* **`external_id`**: sua referência interna para a recorrência.
+* **`amounts`**: define o valor (ver abaixo). Se omitido, a recorrência é criada com **valor variável sem mínimo**.
+* **`first_payment`**: configura o primeiro pagamento conjugado à autorização (ver variações de jornada).
+* **`options`**: bloco de configurações da recorrência (ver seção [Opções e configurações](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#opcoes-e-configuracoes-na-criacao)).
+
+#### Valor fixo x valor variável
+
+O bloco `amounts` define como o valor de cada cobrança é determinado:
+
+* **Valor fixo** — envie `amounts.fixed` (em centavos). Toda cobrança terá esse valor e ele **não pode ser alterado** antes do envio.
+* **Valor variável com mínimo** — envie `amounts.minimum` (em centavos). O pagador não pode autorizar um limite menor que o mínimo. **Cada cobrança precisa ter o valor informado antes da data de cobrança.**
+* **Valor variável sem mínimo** — omita o bloco `amounts`. Também exige informar o valor antes de cada cobrança.
+
+> Em recorrências de valor variável, informar o valor antes do envio é obrigatório. Use a atualização de valor (`PUT`) ou informe o `amount` no agendamento, conforme a seção de gestão de cobranças.
+
+#### Variações por jornada
+
+O Pix Automático prevê diferentes **jornadas de autorização**. Na Trio, a jornada resultante é determinada pela combinação de três parâmetros e é retornada no campo `journey` (`aut1`–`aut4`) do objeto de recorrência:
+
+* **`options.authorization_type`** — `qrcode` (gera um QR Code para o pagador autorizar) ou `app` (envia a solicitação de autorização direto para o app do banco do pagador).
+* **`first_payment`** — presente ou ausente: define se há um primeiro pagamento conjugado à autorização.
+* **`first_payment.recurrence_required`** — `true` aprova recorrência e primeiro pagamento numa única autorização; `false` permite que o pagador pague o primeiro pagamento e recuse a recorrência.
+
+O campo `reference_type` no retorno indica o canal usado: `qrdn` (QR Code dinâmico), `qres` (QR Code estático) ou `requ` (solicitação enviada ao app).
+
+A seguir, as variações mais comuns utilizadas por nossos clientes:
+
+**Jornada A — Autorização via QR Code, valor fixo, sem primeiro pagamento**
+
+O cliente lê um QR Code e autoriza a recorrência. Nenhuma cobrança é feita no ato da autorização.
+
+```json
+{
+  "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+  "counterparty": {
+    "tax_number": "70004764005",
+    "name": "Jhon Doe"
+  },
+  "description": "Assinatura mensal",
+  "contract_number": "CONTRATO-2025-001",
+  "periodicity": "mnth",
+  "start_date": "2025-11-01T00:00:00.000000Z",
+  "amounts": {
+    "fixed": 4990
+  },
+  "options": {
+    "authorization_type": "qrcode"
+  }
+}
+```
+
+**Jornada B — Autorização + primeiro pagamento conjugados (QR Code)**
+
+A autorização da recorrência e a primeira cobrança são aprovadas numa única ação do pagador. Útil quando a assinatura já começa com uma cobrança imediata. O `due_detail` permite configurar vencimento, juros, multa e descontos do primeiro pagamento.
+
+```json
+{
+  "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+  "counterparty": {
+    "tax_number": "70004764005",
+    "name": "Jhon Doe"
+  },
+  "description": "Assinatura mensal",
+  "contract_number": "CONTRATO-2025-002",
+  "periodicity": "mnth",
+  "start_date": "2025-11-01T00:00:00.000000Z",
+  "amounts": {
+    "fixed": 4990
+  },
+  "first_payment": {
+    "amount": 4990,
+    "dict_key": "chave-pix-da-sua-virtual-account",
+    "recurrence_required": true,
+    "due_detail": {
+      "due_date": "2025-10-25"
+    }
+  },
+  "options": {
+    "authorization_type": "qrcode",
+    "qrcode_expiration_seconds": 86400
+  }
+}
+```
+
+> Definindo `recurrence_required: false`, o pagador pode pagar o primeiro pagamento e ainda assim recusar a recorrência. Com `true`, recorrência e primeiro pagamento são aprovados juntos, em uma única autorização.
+
+**Jornada C — Solicitação enviada direto ao app do pagador**
+
+Em vez de gerar um QR Code, a solicitação de autorização é enviada diretamente para o app do banco do pagador. Nesse caso, o `counterparty.bank_account` é **obrigatório** — é a conta que receberá o pedido de aprovação.
+
+```json
+{
+  "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+  "counterparty": {
+    "tax_number": "70004764005",
+    "name": "Jhon Doe",
+    "bank_account": {
+      "ispb": "49931906",
+      "branch": "0001",
+      "number": "12345678",
+      "digit": "9"
+    }
+  },
+  "description": "Plano anual",
+  "contract_number": "CONTRATO-2025-003",
+  "periodicity": "year",
+  "start_date": "2025-11-01T00:00:00.000000Z",
+  "amounts": {
+    "fixed": 59900
+  },
+  "options": {
+    "authorization_type": "app"
+  }
+}
+```
+
+Quando a autorização é por app, a Trio cria uma **solicitação de autorização** (`recurrence request`), que você pode acompanhar com `load_requests` na consulta da recorrência ou pelo endpoint `GET /recurrences/requests/{id}`. Os status da solicitação são: `created`, `sent`, `received`, `rejected`, `accepted`, `expired`, `cancelled`.
+
+**Jornada D — Valor variável com mínimo**
+
+Para assinaturas em que o valor muda a cada ciclo (consumo, uso, parcelas variáveis), informe apenas o mínimo. O valor de cada cobrança deverá ser informado antes do envio.
+
+```json
+{
+  "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+  "counterparty": {
+    "tax_number": "70004764005",
+    "name": "Jhon Doe"
+  },
+  "description": "Conta de consumo",
+  "contract_number": "CONTRATO-2025-004",
+  "periodicity": "mnth",
+  "start_date": "2025-11-01T00:00:00.000000Z",
+  "amounts": {
+    "minimum": 1000
+  },
+  "options": {
+    "authorization_type": "qrcode",
+    "automatic_schedule": false
+  }
+}
+```
+
+#### Resposta da criação
+
+Em caso de sucesso você recebe `201` com o objeto da recorrência. Para jornadas via QR Code, o bloco `qrcode` traz o `hash` (Copia e Cola) e o `id` do QR Code. O `id_rec` é o identificador da recorrência no SPI/Bacen e o `id` é o identificador interno na Trio.
+
+```json
+{
+  "data": {
+    "id": "0199d478-de39-fcf3-87a9-e8bded7db468",
+    "id_rec": "RR4993190620251011181155657BH",
+    "status": "created",
+    "journey": "aut3",
+    "reference_type": "qrdn",
+    "periodicity": "mnth",
+    "description": "Assinatura mensal",
+    "contract_number": "CONTRATO-2025-001",
+    "fixed_amount": { "amount": "4990", "currency": "BRL" },
+    "start_date": "2025-11-01T00:00:00.000000Z",
+    "first_payment_date": "2025-11-01T00:00:00.000000Z",
+    "automatic_schedule": "true",
+    "retry_policy": "3r_7d",
+    "next_working_day": "false",
+    "virtual_account_id": "018af380-cedc-3a53-29c0-e329bf0e109b",
+    "qrcode": {
+      "id": "0199d478-...-qr",
+      "type": "dynamic",
+      "hash": "00020101021126640014br.gov.bcb.pix..."
+    }
+  }
+}
+```
+
+Ofereça ao pagador o `hash` em "Copia e Cola" e/ou renderize a imagem do QR Code a partir dele. A recorrência só passa a valer depois que o pagador a autoriza — você acompanha isso pelo webhook `recurrence.approved` (ou `recurrence.rejected` / `recurrence.expired`).
+
+***
+
+### Opções e configurações na criação
+
+O bloco `options` define o comportamento da recorrência ao longo do tempo. Todos os campos são opcionais e têm valores padrão.
+
+| Campo                       | Padrão   | Descrição                                                                                                                        |
+| --------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `authorization_type`        | `qrcode` | `qrcode` gera QR Code; `app` envia a solicitação direto ao app do pagador (exige `counterparty.bank_account`).                   |
+| `automatic_schedule`        | `true`   | Gestão automática das cobranças. Se `false`, cada cobrança precisa ser criada e agendada manualmente.                            |
+| `retry_policy`              | `3r_7d`  | Política de retentativa quando a cobrança falha. `3r_7d`: 3 retentativas em 7 dias, em dias alternados. `none`: sem retentativa. |
+| `next_working_day`          | `false`  | Se `true`, não cobra em feriados; transfere a cobrança para o próximo dia útil do pagador.                                       |
+| `qrcode_expiration_seconds` | `86400`  | Tempo de expiração (em segundos) do QR Code dinâmico. Ignorado para QR Code estático.                                            |
+
+#### Gestão de cobrança automática
+
+Com `automatic_schedule: true` (padrão), a Trio cria e agenda automaticamente cada cobrança na periodicidade definida. Você não precisa fazer nada a cada ciclo — basta reagir aos webhooks. Use este modo quando o valor é fixo ou quando você já consegue determinar o valor com antecedência.
+
+Com `automatic_schedule: false` (gestão manual), você é responsável por criar e agendar cada cobrança a cada ciclo. Esse modo é necessário, por exemplo, quando o valor variável só é conhecido perto da data de cobrança. Veja a seção [Gestão manual de cobranças](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#gestao-manual).
+
+#### Retentativa e o cliente que não paga
+
+A `retry_policy` controla o que acontece quando uma cobrança não é liquidada:
+
+* **`3r_7d`** — a cobrança é retentada 3 vezes ao longo de 7 dias, em dias alternados. Cada retentativa gera uma nova *tentativa* (`attempt`). Se nenhuma tentativa for liquidada, a cobrança vai para um status final de falha/expiração.
+* **`none`** — não há retentativa. Uma tentativa falha encerra a cobrança.
+
+> **Cancelar a recorrência quando o cliente não paga.** A política de retentativa atua no nível da *cobrança*, não da recorrência. Se a sua regra de negócio é encerrar a assinatura após uma cobrança não paga, monitore os webhooks de tentativa (`recurrence_collection_attempt` com tipo `failed`/`expired`) e/ou de cobrança (`recurrence_collection` com tipo `expired`/`rejected`) e, ao detectar o esgotamento das retentativas, chame o [cancelamento da recorrência](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#cancelando-a-recorrencia). Assim você implementa o "cancelamento automático por inadimplência" de forma controlada pela sua aplicação.
+
+***
+
+### Gestão de cobranças (collections)
+
+Cada cobrança representa uma ocorrência de débito da recorrência. O ciclo de vida de uma cobrança passa pelos status: `created`, `active`, `settled`, `expired`, `rejected`, `cancelled`. As tentativas de liquidação têm os status: `requested`, `scheduled`, `settled`, `cancelled`, `rejected`, `expired`, `failed`.
+
+#### Gestão manual: criar a próxima cobrança
+
+Com `automatic_schedule: false`, crie a próxima cobrança da recorrência:
 
-### Creating a Recurrence
+`POST: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/create_next_collection`
 
-A recurrence is created by sending a `POST` request to the creation endpoint. Before looking at the different authorization flows, let's review the parameters you must always send.
+```json
+{
+  "recurrence_id": "0199d478-de39-fcf3-87a9-e8bded7db468"
+}
+```
 
-`POST: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\`))
+A resposta `200` traz a cobrança criada (`RecurrenceCollection`) com seus estágios (`stages`) e tentativas (`attempts`).
 
-Required fields:
+#### Agendar uma cobrança (gestão manual)
 
-- `virtual_account_id`: the virtual account that will receive the charges.
-- `counterparty`: payer information. `tax_number` and `name` are required. For app-based authorization (`app` journey), the payer's `bank_account` is also required.
-- `description`: recurrence description (max. 35 characters). This is shown to the payer during authorization.
-- `periodicity`: charge frequency.
-- `contract_number`: contract/subscription number in your system (max. 35 characters).
-- `start_date`: recurrence start date (ISO 8601).
+Depois de criada, a cobrança precisa ser **agendada** para ser enviada ao banco recebedor. O agendamento deve ocorrer **entre 2 e 10 dias antes** da data de pagamento do ciclo. No agendamento você pode, opcionalmente, informar o valor (para recorrências de valor variável), a data de vencimento e um `external_id`.
 
-Possible values for `periodicity`:
+`POST: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/schedule`
 
-| Value | Meaning |
-| --- | --- |
-| `week` | Every week |
-| `mnth` | Every month |
-| `qurt` | Every 3 months |
-| `mian` | Every 6 months |
-| `year` | Every year |
+```json
+{
+  "amount": 12990,
+  "due_date": "2025-11-01T00:00:00.000000Z",
+  "external_id": "COBR-2025-11"
+}
+```
 
-Relevant optional fields:
+* **`amount`**: valor em centavos. Use para informar/atualizar o valor antes de agendar. **Não funciona em recorrências de valor fixo.**
+* **`due_date`**: data de vencimento da tentativa.
+* **`external_id`**: sua referência para a tentativa.
 
-- `end_date`: recurrence end date. If omitted, the recurrence has no expiration date.
-- `external_id`: your internal reference for the recurrence.
-- `amounts`: defines the amount (see below). If omitted, the recurrence is created as variable amount with no minimum.
-- `first_payment`: configures the first payment combined with the authorization (see authorization flow variations).
-- `options`: recurrence configuration block (see the "Options and Configuration" section).
+A resposta de sucesso é `204 No Content`. Acompanhe o resultado pelo webhook `recurrence_collection_attempt` com tipo `scheduled` e, depois, `settled` ou `failed`.
 
-#### Fixed Amount vs Variable Amount
+#### Atualizar o valor de uma cobrança antes do envio
 
-The `amounts` block defines how each collection amount is determined:
+Para recorrências de **valor variável**, você pode atualizar o valor de uma cobrança que ainda não foi enviada ao banco recebedor:
 
-- Fixed amount — send `amounts.fixed` (in cents). Every collection will have this amount and it cannot be changed before submission.
-- Variable amount with a minimum — send `amounts.minimum` (in cents). The payer cannot authorize a limit lower than the minimum. Each collection amount must be informed before the charge date.
-- Variable amount with no minimum — omit the `amounts` block. You must also provide the amount before each collection.
+`PUT: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}`
 
-For variable-amount recurrences, providing the amount before submission is mandatory. Use the amount update (`PUT`) endpoint or send the `amount` when scheduling the collection, as described in the collection management section.
+```json
+{
+  "amount": 13500
+}
+```
 
-#### Authorization Flow Variations
+* **`amount`**: novo valor em centavos.
+* Só é possível atualizar enquanto a cobrança ainda não foi enviada. Em recorrências de **valor fixo**, o valor não pode ser alterado.
 
-Pix Automatic supports different authorization flows. At Trio, the resulting flow is determined by the combination of three parameters and is returned in the recurrence object's `journey` field (`aut1`–`aut4`):
+A resposta `200` retorna a cobrança atualizada.
 
-- `options.authorization_type` — `qrcode` (generates a QR Code for the payer to authorize) or `app` (sends the authorization request directly to the payer's banking app).
-- `first_payment` — present or absent: defines whether there is an initial payment combined with the authorization.
-- `first_payment.recurrence_required` — `true` approves both the recurrence and the first payment in a single authorization; `false` allows the payer to pay the first payment while rejecting the recurrence.
+#### Cancelar uma cobrança
 
-The `reference_type` field in the response indicates the channel used: `qrdn` (dynamic QR Code), `qres` (static QR Code), or `requ` (request sent to the app).
+Você pode cancelar uma cobrança específica (sem cancelar a recorrência inteira):
 
-Below are the most common flows used by our customers:
+`POST: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/cancel`
 
-**Flow A — QR Code Authorization, Fixed Amount, No First Payment**
+```json
+{
+  "requester_tax_number": "12345678000190",
+  "entity_id": "019953ad-1738-b094-097c-7941a0c642a5"
+}
+```
 
-The customer scans a QR Code and authorizes the recurrence. No collection is performed at the moment of authorization.
+* **`requester_tax_number`** (obrigatório): CPF/CNPJ de quem está solicitando o cancelamento.
+* **`entity_id`** (opcional): identificador da entidade.
 
-**Flow B — Authorization \+ First Payment Combined (QR Code)**
+A resposta `200` retorna a cobrança com status `cancelled`. As próximas cobranças da recorrência seguem normalmente.
 
-The recurrence authorization and the first collection are approved in a single action by the payer. This is useful when the subscription starts immediately with a charge. The `due_detail` object allows you to configure due date, interest, fines, and discounts for the first payment.
+***
 
-By setting `recurrence_required: false`, the payer can pay the first payment and still reject the recurrence. With `true`, both the recurrence and the first payment are approved together in a single authorization.
+### Cancelando a recorrência
 
-**Flow C — Request Sent Directly to the Payer's App**
+Para encerrar a recorrência por completo (nenhuma cobrança futura será gerada):
 
-Instead of generating a QR Code, the authorization request is sent directly to the payer's banking app. In this case, `counterparty.bank_account` is required — it is the account that will receive the approval request.
+`POST: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}/cancel`
 
-When authorization is performed through the app, Trio creates a recurrence request that you can track using `load_requests` when querying the recurrence or through the `GET /recurrences/requests/{id}` endpoint. Request statuses are: `created`, `sent`, `received`, `rejected`, `accepted`, `expired`, and `cancelled`.
+```json
+{
+  "requester_tax_number": "12345678000190"
+}
+```
 
-**Flow D — Variable Amount with a Minimum**
+* **`requester_tax_number`** (obrigatório): CPF/CNPJ de quem solicita o cancelamento.
 
-For subscriptions where the amount changes every cycle (usage, consumption, variable installments), provide only the minimum. The amount for each collection must be informed before submission.
+A resposta `200` retorna a recorrência com status `cancelled`. Você também recebe o webhook `recurrence.cancelled`.
 
-#### Creation Response
+***
 
-On success, you receive a `201` response containing the recurrence object. For QR Code flows, the `qrcode` block contains the `hash` (Copy and Paste) and the QR Code `id`. The `id_rec` field is the recurrence identifier in the SPI/Central Bank system, while `id` is the internal Trio identifier.
+### Consultas
 
-Provide the payer with the `hash` for Copy-and-Paste payments and/or render the QR Code image from it. The recurrence only becomes active after the payer authorizes it — you can track this through the `recurrence.approved` webhook (or `recurrence.rejected` / `recurrence.expired`).
+#### Consultar uma recorrência
 
-### Options and Configuration at Creation Time
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}`
 
-The `options` block defines how the recurrence behaves over time. All fields are optional and have default values.
+Parâmetros de query úteis:
 
-| Field | Default | Description |
-| --- | --- | --- |
-| `authorization_type` | `qrcode` | `qrcode` generates a QR Code; `app` sends the request directly to the payer's banking app (requires `counterparty.bank_account`). |
-| `automatic_schedule` | `true` | Automatic collection management. If `false`, each collection must be created and scheduled manually. |
-| `retry_policy` | `3r_7d` | Retry policy when a collection fails. `3r_7d`: 3 retries within 7 days on alternating days. `none`: no retries. |
-| `next_working_day` | `false` | If `true`, collections are not processed on holidays and are moved to the payer's next business day. |
-| `qrcode_expiration_seconds` | `86400` | Expiration time (in seconds) for the dynamic QR Code. Ignored for static QR Codes. |
+* **`load_stages`** (`true`/`false`): inclui o histórico de estágios da recorrência.
+* **`load_requests`** (`true`/`false`): inclui as solicitações de autorização (jornada `app`).
+* **`entity_id`**, **`bank_account_id`**, **`virtual_account_id`**: filtros opcionais.
 
-#### Automatic Collection Management
+#### Listar recorrências
 
-With `automatic_schedule: true` (default), Trio automatically creates and schedules each collection according to the defined periodicity. You don't need to do anything every cycle — simply react to the webhooks. Use this mode when the amount is fixed or when you can determine the amount in advance.
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences`
 
-With `automatic_schedule: false` (manual management), you are responsible for creating and scheduling each collection for every cycle. This mode is required, for example, when the variable amount is only known close to the charge date.
+* **`from_datetime`** e **`to_datetime`** (obrigatórios): janela de tempo.
+* **`virtual_account_id`**, **`entity_id`**: filtros opcionais.
+* **`limit`**, **`before`**, **`after`**: paginação.
 
-#### Retry Policy and Unpaid Collections
+#### Consultar uma solicitação de autorização
 
-The `retry_policy` controls what happens when a collection is not settled:
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/requests/{id}`
 
-- `3r_7d` — the collection is retried 3 times over 7 days on alternating days. Each retry creates a new `attempt`. If none of the attempts is settled, the collection reaches a final failed/expired state.
-- `none` — no retries are performed. A failed attempt immediately ends the collection.
+Use `load_stages` para incluir os estágios da solicitação.
 
-**Canceling the recurrence when the customer does not pay.** The retry policy operates at the collection level, not at the recurrence level. If your business rule is to terminate the subscription after an unpaid collection, monitor the `recurrence_collection_attempt` webhooks (`failed`/`expired`) and/or the `recurrence_collection` webhooks (`expired`/`rejected`), and once all retries have been exhausted, call the recurrence cancellation endpoint. This allows you to implement "automatic cancellation due to delinquency" in a controlled manner within your application.
+#### Consultar e listar cobranças
 
-### Collection Management
+Consultar uma cobrança específica, com estágios e tentativas:
 
-Each collection represents a debit occurrence for the recurrence. A collection can move through the following statuses: `created`, `active`, `settled`, `expired`, `rejected`, `cancelled`. Settlement attempts can have the statuses: `requested`, `scheduled`, `settled`, `cancelled`, `rejected`, `expired`, `failed`.
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}`
 
-#### Manual Management: Create the Next Collection
+* **`load_stages`** e **`load_attempts`**: incluem estágios e tentativas.
 
-With `automatic_schedule: false`, create the next collection for the recurrence:
+Listar cobranças de uma recorrência:
 
-`POST: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/create\_next\_collection\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/create\\\_next\\\_collection\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/create\_next\_collection\`))
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections`
 
-The `200` response returns the created `RecurrenceCollection` object, including its `stages` and `attempts`.
+* **`recurrence_id`** (obrigatório), **`from_datetime`** e **`to_datetime`** (obrigatórios).
+* **`limit`**, **`before`**, **`after`**: paginação.
 
-#### Schedule a Collection (Manual Management)
+#### Consultar e listar tentativas
 
-After a collection is created, it must be scheduled before being sent to the receiving bank. Scheduling must occur between 2 and 10 days before the cycle's payment date. When scheduling, you may optionally provide the amount (for variable-amount recurrences), the due date, and an `external_id`.
+Listar tentativas de uma cobrança:
 
-`POST: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/schedule\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/schedule\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/schedule\`))
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts`
 
-- `amount`: amount in cents. Use it to set/update the amount before scheduling. It does not apply to fixed-amount recurrences.
-- `due_date`: due date for the attempt.
-- `external_id`: your reference for the attempt.
+* **`recurrence_id`** e **`collection_id`** (obrigatórios).
+* `from_datetime`, `to_datetime`, `limit`, `before`, `after`: opcionais.
 
-A successful response returns `204 No Content`. Track the result through the `recurrence_collection_attempt` webhook with type `scheduled`, followed by `settled` or `failed`.
+Consultar uma tentativa específica:
 
-#### Update the Collection Amount Before Submission
+`GET: https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts/{id}`
 
-For variable-amount recurrences, you can update the amount of a collection that has not yet been sent to the receiving bank:
+* **`load_stages`**: inclui os estágios da tentativa.
 
-`PUT: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\`))
-
-- `amount`: new amount in cents.
-- The amount can only be updated before the collection is sent. For fixed-amount recurrences, the amount cannot be changed.
-
-A `200` response returns the updated collection object.
-
-#### Cancel a Collection
-
-You can cancel a specific collection without canceling the entire recurrence:
-
-`POST: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/cancel\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/cancel\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}/cancel\`))
-
-- `requester_tax_number` (required): CPF/CNPJ of the party requesting the cancellation.
-- `entity_id` (optional): entity identifier.
-
-A `200` response returns the collection with status `cancelled`. Future collections for the recurrence continue normally.
-
-### Canceling the Recurrence
-
-To terminate the recurrence entirely (no future collections will be generated):
-
-`POST: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}/cancel\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}/cancel\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}/cancel\`))
-
-- `requester_tax_number` (required): CPF/CNPJ of the party requesting the cancellation.
-
-A `200` response returns the recurrence with status `cancelled`. You will also receive the `recurrence.cancelled` webhook.
-
-### Queries
-
-#### Get a Recurrence
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/{id}\`))
-
-Useful query parameters:
-
-- `load_stages` (`true`/`false`): includes the recurrence stage history.
-- `load_requests` (`true`/`false`): includes authorization requests (`app` journey).
-- `entity_id`, `bank_account_id`, `virtual_account_id`: optional filters.
-
-#### List Recurrences
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences\`))
-
-- `from_datetime` and `to_datetime` (required): time window.
-- `virtual_account_id`, `entity_id`: optional filters.
-- `limit`, `before`, `after`: pagination.
-
-#### Get an Authorization Request
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/requests/{id}\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/requests/{id}\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/requests/{id}\`))
-
-Use `load_stages` to include the request stage history.
-
-#### Get and List Collections
-
-Get a specific collection with stages and attempts:
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/{id}\`))
-
-- `load_stages` and `load_attempts`: include stages and attempts.
-
-List collections for a recurrence:
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections\`))
-
-- `recurrence_id` (required), `from_datetime`, and `to_datetime` (required).
-- `limit`, `before`, `after`: pagination.
-
-#### Get and List Attempts
-
-List attempts for a collection:
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts\`))
-
-- `recurrence_id` and `collection_id` (required).
-- `from_datetime`, `to_datetime`, `limit`, `before`, `after`: optional.
-
-Get a specific attempt:
-
-`GET: [https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts/{id}\`\]([https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts/{id}\\\`](https://api.sandbox.trio.com.br/banking/cashin/pix/recurrences/collections/attempts/{id}\`))
-
-- `load_stages`: includes the attempt stage history.
+***
 
 ### Webhooks
 
-Asynchronous communication for each stage is performed through webhooks. There are three categories related to Pix Automatic.
+A comunicação assíncrona em cada etapa é feita por webhooks. Há três categorias relacionadas ao Pix Automático.
 
-#### Recurrence — `recurrence` category
+#### Recorrência — categoria `recurrence`
 
-Triggered when the recurrence (the authorization contract) changes state.
+Disparada nas mudanças de estado da recorrência (o "contrato" de autorização).
 
-| Type | Meaning |
-| --- | --- |
-| `created` | The recurrence was created. |
-| `approved` | The recurrence was approved by the payer. |
-| `rejected` | The recurrence was rejected. |
-| `expired` | The recurrence expired (authorization was not completed in time). |
-| `cancelled` | The recurrence was cancelled. |
+| Tipo        | Significado                                                 |
+| ----------- | ----------------------------------------------------------- |
+| `created`   | A recorrência foi criada.                                   |
+| `approved`  | A recorrência foi aprovada pelo pagador.                    |
+| `rejected`  | A recorrência foi rejeitada.                                |
+| `expired`   | A recorrência expirou (autorização não concluída no prazo). |
+| `cancelled` | A recorrência foi cancelada.                                |
 
-#### Collection — `recurrence_collection` category
+[Exemplo de payload](https://docs.trio.com.br/developers/webooks/events/recurrence)
 
-Triggered when a collection changes state.
+#### Cobrança — categoria `recurrence_collection`
 
-| Type | Meaning |
-| --- | --- |
-| `created` | The collection was created. |
-| `active` | The collection became active (scheduled/sent to the receiver). |
-| `settled` | The collection was settled. |
-| `expired` | The collection expired. |
-| `rejected` | The collection was rejected. |
-| `cancelled` | The collection was cancelled. |
+Disparada nas mudanças de estado de cada cobrança.
 
-#### Collection Attempt — `recurrence_collection_attempt` category
+| Tipo        | Significado                                             |
+| ----------- | ------------------------------------------------------- |
+| `created`   | A cobrança foi criada.                                  |
+| `active`    | A cobrança ficou ativa (agendada/enviada ao recebedor). |
+| `settled`   | A cobrança foi liquidada.                               |
+| `expired`   | A cobrança expirou.                                     |
+| `rejected`  | A cobrança foi rejeitada.                               |
+| `cancelled` | A cobrança foi cancelada.                               |
 
-Triggered for every settlement attempt. This is where you track the actual debit result and the retry process.
+[Exemplo de payload](https://docs.trio.com.br/developers/webooks/events/recurrences-collection)
 
-| Type | Meaning |
-| --- | --- |
-| `requested` | An attempt was created. |
-| `scheduled` | The attempt was scheduled. |
-| `settled` | The attempt was settled (payment completed). |
-| `cancelled` | The attempt was cancelled. |
-| `rejected` | The attempt was rejected. |
-| `expired` | The attempt expired. |
-| `failed` | The attempt failed. |
+#### Tentativa da cobrança — categoria `recurrence_collection_attempt`
 
-### End-to-End Flow Summary
+Disparada em cada tentativa de liquidação de uma cobrança. É aqui que você acompanha o resultado efetivo do débito e as retentativas.
 
-The table below maps each step of the process to its corresponding endpoint and webhook.
+| Tipo        | Significado                                      |
+| ----------- | ------------------------------------------------ |
+| `requested` | Uma tentativa foi criada.                        |
+| `scheduled` | A tentativa foi agendada.                        |
+| `settled`   | A tentativa foi liquidada (pagamento efetivado). |
+| `cancelled` | A tentativa foi cancelada.                       |
+| `rejected`  | A tentativa foi rejeitada.                       |
+| `expired`   | A tentativa expirou.                             |
+| `failed`    | A tentativa falhou.                              |
 
-| Step | What You Do | Expected Webhook |
-| --- | --- | --- |
-| 1. Create recurrence | `POST /recurrences` and deliver the QR Code / send the request to the app | `recurrence.created` |
-| 2. Payer authorization | (payer action) | `recurrence.approved` · `recurrence.rejected` · `recurrence.expired` |
-| 3a. Automatic collection | Nothing (automatic management) | `recurrence_collection.created` → `active` |
-| 3b. Manual collection | `create_next_collection` \+ `schedule` (with `amount`/`due_date` if variable) | `recurrence_collection.created` → `active` |
-| 4. Amount adjustment (variable) | `PUT /recurrences/collections/{id}` before submission | — |
-| 5. Settlement | (processing) | `recurrence_collection_attempt.scheduled` → `settled` |
-| 6. Failure / delinquency | React according to `retry_policy` | `recurrence_collection_attempt.failed` · `recurrence_collection.expired` |
-| 7. Cancel collection | `POST /recurrences/collections/{id}/cancel` | `recurrence_collection.cancelled` |
-| 8. Cancel recurrence | `POST /recurrences/{id}/cancel` | `recurrence.cancelled` |
+[Exemplo de payload](https://docs.trio.com.br/developers/webooks/events/recurrence-collections-attempt)
 
-**Best practice:** always handle final states through webhooks (`settled`, `failed`, `expired`, `cancelled`) and use the query endpoints (`GET`) for reconciliation. For delinquency handling, combine attempt monitoring with the `retry_policy` and decide within your application whether the recurrence should be cancelled.
+***
+
+### Resumo do fluxo de ponta a ponta
+
+A tabela abaixo amarra cada etapa do processo ao endpoint e ao webhook correspondente.
+
+| Etapa                         | O que você faz                                                              | Webhook esperado                                                         |
+| ----------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 1. Criar recorrência          | `POST /recurrences` e entrega do QR Code / envio da solicitação ao app      | `recurrence.created`                                                     |
+| 2. Autorização do pagador     | (ação do pagador)                                                           | `recurrence.approved` · `recurrence.rejected` · `recurrence.expired`     |
+| 3a. Cobrança automática       | nada (gestão automática)                                                    | `recurrence_collection.created` → `active`                               |
+| 3b. Cobrança manual           | `create_next_collection` + `schedule` (com `amount`/`due_date` se variável) | `recurrence_collection.created` → `active`                               |
+| 4. Ajuste de valor (variável) | `PUT /recurrences/collections/{id}` antes do envio                          | —                                                                        |
+| 5. Liquidação                 | (processamento)                                                             | `recurrence_collection_attempt.scheduled` → `settled`                    |
+| 6. Falha / inadimplência      | reagir conforme `retry_policy`                                              | `recurrence_collection_attempt.failed` · `recurrence_collection.expired` |
+| 7. Cancelar cobrança          | `POST /recurrences/collections/{id}/cancel`                                 | `recurrence_collection.cancelled`                                        |
+| 8. Cancelar recorrência       | `POST /recurrences/{id}/cancel`                                             | `recurrence.cancelled`                                                   |
+
+> **Boa prática:** trate sempre os estados finais via webhook (`settled`, `failed`, `expired`, `cancelled`) e use as consultas (`GET`) para reconciliação. Para inadimplência, combine o monitoramento das tentativas com a `retry_policy` e decida, na sua aplicação, se cancela a recorrência.
