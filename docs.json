@@ -108,15 +108,17 @@
         "groups": [
           {
             "group": "Banking API",
-            "openapi": [
-              "api-reference/banking-api/openapi_foundation.json"
-            ]
+            "openapi": {
+              "source": "api-reference/banking-api/openapi_foundation.json",
+              "directory": "banking-api-reference"
+            }
           },
           {
             "group": "Initiation API",
-            "openapi": [
-              "api-reference/initiation-api/openapi_initiation.json"
-            ]
+            "openapi": {
+              "source": "api-reference/initiation-api/openapi_initiation.json",
+              "directory": "initiation-api-reference"
+            }
           }
         ]
       }
