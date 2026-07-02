@@ -107,18 +107,15 @@
         "tab": "API reference",
         "groups": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+            "group": "Banking API",
+            "openapi": [
+              "api-reference/banking-api/openapi_foundation.json"
             ]
           },
           {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+            "group": "Initiation API",
+            "openapi": [
+              "api-reference/initiation-api/openapi_initiation.json"
             ]
           }
         ]

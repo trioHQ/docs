@@ -1,0 +1,1889 @@
+{
+  "components": {
+    "responses": {},
+    "schemas": {
+      "Checkout session response": {
+        "description": "Endpoint response for a checkout session",
+        "example": {
+          "allow_other_pix_key": true,
+          "amount": {
+            "amount": 10000,
+            "currency": "BRL"
+          },
+          "available_withdraw_amount": {
+            "amount": 5000,
+            "currency": "BRL"
+          },
+          "backdrop_color": "#FFFFFF",
+          "button_color": "#28A745",
+          "button_label_color": "#FFFFFF",
+          "company_id": "019f2440-24d2-db91-ad08-fd209decf7db",
+          "description": "Payment for services",
+          "expiration_in_seconds": 300,
+          "expiration_timestamp": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              346123,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "external_id": "019f2440-24d2-786e-bc51-238fb0c56aff",
+          "from_email": "john.doe@example.com",
+          "from_name": "John Doe",
+          "from_phone_number": "41999999999",
+          "from_tax_number": "89429958534",
+          "id": "019f2440-24c3-e2d8-f630-28e7c01f4dcb",
+          "inserted_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              346124,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "link_color": "#1C6DD0",
+          "logo_url": "https://example.com/logo.png",
+          "navbar_action_color": "#FFFFFF",
+          "navbar_color": "#000000",
+          "org_id": "019f2440-24d2-699e-433a-145beb1b35f8",
+          "origin_id": "019f2440-24d2-4883-110a-f98c1ca393ce",
+          "origin_type": "api_client",
+          "participants": [
+            "019f2440-24d2-7471-a1b1-d29a295f0257",
+            "019f2440-24d2-fea0-9120-82e2035af48a"
+          ],
+          "person_type": "natural_person",
+          "pix_qrcode_id": null,
+          "redirect_url": "https://example.com/redirect",
+          "session_type": "payin",
+          "timestamp": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              346118,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "updated_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              346124,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "virtual_account_id": "019f2440-24d2-29ca-f502-1e23e2860d73"
+        },
+        "properties": {
+          "inserted_at": {
+            "description": "Session creation timestamp",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "recurrence": {
+            "description": "Recurrence information for the session",
+            "nullable": true,
+            "properties": {
+              "amounts": {
+                "description": "Amount for the recurrence, use either minimum and maximum for variable amount recurrences or fixed amount.",
+                "properties": {
+                  "fixed": {
+                    "description": "Fixed amount for the recurrence",
+                    "type": "integer"
+                  },
+                  "maximum": {
+                    "description": "Maximum amount for the recurrence, in cents.",
+                    "type": "integer"
+                  },
+                  "minimum": {
+                    "description": "Minimum amount for the recurrence, in cents.",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "contract_number": {
+                "description": "Contract number for the recurrence",
+                "type": "string"
+              },
+              "end_date": {
+                "description": "Recurrence End Date",
+                "format": "date-time",
+                "type": "string"
+              },
+              "periodicity": {
+                "description": "Periodicity for the recurrence, e.g. 'week': every week, 'mnth': every month, 'qurt': every 3 months, 'mian': every 6 months, 'year': every year",
+                "enum": [
+                  "week",
+                  "mnth",
+                  "qurt",
+                  "mian",
+                  "year"
+                ],
+                "type": "string"
+              },
+              "retry_policy": {
+                "description": "Retry policy for the recurrence",
+                "enum": [
+                  "none",
+                  "3r_7d"
+                ],
+                "type": "string"
+              },
+              "start_date": {
+                "description": "Recurrence Start Date",
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "navbar_color": {
+            "description": "Navbar color for the session",
+            "type": "string"
+          },
+          "allow_other_pix_key": {
+            "description": "Whether other PIX keys are allowed",
+            "type": "boolean"
+          },
+          "button_color": {
+            "description": "Button color for the session",
+            "type": "string"
+          },
+          "expiration_in_seconds": {
+            "description": "Expiration time in seconds",
+            "type": "integer"
+          },
+          "virtual_account_id": {
+            "description": "Virtual account ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "company_id": {
+            "description": "Company ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "pix_qrcode_id": {
+            "description": "PIX QR Code ID",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "backdrop_color": {
+            "description": "Backdrop color for the session",
+            "type": "string"
+          },
+          "from_name": {
+            "description": "Name of the sender",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Session update timestamp",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of the session",
+            "type": "string"
+          },
+          "id": {
+            "description": "Session ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "person_type": {
+            "description": "Type of the person initiating the session",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "URL to redirect after the session",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID for the session",
+            "type": "string"
+          },
+          "from_tax_number": {
+            "description": "Tax number of the sender",
+            "type": "string"
+          },
+          "expiration_timestamp": {
+            "description": "Session expiration timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "session_type": {
+            "description": "Type of the session",
+            "type": "string"
+          },
+          "from_email": {
+            "description": "Email of the sender",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "Session timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "origin_id": {
+            "description": "Session origin ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "org_id": {
+            "description": "Org ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "from_phone_number": {
+            "description": "Phone number of the sender",
+            "type": "string"
+          },
+          "available_withdraw_amount": {
+            "description": "Available amount for withdrawal",
+            "type": {
+              "amount": 0,
+              "currency": "USD"
+            }
+          },
+          "link_color": {
+            "description": "Link color for the session",
+            "type": "string"
+          },
+          "button_label_color": {
+            "description": "Button label color for the session",
+            "type": "string"
+          },
+          "participants": {
+            "description": "List of Participant IDs",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "amount": {
+            "description": "Amount for the session",
+            "type": "integer"
+          },
+          "origin_type": {
+            "description": "Session origin type",
+            "type": "string"
+          },
+          "logo_url": {
+            "description": "URL of the logo to be displayed",
+            "type": "string"
+          },
+          "navbar_action_color": {
+            "description": "Navbar action color for the session",
+            "type": "string"
+          }
+        },
+        "title": "Checkout session response",
+        "type": "object"
+      },
+      "Generate a payment initiation": {
+        "description": "Generate a payment initiation for Intranet",
+        "example": {
+          "amount": 10,
+          "company_id": "019f2440-25a9-f7e7-b66f-cfc19c8dcc83",
+          "description": "Descrição da transação",
+          "entity_id": "019f2440-25a9-ae44-a374-d8a5c9090269",
+          "external_id": "ID Externo 1",
+          "from_email": "email@email.com",
+          "from_name": "Nome do pagador",
+          "from_phone_number": "11999999999",
+          "from_tax_number": "12345678901",
+          "org_id": "019f2440-25a9-1b34-9f04-66a848da998f",
+          "origin_id": "019f2440-25a9-c58f-7779-11690e3620a7",
+          "origin_type": "api_client",
+          "participant_id": "019f2440-25a9-885d-5184-86074d9232cc",
+          "qrcode_hash": "12345678",
+          "qrcode_id": "019f2440-25a9-ed7c-8ffb-1513e60ffc0a",
+          "redirect_url": "https://www.google.com",
+          "session_id": "019f2440-25a9-1d32-e2ee-0a67a54f422f",
+          "session_options": {},
+          "virtual_account_id": "019f2440-25a9-0b93-83af-b02ff720a292"
+        },
+        "properties": {
+          "amount": {
+            "description": "Amount value of the document",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Document description",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "type": "string"
+          },
+          "from_counterparty": {
+            "description": "From Counterparty",
+            "format": "uuid",
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "Redirect URL",
+            "type": "string"
+          },
+          "virtual_account_id": {
+            "description": "Bank account ID",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "virtual_account_id",
+          "participant_id",
+          "from_counterparty",
+          "amount"
+        ],
+        "title": "Generate a payment initiation",
+        "type": "object"
+      },
+      "Generate payment initiation response for external API": {
+        "description": "Generate payment initiation response for external API",
+        "example": {
+          "amount": {
+            "amount": 10,
+            "currency": "BRL"
+          },
+          "company_id": "019f2440-2682-9ac2-a79f-662e93516bd3",
+          "consent_id": "019f2440-2682-57b6-9212-1f3fd5ef51af",
+          "consent_url": "https://www.bank_url.com",
+          "counterparty_id": "019f2440-2682-bdc7-8b24-0fec247c29bb",
+          "description": "Descrição da transação",
+          "end_to_end_id": "S12345678202607021913VGuYYp5NPEL",
+          "entity_id": "019f2440-2682-e97b-b3c3-6a2d7c67fbcb",
+          "external_id": "ID Externo 1",
+          "id": "019f2440-2682-a4c0-d269-ec24c0a9cea0",
+          "inserted_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              778207,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "itp_document_stages": [],
+          "origin_id": "019f2440-2682-e7e2-5993-40f8b3c308b0",
+          "origin_type": "api_client",
+          "participant_id": "019f2440-2682-4093-fc76-94d123f0c154",
+          "redirect_url": "https://www.google.com",
+          "session_id": "019f2440-2682-5c00-9e9f-46438d284c85",
+          "status": "created",
+          "timestamp": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              778178,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "transaction_date": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              778185,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "updated_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              778207,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "virtual_account_id": "019f2440-2682-1354-92b8-ca8c38f51765"
+        },
+        "properties": {
+          "amount": {
+            "description": "Amount value of the document",
+            "type": "object"
+          },
+          "company_id": {
+            "description": "Company ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "consent_id": {
+            "description": "Consent ID",
+            "type": "string"
+          },
+          "consent_url": {
+            "description": "Consent URL",
+            "type": "string"
+          },
+          "counterparty_id": {
+            "description": "Counterparty ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "description": {
+            "description": "Document description",
+            "type": "string"
+          },
+          "end_to_end_id": {
+            "description": "End To End ID",
+            "type": "string"
+          },
+          "entity_id": {
+            "description": "Entity ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "type": "string"
+          },
+          "id": {
+            "description": "Itp document ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Itp document inserted at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "origin_id": {
+            "description": "Document origin ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "origin_type": {
+            "description": "Document origin type",
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "Redirect URL",
+            "type": "string"
+          },
+          "session_id": {
+            "description": "Session ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "stages": {
+            "description": "Document stages",
+            "type": "array"
+          },
+          "status": {
+            "description": "Document status",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "Itp Document timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "transaction_date": {
+            "description": "Transaction Date",
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Itp document updated at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "virtual_account_id": {
+            "description": "Virtual account ID",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "title": "Generate payment initiation response for external API",
+        "type": "object"
+      },
+      "Itp document response": {
+        "description": "An itp document response for Intranet",
+        "example": {
+          "counterparty_id": "019f2440-251b-c191-6c19-5e99698bbbce",
+          "inserted_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419633,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "itp_document_stages": [],
+          "participant_id": "019f2440-251b-aff2-79d8-673161151f50",
+          "entity_id": "019f2440-251b-dd44-5d71-076104fd8673",
+          "consent_url": "",
+          "reference_id": "019f2440-251b-ed02-6109-d38fcbd9351c",
+          "customer_id": "019f2440-251b-1e9a-4220-2f7c9c94a486",
+          "session_options": {},
+          "integration_id": "123",
+          "consent_id": "",
+          "reconciliation_id": "019f2440-251b-3c98-b3df-4ebe28489101",
+          "company_id": "019f2440-251b-afda-95f4-e9a1ff65f35c",
+          "status": "created",
+          "updated_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419634,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "description": "Descrição da transação",
+          "id": "019f2440-251b-f814-04c0-7d2ee6e7ba19",
+          "method": "PIX_MANU",
+          "fee": "",
+          "payment_id": "",
+          "client_id": "019f2440-251b-61fd-6e4e-423760cc813c",
+          "redirect_url": "https://www.google.com",
+          "access_token": "",
+          "external_id": "ID Externo 1",
+          "end_to_end_id": "S12345678202607021913FcTjkwkYmw2",
+          "timestamp": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419605,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "origin_id": "019f2440-251b-1815-306d-9513e0194851",
+          "org_id": "019f2440-251b-94bc-bf93-7fc058cb858f",
+          "transaction_date": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419612,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "reference_type": "pix_qrcode",
+          "date": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "month": 7,
+            "year": 2026
+          },
+          "compress_timestamp": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419633,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "amount": {
+            "amount": 10,
+            "currency": "BRL"
+          },
+          "session_id": "019f2440-251b-c08e-d901-0fa375111d51",
+          "origin_type": "api_client",
+          "bank_account_id": "019f2440-251b-b035-39de-e834f9a6345f",
+          "created_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              419613,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "counterparty_seq": 1
+        },
+        "properties": {
+          "counterparty_id": {
+            "description": "Counterparty ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Itp document inserted at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "itp_document_stages": {
+            "description": "Document stages",
+            "type": "array"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "entity_id": {
+            "description": "Entity ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "consent_url": {
+            "description": "Consent URL",
+            "type": "string"
+          },
+          "reference_id": {
+            "description": "Ref ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "customer_id": {
+            "description": "Customer ID",
+            "type": "string"
+          },
+          "session_options": {
+            "description": "Session options",
+            "type": "object"
+          },
+          "integration_id": {
+            "description": "Integration ID",
+            "type": "string"
+          },
+          "consent_id": {
+            "description": "Consent ID",
+            "type": "string"
+          },
+          "reconciliation_id": {
+            "description": "Reconciliation ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "company_id": {
+            "description": "Company ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "status": {
+            "description": "Document status",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Itp document updated at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "description": "Document description",
+            "type": "string"
+          },
+          "id": {
+            "description": "Itp document ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "method": {
+            "description": "PIX Method",
+            "type": "string"
+          },
+          "fee": {
+            "description": "Fee",
+            "type": "string"
+          },
+          "payment_id": {
+            "description": "Payment ID",
+            "type": "string"
+          },
+          "client_id": {
+            "description": "Client ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "Redirect URL",
+            "type": "string"
+          },
+          "access_token": {
+            "description": "Access token",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "type": "string"
+          },
+          "end_to_end_id": {
+            "description": "End To End ID",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "Itp Document timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "origin_id": {
+            "description": "Document origin ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "org_id": {
+            "description": "Org ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "transaction_date": {
+            "description": "Transaction Date",
+            "format": "date-time",
+            "type": "string"
+          },
+          "reference_type": {
+            "description": "Ref Type",
+            "type": "string"
+          },
+          "date": {
+            "description": "Date",
+            "format": "date",
+            "type": "string"
+          },
+          "compress_timestamp": {
+            "description": "Compress Timestamp",
+            "format": "date-time",
+            "type": "string"
+          },
+          "amount": {
+            "description": "Amount value of the document",
+            "type": "object"
+          },
+          "session_id": {
+            "description": "Session ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "origin_type": {
+            "description": "Document origin type",
+            "type": "string"
+          },
+          "bank_account_id": {
+            "description": "Bank account ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "Created At",
+            "format": "date-time",
+            "type": "string"
+          },
+          "counterparty_seq": {
+            "description": "Counterparty Seq",
+            "type": "integer"
+          }
+        },
+        "title": "Itp document response",
+        "type": "object"
+      },
+      "JsonErrorResponse": {
+        "properties": {
+          "errors": {
+            "items": {
+              "properties": {
+                "detail": {
+                  "example": "null value where string expected",
+                  "type": "string"
+                },
+                "source": {
+                  "properties": {
+                    "pointer": {
+                      "example": "/data/attributes/petName",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "pointer"
+                  ],
+                  "type": "object"
+                },
+                "title": {
+                  "example": "Invalid value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "detail"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "errors"
+        ],
+        "title": "JsonErrorResponse",
+        "type": "object"
+      },
+      "Participant response": {
+        "description": "A participant response for Intranet",
+        "example": {
+          "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+          "id": "019f2440-252c-cbcc-58ee-26b22d5bd14f",
+          "inserted_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              436648,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          },
+          "integration_id": "019f2440-252c-3095-9ee7-d16996e40701",
+          "name": "Mock Bank",
+          "order": 1,
+          "outage": false,
+          "outage_reason": null,
+          "payment_method_shortcut_order": 1,
+          "slug": "mock-bank",
+          "status": "active",
+          "updated_at": {
+            "calendar": "Elixir.Calendar.ISO",
+            "day": 2,
+            "hour": 19,
+            "microsecond": [
+              436652,
+              6
+            ],
+            "minute": 13,
+            "month": 7,
+            "second": 31,
+            "std_offset": 0,
+            "time_zone": "Etc/UTC",
+            "utc_offset": 0,
+            "year": 2026,
+            "zone_abbr": "UTC"
+          }
+        },
+        "properties": {
+          "avatar": {
+            "description": "Avatar",
+            "type": "string"
+          },
+          "id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Itp document inserted at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "integration_id": {
+            "description": "Integration ID",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name",
+            "type": "string"
+          },
+          "order": {
+            "description": "Order",
+            "type": "integer"
+          },
+          "outage": {
+            "description": "Outage",
+            "type": "boolean"
+          },
+          "outage_reason": {
+            "description": "Outage Reason",
+            "type": "string"
+          },
+          "payment_method_shortcut_order": {
+            "description": "Payment Method Shortcut Order",
+            "type": "integer"
+          },
+          "slug": {
+            "description": "Slug",
+            "type": "string"
+          },
+          "status": {
+            "description": "Participant status",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Itp document updated at",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Participant response",
+        "type": "object"
+      },
+      "Participants list response": {
+        "description": "Participants list response for Intranet",
+        "example": {
+          "metadata": {
+            "after": "g3QAAAACdwJpZG0AAAAkMDE5MTgwNWEtNGJkYy0wYTIxLTM4ZTEtM2FiOWNkNzNhOGFjdwtpbnNlcnRlZF9hdHQAAAANdwttaWNyb3NlY29uZGgCYgAAEhlhBncGc2Vjb25kYQd3CGNhbGVuZGFydxNFbGl4aXIuQ2FsZW5kYXIuSVNPdwVtb250aGEIdwpfX3N0cnVjdF9fdw9FbGl4aXIuRGF0ZVRpbWV3A2RheWEXdwR5ZWFyYgAAB-h3Bm1pbnV0ZWEwdwRob3VyYRF3CXRpbWVfem9uZW0AAAAHRXRjL1VUQ3cJem9uZV9hYmJybQAAAANVVEN3CnV0Y19vZmZzZXRhAHcKc3RkX29mZnNldGEA",
+            "before": null,
+            "has_more": true,
+            "limit": 3,
+            "total_count": null,
+            "total_count_cap_exceeded": null
+          },
+          "participants": [
+            {
+              "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+              "id": "019f2440-258c-33db-a10d-049ad1a5bd68",
+              "inserted_at": {
+                "calendar": "Elixir.Calendar.ISO",
+                "day": 2,
+                "hour": 19,
+                "microsecond": [
+                  532892,
+                  6
+                ],
+                "minute": 13,
+                "month": 7,
+                "second": 31,
+                "std_offset": 0,
+                "time_zone": "Etc/UTC",
+                "utc_offset": 0,
+                "year": 2026,
+                "zone_abbr": "UTC"
+              },
+              "integration_id": "019f2440-258c-7472-82f7-f2ca97162c35",
+              "name": "Mock Bank",
+              "order": 1,
+              "outage": false,
+              "outage_reason": null,
+              "payment_method_shortcut_order": 1,
+              "slug": "mock-bank",
+              "status": "active",
+              "updated_at": {
+                "calendar": "Elixir.Calendar.ISO",
+                "day": 2,
+                "hour": 19,
+                "microsecond": [
+                  532899,
+                  6
+                ],
+                "minute": 13,
+                "month": 7,
+                "second": 31,
+                "std_offset": 0,
+                "time_zone": "Etc/UTC",
+                "utc_offset": 0,
+                "year": 2026,
+                "zone_abbr": "UTC"
+              }
+            }
+          ]
+        },
+        "properties": {
+          "metadata": {
+            "properties": {
+              "limit": {
+                "description": "Limit of participants per page",
+                "type": "integer"
+              },
+              "offset": {
+                "description": "Offset of participants per page",
+                "type": "integer"
+              },
+              "total": {
+                "description": "Total number of participants",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "participants": {
+            "items": {
+              "properties": {
+                "avatar": {
+                  "description": "Avatar",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Participant ID",
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "inserted_at": {
+                  "description": "Itp document inserted at",
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "integration_id": {
+                  "description": "Integration ID",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Name",
+                  "type": "string"
+                },
+                "order": {
+                  "description": "Order",
+                  "type": "integer"
+                },
+                "outage": {
+                  "description": "Outage",
+                  "type": "boolean"
+                },
+                "outage_reason": {
+                  "description": "Outage Reason",
+                  "type": "string"
+                },
+                "payment_method_shortcut_order": {
+                  "description": "Payment Method Shortcut Order",
+                  "type": "integer"
+                },
+                "slug": {
+                  "description": "Slug",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "Participant status",
+                  "type": "string"
+                },
+                "updated_at": {
+                  "description": "Itp document updated at",
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Participants list response",
+        "type": "object"
+      },
+      "Session Input Parameters": {
+        "description": "Parameters for creating a session",
+        "example": {
+          "options": {
+            "allow_other_pix_key": false,
+            "expiration_in_seconds": 600,
+            "session_type": "payin",
+            "theme": {
+              "colors": {
+                "backdrop_color": "#FFFFFF",
+                "button_color": "#0000FF",
+                "button_label_color": "#FFFF00",
+                "link_color": "#00FF00",
+                "navbar_action_color": "#FF0000",
+                "navbar_color": "#000000"
+              },
+              "logo_url": "https://example.com/logo.png"
+            }
+          },
+          "participants": [
+            "a8d7e9f8-1234-5678-9abc-def012345678"
+          ],
+          "receiver": {
+            "virtual_account_id": "a9iJ_dsawe0987"
+          },
+          "transaction": {
+            "amount": 5000,
+            "description": "Payment for services rendered",
+            "email": "john.doe@example.com",
+            "external_id": "external_123456",
+            "name": "John Doe",
+            "phone_number": "+1234567890",
+            "recurrence": {
+              "amounts": {
+                "fixed": 4000
+              },
+              "contract_number": "contract_123456",
+              "end_date": "2024-01-01T00:00:00Z",
+              "periodicity": "mnth",
+              "retry_policy": "3r_7d",
+              "start_date": "2023-01-01T00:00:00Z"
+            },
+            "redirect_url": "https://example.com/redirect",
+            "tax_number": "123.456.789-00"
+          }
+        },
+        "properties": {
+          "options": {
+            "properties": {
+              "allow_other_pix_key": {
+                "description": "Whether other PIX keys are allowed",
+                "type": "boolean"
+              },
+              "expiration_in_seconds": {
+                "description": "Expiration time in seconds",
+                "type": "integer"
+              },
+              "session_type": {
+                "description": "Type of the session",
+                "enum": [
+                  "user_onboarding",
+                  "guest_onboarding",
+                  "payin",
+                  "payin_qrcode",
+                  "payout",
+                  "payin_initiation",
+                  "payin_recurrence_initiation"
+                ],
+                "type": "string"
+              },
+              "theme": {
+                "properties": {
+                  "colors": {
+                    "properties": {
+                      "backdrop_color": {
+                        "description": "Backdrop color for the session",
+                        "type": "string"
+                      },
+                      "button_color": {
+                        "description": "Button color for the session",
+                        "type": "string"
+                      },
+                      "button_label_color": {
+                        "description": "Button label color for the session",
+                        "type": "string"
+                      },
+                      "link_color": {
+                        "description": "Link color for the session",
+                        "type": "string"
+                      },
+                      "navbar_action_color": {
+                        "description": "Navbar action color for the session",
+                        "type": "string"
+                      },
+                      "navbar_color": {
+                        "description": "Navbar color for the session",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "logo_url": {
+                    "description": "URL of the logo to be displayed",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "participants": {
+            "description": "List of Participant IDs",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "receiver": {
+            "properties": {
+              "virtual_account_id": {
+                "description": "Virtual Account ID",
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "virtual_account_id"
+            ],
+            "type": "object"
+          },
+          "transaction": {
+            "properties": {
+              "amount": {
+                "description": "Amount for the transaction. In recurrence sessions, this can be used as the first payment amount",
+                "nullable": true,
+                "type": "integer"
+              },
+              "available_withdraw_amount": {
+                "description": "Available amount for withdrawal",
+                "type": "integer"
+              },
+              "description": {
+                "description": "Description of the transaction",
+                "type": "string"
+              },
+              "email": {
+                "description": "Email of the sender, also used as pix_key in payin sessions",
+                "type": "string"
+              },
+              "external_id": {
+                "description": "External ID for the transaction",
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the sender",
+                "type": "string"
+              },
+              "phone_number": {
+                "description": "Phone number of the sender, also used as pix_key in payin sessions",
+                "type": "string"
+              },
+              "recurrence": {
+                "description": "Recurrence information for the session",
+                "nullable": true,
+                "properties": {
+                  "contract_number": {
+                    "description": "Contract number for the recurrence",
+                    "type": "string"
+                  },
+                  "end_date": {
+                    "description": "Recurrence End Date",
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "fixed_amount": {
+                    "description": "Fixed amount for the recurrence",
+                    "type": "integer"
+                  },
+                  "maximum_amount": {
+                    "description": "Maximum amount for the recurrence, in cents.",
+                    "type": "integer"
+                  },
+                  "minimum_amount": {
+                    "description": "Minimum amount for the recurrence, in cents.",
+                    "type": "integer"
+                  },
+                  "periodicity": {
+                    "description": "Periodicity for the recurrence, e.g. 'week': every week, 'mnth': every month, 'qurt': every 3 months, 'mian': every 6 months, 'year': every year",
+                    "enum": [
+                      "week",
+                      "mnth",
+                      "qurt",
+                      "mian",
+                      "year"
+                    ],
+                    "type": "string"
+                  },
+                  "retry_policy": {
+                    "description": "Retry policy for the recurrence",
+                    "enum": [
+                      "none",
+                      "3r_7d"
+                    ],
+                    "type": "string"
+                  },
+                  "start_date": {
+                    "description": "Recurrence Start Date",
+                    "format": "date-time",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contract_number",
+                  "periodicity",
+                  "start_date",
+                  "retry_policy"
+                ],
+                "type": "object"
+              },
+              "redirect_url": {
+                "description": "URL to redirect after the session",
+                "type": "string"
+              },
+              "tax_number": {
+                "description": "Tax number of the sender, also used as pix_key in payin sessions",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "receiver",
+          "transaction"
+        ],
+        "title": "Session Input Parameters",
+        "type": "object"
+      },
+      "UUID": {
+        "description": "Unique identifier",
+        "format": "uuid",
+        "title": "UUID",
+        "type": "string"
+      }
+    }
+  },
+  "info": {
+    "title": "Trio Initiation External API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/checkout/sessions": {
+      "post": {
+        "callbacks": {},
+        "description": "Creates a Checkout session API endpoint",
+        "operationId": "TrioInitiationWeb.Checkout.SessionController.create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Session Input Parameters"
+              }
+            }
+          },
+          "description": "Session creation parameters",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Checkout session response"
+                }
+              }
+            },
+            "description": "Created document"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {},
+          {
+            "basic": [
+              "Base64encode(<client_id>:<client_secret>)"
+            ]
+          }
+        ],
+        "summary": "Creates a checkout session",
+        "tags": []
+      }
+    },
+    "/itp/documents": {
+      "get": {
+        "callbacks": {},
+        "description": "List itp document for Intranet",
+        "operationId": "TrioInitiationWeb.Itp.DocumentController.index",
+        "parameters": [
+          {
+            "description": "Entity ID",
+            "in": "query",
+            "name": "entity_id",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "description": "From Datetime",
+            "in": "query",
+            "name": "from_datetime",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "To Datetime",
+            "in": "query",
+            "name": "to_datetime",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "External ID",
+            "in": "query",
+            "name": "external_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Reconciliation ID",
+            "in": "query",
+            "name": "reconciliation_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination before",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination after",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination limit",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Itp document response"
+                }
+              }
+            },
+            "description": "Document"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {},
+          {
+            "basic": [
+              "Base64encode(<client_id>:<client_secret>)"
+            ]
+          }
+        ],
+        "summary": "List itp documents",
+        "tags": []
+      }
+    },
+    "/itp/documents/{id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Get itp document for Intranet",
+        "operationId": "TrioInitiationWeb.Itp.DocumentController.show",
+        "parameters": [
+          {
+            "description": "Itp Document ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Itp document response"
+                }
+              }
+            },
+            "description": "Document"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {},
+          {
+            "basic": [
+              "Base64encode(<client_id>:<client_secret>)"
+            ]
+          }
+        ],
+        "summary": "Get itp document",
+        "tags": []
+      }
+    },
+    "/itp/participants": {
+      "get": {
+        "callbacks": {},
+        "description": "List participants for Intranet",
+        "operationId": "TrioInitiationWeb.Itp.ParticipantController.index",
+        "parameters": [
+          {
+            "description": "Pagination before",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination after",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Pagination limit",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participants list response"
+                }
+              }
+            },
+            "description": "Participant"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "List participants",
+        "tags": []
+      }
+    },
+    "/itp/participants/{id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Get participant for Intranet",
+        "operationId": "TrioInitiationWeb.Itp.ParticipantController.show",
+        "parameters": [
+          {
+            "description": "Participant ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant response"
+                }
+              }
+            },
+            "description": "Participant"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Get participant",
+        "tags": []
+      }
+    },
+    "/itp/payment_initiation": {
+      "post": {
+        "callbacks": {},
+        "description": "Generate a payment initiation API endpoint",
+        "operationId": "TrioInitiationWeb.Itp.PaymentInitiationController.create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Generate a payment initiation"
+              }
+            }
+          },
+          "description": "Itp document creation parameters",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Generate payment initiation response for external API"
+                }
+              }
+            },
+            "description": "Created document"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {},
+          {
+            "basic": [
+              "Base64encode(<client_id>:<client_secret>)"
+            ]
+          }
+        ],
+        "summary": "Generate a payment initiation external",
+        "tags": [
+          "intranet"
+        ]
+      }
+    }
+  },
+  "security": [],
+  "servers": [
+    {
+      "url": "http://localhost:5900",
+      "variables": {}
+    }
+  ],
+  "tags": []
+}
