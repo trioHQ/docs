@@ -527,11 +527,13 @@
           },
           "bank_account_id": {
             "description": "Bank Account ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "counterparty_id": {
             "description": "Counterparty ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "document_type": {
             "$ref": "#/components/schemas/Bank_Account_transaction_document_type"
@@ -542,22 +544,26 @@
           },
           "external_id": {
             "description": "External ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "ledger_account_id": {
             "description": "Ledger account ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "posting_type": {
             "$ref": "#/components/schemas/Transaction_posting_type"
           },
           "reconciliation_id": {
             "description": "Reconciliation ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "ref_id": {
             "description": "Ref ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           },
           "ref_type": {
             "$ref": "#/components/schemas/Bank_account_transaction_ref_type"
@@ -570,7 +576,8 @@
           },
           "virtual_account_id": {
             "description": "Virtual account ID",
-            "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
+            "format": "uuid",
+            "type": "string"
           }
         },
         "title": "Transaction bank account response",
