@@ -114,12 +114,8 @@
                 "pages": [
                   {
                     "group": "Static QR Code",
-                    "openapi": {
-                      "source": "api-reference/banking-api/openapi.json"
-                    },
                     "pages": [
-                      "POST /banking/cashin/pix/qrcodes/static",
-                      "GET /banking/cashin/pix/qrcodes/static/{id}"
+                      "/api-reference/banking-api/receivables/static-qr-code/create"
                     ]
                   }
                 ]
