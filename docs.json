@@ -110,6 +110,19 @@
             "group": "Banking API",
             "pages": [
               {
+                "group": "Entities",
+                "pages": [
+                  "api-reference/banking-api/entities/list",
+                  "api-reference/banking-api/entities/get"
+                ]
+              },
+              {
+                "group": "Bank Accounts",
+                "pages": [
+                  {}
+                ]
+              },
+              {
                 "group": "Receivables",
                 "pages": [
                   {
@@ -136,6 +149,42 @@
                       "GET /banking/cashin/pix/qrcodes/{id}/hash"
                     ]
                   }
+                ]
+              },
+              {
+                "group": "Recurrences",
+                "pages": [
+                  {}
+                ]
+              },
+              {
+                "group": "Payments",
+                "pages": [
+                  {}
+                ]
+              },
+              {
+                "group": "Documents",
+                "pages": [
+                  {}
+                ]
+              },
+              {
+                "group": "Cards",
+                "pages": [
+                  {}
+                ]
+              },
+              {
+                "group": "Counterparties",
+                "pages": [
+                  {}
+                ]
+              },
+              {
+                "group": "Institutions",
+                "pages": [
+                  "api-reference/banking-api/institutions/list"
                 ]
               }
             ]
