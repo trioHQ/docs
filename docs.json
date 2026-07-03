@@ -105,7 +105,22 @@
       },
       {
         "tab": "API reference",
-        "openapi": "api-reference/banking-api/openapi.json"
+        "groups": [
+          {
+            "group": "Banking API",
+            "openapi": {
+              "source": "api-reference/banking-api/openapi.json",
+              "directory": "banking-api-reference"
+            }
+          },
+          {
+            "group": "Initiation API",
+            "openapi": {
+              "source": "api-reference/initiation-api/openapi.json",
+              "directory": "initiation-api-reference"
+            }
+          }
+        ]
       }
     ]
   },

@@ -1458,7 +1458,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Session Input Parameters"
+                "$ref": "#/components/schemas/Session%20Input%20Parameters"
               }
             }
           },
@@ -1470,7 +1470,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Checkout session response"
+                  "$ref": "#/components/schemas/Checkout%20session%20response"
                 }
               }
             },
@@ -1593,7 +1593,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Itp document response"
+                  "$ref": "#/components/schemas/Itp%20document%20response"
                 }
               }
             },
@@ -1653,7 +1653,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Itp document response"
+                  "$ref": "#/components/schemas/Itp%20document%20response"
                 }
               }
             },
@@ -1731,7 +1731,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Participants list response"
+                  "$ref": "#/components/schemas/Participants%20list%20response"
                 }
               }
             },
@@ -1783,7 +1783,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Participant response"
+                  "$ref": "#/components/schemas/Participant%20response"
                 }
               }
             },
