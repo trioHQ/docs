@@ -1253,7 +1253,6 @@
               "properties": {
                 "category": {
                   "description": "Event category",
-                  "required": true,
                   "type": "string"
                 },
                 "types": {
@@ -1261,10 +1260,13 @@
                   "items": {
                     "type": "string"
                   },
-                  "required": true,
                   "type": "array"
                 }
               },
+              "required": [
+                "category",
+                "types"
+              ],
               "type": "object"
             },
             "nullable": true,
@@ -2991,7 +2993,6 @@
               "properties": {
                 "category": {
                   "description": "Event category",
-                  "required": true,
                   "type": "string"
                 },
                 "types": {
@@ -2999,10 +3000,13 @@
                   "items": {
                     "type": "string"
                   },
-                  "required": true,
                   "type": "array"
                 }
               },
+              "required": [
+                "category",
+                "types"
+              ],
               "type": "object"
             },
             "nullable": true,
@@ -4051,7 +4055,8 @@
           },
           "bank_account_id": {
             "description": "Bank account ID",
-            "type": "uuid"
+            "format": "uuid",
+            "type": "string"
           },
           "description": {
             "description": "Description",
@@ -4083,7 +4088,7 @@
           },
           "status": {
             "description": "Transfer document status",
-            "type": "Elixir.TrioFoundationWeb.Schemas.Banking.Transfer.Status"
+            "type": "string"
           },
           "timestamp": {
             "description": "generation timestamp",
@@ -4194,11 +4199,13 @@
           },
           "bank_account_id": {
             "description": "Bank account ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "collecting_document_id": {
             "description": "Collecting document ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "counterparty": {
             "$ref": "#/components/schemas/Collecting_refund_counterparty"
@@ -4216,7 +4223,8 @@
           },
           "entity_id": {
             "description": "Entity ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "external_id": {
             "description": "External ID",
@@ -4224,11 +4232,13 @@
           },
           "id": {
             "description": "Refund document ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "origin_id": {
             "description": "Origin ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "origin_type": {
             "description": "Origin type",
@@ -4240,7 +4250,8 @@
           },
           "reconciliation_id": {
             "description": "Reconciliation ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "stages": {
             "description": "Refund document stages",
@@ -4251,7 +4262,7 @@
           },
           "status": {
             "description": "Refund document status",
-            "type": "Elixir.TrioFoundationWeb.Schemas.Banking.Cashin.Refund.Status"
+            "type": "string"
           },
           "timestamp": {
             "description": "Refund document timestamp",
@@ -4261,11 +4272,12 @@
           "transaction_date": {
             "description": "Refund document transaction date",
             "format": "date-time",
-            "type": "Elixir.SchemaDateTime"
+            "type": "string"
           },
           "virtual_account_id": {
             "description": "Virtual account ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           }
         },
         "title": "Collecting document refund response",
@@ -7267,7 +7279,8 @@
           },
           "id": {
             "description": "Refund document stage ID",
-            "type": "Elixir.SchemaUUID"
+            "format": "uuid",
+            "type": "string"
           },
           "status": {
             "$ref": "#/components/schemas/Refund_document_status"
@@ -8400,7 +8413,7 @@
           },
           "status": {
             "description": "Pix Key Status",
-            "type": "Elixir.TrioFoundationWeb.Schemas.Banking.Cashin.Key.Status"
+            "type": "string"
           },
           "tax_number": {
             "description": "Tax number",
@@ -8408,7 +8421,7 @@
           },
           "type": {
             "description": "Pix Key type",
-            "type": "Elixir.TrioFoundationWeb.Schemas.Banking.Cashin.Key.Type"
+            "type": "string"
           },
           "updated_at": {
             "description": "Updated at",
