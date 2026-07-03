@@ -1443,8 +1443,8 @@
     }
   },
   "info": {
-    "title": "Trio Initiation External API",
-    "version": "0.1.0"
+    "title": "Initiation API",
+    "version": "1.0.0"
   },
   "openapi": "3.0.0",
   "paths": {
@@ -1813,75 +1813,20 @@
         "summary": "Get participant",
         "tags": []
       }
-    },
-    "/itp/payment_initiation": {
-      "post": {
-        "callbacks": {},
-        "description": "Generate a payment initiation API endpoint",
-        "operationId": "TrioInitiationWeb.Itp.PaymentInitiationController.create",
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Generate a payment initiation"
-              }
-            }
-          },
-          "description": "Itp document creation parameters",
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Generate payment initiation response for external API"
-                }
-              }
-            },
-            "description": "Created document"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonErrorResponse"
-                }
-              }
-            },
-            "description": "Unprocessable Entity"
-          }
-        },
-        "security": [
-          {},
-          {
-            "basic": [
-              "Base64encode(<client_id>:<client_secret>)"
-            ]
-          }
-        ],
-        "summary": "Generate a payment initiation external",
-        "tags": [
-          "intranet"
-        ]
-      }
     }
   },
   "security": [],
   "servers": [
     {
-      "url": "http://localhost:5900",
+      "url": "https://api.sandbox.trio.com.br",
+      "variables": {}
+    },
+    {
+      "url": "https://api.qa.trio.com.br",
+      "variables": {}
+    },
+    {
+      "url": "https://api.trio.com.br",
       "variables": {}
     }
   ],
