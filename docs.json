@@ -122,29 +122,29 @@
                   {
                     "group": "Pix - Static QR Code",
                     "pages": [
-                      "api-reference/banking-api/qrcode-static/post",
-                      "api-reference/banking-api/qrcode-static/get",
-                      "api-reference/banking-api/qrcode-static/get-image",
-                      "api-reference/banking-api/qrcode-static/get-hash"
+                      "api-reference/banking-api/receivables/qrcode-static/post",
+                      "api-reference/banking-api/receivables/qrcode-static/get",
+                      "api-reference/banking-api/receivables/qrcode-static/get-image",
+                      "api-reference/banking-api/receivables/qrcode-static/get-hash"
                     ]
                   },
                   {
                     "group": "Pix - Dynamic QR Code",
                     "pages": [
-                      "api-reference/banking-api/qrcode-dynamic/post",
-                      "api-reference/banking-api/qrcode-dynamic/get",
-                      "api-reference/banking-api/qrcode-dynamic/get-image",
-                      "api-reference/banking-api/qrcode-dynamic/get-hash"
+                      "api-reference/banking-api/receivables/qrcode-dynamic/post",
+                      "api-reference/banking-api/receivables/qrcode-dynamic/get",
+                      "api-reference/banking-api/receivables/qrcode-dynamic/get-image",
+                      "api-reference/banking-api/receivables/qrcode-dynamic/get-hash"
                     ]
                   },
                   {
                     "group": "Boleto",
                     "pages": [
-                      "api-reference/banking-api/boletos/post",
-                      "api-reference/banking-api/boletos/list",
-                      "api-reference/banking-api/boletos/get",
-                      "api-reference/banking-api/boletos/update",
-                      "api-reference/banking-api/boletos/cancel"
+                      "api-reference/banking-api/receivables/boletos/post",
+                      "api-reference/banking-api/receivables/boletos/list",
+                      "api-reference/banking-api/receivables/boletos/get",
+                      "api-reference/banking-api/receivables/boletos/update",
+                      "api-reference/banking-api/receivables/boletos/cancel"
                     ]
                   }
                 ]
