@@ -117,68 +117,32 @@
                 ]
               },
               {
-                "group": "Bank Accounts",
-                "pages": [
-                  {}
-                ]
-              },
-              {
                 "group": "Receivables",
                 "pages": [
                   {
-                    "group": "Static QR Code",
+                    "group": "Static QR Code (Pix)",
                     "openapi": {
                       "source": "api-reference/banking-api/openapi.json"
                     },
                     "pages": [
-                      "POST /banking/cashin/pix/qrcodes/static",
-                      "GET /banking/cashin/pix/qrcodes/static/{id}",
-                      "GET /banking/cashin/pix/qrcodes/static/{id}/image",
-                      "GET /banking/cashin/pix/qrcodes/static/{id}/hash"
+                      "api-reference/banking-api/qrcode-static/create",
+                      "api-reference/banking-api/qrcode-static/get",
+                      "api-reference/banking-api/qrcode-static/get-image",
+                      "api-reference/banking-api/qrcode-static/get-hash"
                     ]
                   },
                   {
-                    "group": "Dynamic QR Code",
+                    "group": "Dynamic QR Code (Pix)",
                     "openapi": {
                       "source": "api-reference/banking-api/openapi.json"
                     },
                     "pages": [
-                      "POST /banking/cashin/pix/qrcodes",
-                      "GET /banking/cashin/pix/qrcodes/{id}",
-                      "GET /banking/cashin/pix/qrcodes/{id}/image",
-                      "GET /banking/cashin/pix/qrcodes/{id}/hash"
+                      "api-reference/banking-api/qrcode-dynamic/create",
+                      "api-reference/banking-api/qrcode-dynamic/get",
+                      "api-reference/banking-api/qrcode-dynamic/get-image",
+                      "api-reference/banking-api/qrcode-dynamic/get-hash"
                     ]
                   }
-                ]
-              },
-              {
-                "group": "Recurrences",
-                "pages": [
-                  {}
-                ]
-              },
-              {
-                "group": "Payments",
-                "pages": [
-                  {}
-                ]
-              },
-              {
-                "group": "Documents",
-                "pages": [
-                  {}
-                ]
-              },
-              {
-                "group": "Cards",
-                "pages": [
-                  {}
-                ]
-              },
-              {
-                "group": "Counterparties",
-                "pages": [
-                  {}
                 ]
               },
               {
