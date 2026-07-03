@@ -115,10 +115,10 @@
                   {
                     "group": "Static QR Code",
                     "pages": [
-                      "/api-reference/banking-api/receivables/qrcode-static/create",
-                      "/api-reference/banking-api/receivables/qrcode-static/get",
-                      "/api-reference/banking-api/receivables/qrcode-static/get-image",
-                      "/api-reference/banking-api/receivables/qrcode-static/get-hash"
+                      "POST /banking/cashin/pix/qrcodes/static",
+                      "GET /banking/cashin/pix/qrcodes/static/{id}",
+                      "GET /banking/cashin/pix/qrcodes/static/{id}/image",
+                      "GET /banking/cashin/pix/qrcodes/static/{id}/hash"
                     ]
                   },
                   {

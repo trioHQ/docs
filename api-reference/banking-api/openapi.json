@@ -2,7 +2,7 @@
   "components": {
     "responses": {},
     "schemas": {
-      "Counterparty bank account data params": {
+      "Counterparty_bank_account_data_params": {
         "description": "Body params counterparty bank account data",
         "example": {
           "branch": "0001",
@@ -29,7 +29,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/Counterparty%20bank%20account%20type"
+            "$ref": "#/components/schemas/Counterparty_bank_account_type"
           }
         },
         "title": "Counterparty bank account data params",
@@ -236,7 +236,7 @@
         "title": "RecurrenceStatus",
         "type": "string"
       },
-      "Update counterparty limits params": {
+      "Update_counterparty_limits_params": {
         "description": "Body params to update counterparty limits",
         "example": {
           "bank_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bb888",
@@ -248,7 +248,7 @@
             "$ref": "#/components/schemas/UUID"
           },
           "document_type": {
-            "$ref": "#/components/schemas/Document%20type%20of%20the%20counterparty%20limits"
+            "$ref": "#/components/schemas/Document_type_of_the_counterparty_limits"
           },
           "maximum_amount": {
             "description": "Counterparty maximum amount",
@@ -263,7 +263,7 @@
         "title": "Update counterparty limits params",
         "type": "object"
       },
-      "List card invoices response": {
+      "List_card_invoices_response": {
         "description": "List card invoices response",
         "example": {
           "data": [
@@ -284,7 +284,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Card%20Invoice"
+              "$ref": "#/components/schemas/Card_Invoice"
             },
             "type": "array"
           }
@@ -489,7 +489,7 @@
         "title": "Boleto_create_params",
         "type": "object"
       },
-      "Transaction bank account response": {
+      "Transaction_bank_account_response": {
         "description": "A bank account transaction ",
         "example": {
           "amount": {
@@ -534,7 +534,7 @@
             "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
           },
           "document_type": {
-            "$ref": "#/components/schemas/Bank%20Account%20transaction%20document%20type"
+            "$ref": "#/components/schemas/Bank_Account_transaction_document_type"
           },
           "end_to_end_id": {
             "description": "End to End ID",
@@ -549,7 +549,7 @@
             "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
           },
           "posting_type": {
-            "$ref": "#/components/schemas/Transaction%20posting%20type"
+            "$ref": "#/components/schemas/Transaction_posting_type"
           },
           "reconciliation_id": {
             "description": "Reconciliation ID",
@@ -560,13 +560,13 @@
             "type": "Elixir.TrioFoundationWeb.Schemas.UUID"
           },
           "ref_type": {
-            "$ref": "#/components/schemas/Bank%20account%20transaction%20ref%20type"
+            "$ref": "#/components/schemas/Bank_account_transaction_ref_type"
           },
           "transaction_date": {
             "$ref": "#/components/schemas/DATETIME"
           },
           "transaction_type": {
-            "$ref": "#/components/schemas/Transaction%20type"
+            "$ref": "#/components/schemas/Transaction_type"
           },
           "virtual_account_id": {
             "description": "Virtual account ID",
@@ -576,7 +576,7 @@
         "title": "Transaction bank account response",
         "type": "object"
       },
-      "Bank account response": {
+      "Bank_account_response": {
         "description": "A bank account grouping a series of virtual accounts",
         "example": {
           "data": {
@@ -590,7 +590,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Bank%20account%20schema"
+            "$ref": "#/components/schemas/Bank_account_schema"
           }
         },
         "title": "Bank account response",
@@ -691,7 +691,7 @@
         "title": "Create_Check_Utility_Response",
         "type": "object"
       },
-      "Collecting document": {
+      "Collecting_document": {
         "description": "Collecting document",
         "example": {
           "data": {
@@ -757,7 +757,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Collecting%20document"
+            "$ref": "#/components/schemas/Collecting_document"
           }
         },
         "title": "Collecting document",
@@ -844,7 +844,7 @@
         "title": "RecurrenceCollectionAttemptData",
         "type": "object"
       },
-      "Card Purchase Document": {
+      "Card_Purchase_Document": {
         "description": "A Card Purchase Document",
         "example": {
           "receipt_url": "https://app.trio.com.br/receipt/0182b3d0-0b3b-4b3b-8b3b-0b3b4b3b8b3b",
@@ -1134,7 +1134,7 @@
         "title": "FirstPaymentWithDueDetail",
         "type": "object"
       },
-      "Pix Key create payload": {
+      "Pix_Key_create_payload": {
         "description": "Body payload to create a Pix Key",
         "example": {
           "key": "32165998093",
@@ -1155,7 +1155,7 @@
         "title": "Pix Key create payload",
         "type": "object"
       },
-      "Counterparty bank account list response": {
+      "Counterparty_bank_account_list_response": {
         "description": "Body response of the listing of counterparty bank accounts",
         "example": {
           "data": [
@@ -1173,7 +1173,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Counterparty%20bank%20account%20response"
+              "$ref": "#/components/schemas/Counterparty_bank_account_response"
             },
             "type": "array"
           }
@@ -1201,7 +1201,7 @@
         "title": "Generate_V2_Boleto_Response",
         "type": "object"
       },
-      "Org webhook creation parameters": {
+      "Org_webhook_creation_parameters": {
         "description": "Org webhook creation parameters for IAM access",
         "example": {
           "authentication_method": "url_secret",
@@ -1426,7 +1426,7 @@
         "title": "Create_Check_Tax_Response",
         "type": "object"
       },
-      "Counterparty limits response": {
+      "Counterparty_limits_response": {
         "description": "Response to counterparty",
         "example": {
           "data": {
@@ -1445,7 +1445,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Counterparty%20limits%20params"
+            "$ref": "#/components/schemas/Counterparty_limits_params"
           }
         },
         "title": "Counterparty limits response",
@@ -1569,7 +1569,7 @@
         "title": "RecurrencePeriodicity",
         "type": "string"
       },
-      "Counterparty bank account response": {
+      "Counterparty_bank_account_response": {
         "description": "Body response of the counterparty bank account",
         "example": {
           "data": {
@@ -1584,13 +1584,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Counterparty%20bank%20account%20response"
+            "$ref": "#/components/schemas/Counterparty_bank_account_response"
           }
         },
         "title": "Counterparty bank account response",
         "type": "object"
       },
-      "Generate pix v2 create params": {
+      "Generate_pix_v2_create_params": {
         "description": "Body params to generate a pix v2",
         "example": {
           "amount": 100,
@@ -1803,7 +1803,7 @@
         "title": "Limit",
         "type": "integer"
       },
-      "Counterparty bank account type": {
+      "Counterparty_bank_account_type": {
         "description": "Type of the counterparty bank account",
         "items": {
           "enum": [
@@ -1817,7 +1817,7 @@
         "title": "Counterparty bank account type",
         "type": "string"
       },
-      "Pix Key confirm payload": {
+      "Pix_Key_confirm_payload": {
         "description": "Body params to confirm a key",
         "example": {
           "token": "123456"
@@ -1834,7 +1834,7 @@
         "title": "Pix Key confirm payload",
         "type": "object"
       },
-      "Virtual account status": {
+      "Virtual_account_status": {
         "description": "Status of the virtual account",
         "items": {
           "enum": [
@@ -2242,7 +2242,7 @@
         "title": "RecurrenceStageData",
         "type": "object"
       },
-      "Purchase Document response": {
+      "Purchase_Document_response": {
         "description": "Purchase Document response",
         "example": {
           "data": {
@@ -2348,13 +2348,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Card%20Purchase%20Document%20with%20Stages"
+            "$ref": "#/components/schemas/Card_Purchase_Document_with_Stages"
           }
         },
         "title": "Purchase Document response",
         "type": "object"
       },
-      "List of collecting documents": {
+      "List_of_collecting_documents": {
         "description": "List of collecting documents",
         "example": {
           "data": [
@@ -2423,7 +2423,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Collecting%20document"
+              "$ref": "#/components/schemas/Collecting_document"
             },
             "type": "array"
           }
@@ -2596,7 +2596,7 @@
         "title": "DynamicQRCodeCreateParams",
         "type": "object"
       },
-      "Transactions virtual account list response": {
+      "Transactions_virtual_account_list_response": {
         "description": "A list of transaction virtual account",
         "example": {
           "data": [
@@ -2624,7 +2624,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Bank%20account%20response"
+              "$ref": "#/components/schemas/Bank_account_response"
             },
             "type": "array"
           }
@@ -2632,7 +2632,7 @@
         "title": "Transactions virtual account list response",
         "type": "object"
       },
-      "Card Invoice": {
+      "Card_Invoice": {
         "description": "An Card Invoice",
         "example": {
           "balance": 10000,
@@ -2796,7 +2796,7 @@
         "title": "TransferResponse",
         "type": "object"
       },
-      "Pix Key list response": {
+      "Pix_Key_list_response": {
         "description": "Pix Key list response",
         "example": {
           "data": [
@@ -2817,7 +2817,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Pix%20Key%20response"
+              "$ref": "#/components/schemas/Pix_Key_response"
             },
             "type": "array"
           }
@@ -2882,7 +2882,7 @@
         "title": "Generate_V1_Tax_Response",
         "type": "object"
       },
-      "Balance for bank account response": {
+      "Balance_for_bank_account_response": {
         "description": "Available balance by bank account(in cents)",
         "example": {
           "data": {
@@ -2917,7 +2917,7 @@
         "title": "Balance for bank account response",
         "type": "object"
       },
-      "Image of a static QRcode": {
+      "Image_of_a_static_QRcode": {
         "description": "Image of a static QRcode",
         "example": {
           "data": {
@@ -2938,7 +2938,7 @@
         "title": "Image of a static QRcode",
         "type": "object"
       },
-      "Org webhook update parameters": {
+      "Org_webhook_update_parameters": {
         "description": "Org webhook update parameters for communication",
         "example": {
           "authentication_method": "url_secret",
@@ -3045,7 +3045,7 @@
         "title": "DynamicBrcodeDueDetailInterestCalculationDays",
         "type": "string"
       },
-      "Entity list response": {
+      "Entity_list_response": {
         "description": "A list of entities from TrioCore's compliance",
         "example": {
           "data": [
@@ -3071,7 +3071,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Entity%20response"
+              "$ref": "#/components/schemas/Entity_response"
             },
             "type": "array"
           }
@@ -3079,7 +3079,7 @@
         "title": "Entity list response",
         "type": "object"
       },
-      "Create counterparty params": {
+      "Create_counterparty_params": {
         "description": "Body params create counterparty",
         "example": {
           "name": "Random",
@@ -3221,7 +3221,7 @@
         "title": "RecurrenceCollectionStageData",
         "type": "object"
       },
-      "Transfer document response": {
+      "Transfer_document_response": {
         "description": "Transfer document response",
         "example": {
           "data": {
@@ -3254,7 +3254,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Transfer%20document%20schema"
+            "$ref": "#/components/schemas/Transfer_document_schema"
           }
         },
         "title": "Transfer document response",
@@ -3360,7 +3360,7 @@
         "title": "RecurrenceRequestData",
         "type": "object"
       },
-      "Collecting document ref type": {
+      "Collecting_document_ref_type": {
         "description": "Collecting document ref type",
         "items": {
           "enum": [
@@ -3375,7 +3375,7 @@
         "title": "Collecting document ref type",
         "type": "string"
       },
-      "Metric response": {
+      "Metric_response": {
         "description": "Metric response",
         "example": {
           "data": {
@@ -3391,7 +3391,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Metric%20data"
+            "$ref": "#/components/schemas/Metric_data"
           }
         },
         "title": "Metric response",
@@ -3407,7 +3407,7 @@
         "title": "DynamicBrcodeDueDetailInterestCalculationType",
         "type": "string"
       },
-      "Card create params": {
+      "Card_create_params": {
         "description": "Card create params",
         "example": {
           "display_name": "marketing card",
@@ -3436,7 +3436,7 @@
         "title": "Card create params",
         "type": "object"
       },
-      "Payment document metrics": {
+      "Payment_document_metrics": {
         "description": "Payment document grouped metrics",
         "example": {
           "failed": 1,
@@ -3457,7 +3457,7 @@
         "title": "Payment document metrics",
         "type": "object"
       },
-      "List Cards Response": {
+      "List_Cards_Response": {
         "description": "A list of cards",
         "example": {
           "data": [
@@ -3618,7 +3618,7 @@
         "title": "VirtualAccountParametersResponse",
         "type": "object"
       },
-      "Bank account schema": {
+      "Bank_account_schema": {
         "description": "A bank account schema",
         "example": {
           "default_virtual_account_id": "019f2433-fb01-4316-f197-83c21b874372",
@@ -3662,7 +3662,7 @@
         "title": "Bank account schema",
         "type": "object"
       },
-      "Counterparty data params": {
+      "Counterparty_data_params": {
         "description": "Body params counterparty data",
         "example": {
           "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
@@ -3699,7 +3699,7 @@
         "title": "Counterparty data params",
         "type": "object"
       },
-      "Collecting document type": {
+      "Collecting_document_type": {
         "description": "Collecting document type",
         "items": {
           "enum": [
@@ -4008,7 +4008,7 @@
         "title": "Generate_V2_Utility_create_params",
         "type": "object"
       },
-      "Transfer document schema": {
+      "Transfer_document_schema": {
         "description": "Transfer document schema",
         "example": {
           "amount": {
@@ -4138,7 +4138,7 @@
         "title": "JsonErrorResponse",
         "type": "object"
       },
-      "Collecting document refund response": {
+      "Collecting_document_refund_response": {
         "description": "Collecting document refund response",
         "example": {
           "amount": {
@@ -4194,10 +4194,10 @@
             "type": "Elixir.SchemaUUID"
           },
           "counterparty": {
-            "$ref": "#/components/schemas/Collecting%20refund%20counterparty"
+            "$ref": "#/components/schemas/Collecting_refund_counterparty"
           },
           "counterparty_bank_account": {
-            "$ref": "#/components/schemas/Collecting%20refund%20counterparty%20bank%20account"
+            "$ref": "#/components/schemas/Collecting_refund_counterparty_bank_account"
           },
           "description": {
             "description": "Description",
@@ -4238,7 +4238,7 @@
           "stages": {
             "description": "Refund document stages",
             "items": {
-              "$ref": "#/components/schemas/Refund%20document%20stage%20list%20response"
+              "$ref": "#/components/schemas/Refund_document_stage_list_response"
             },
             "type": "array"
           },
@@ -4264,7 +4264,7 @@
         "title": "Collecting document refund response",
         "type": "object"
       },
-      "Balance virtual account response": {
+      "Balance_virtual_account_response": {
         "description": "Virtual account available balance",
         "example": {
           "data": {
@@ -4316,7 +4316,7 @@
         "title": "Check_boleto_request_params",
         "type": "object"
       },
-      "Collecting document status": {
+      "Collecting_document_status": {
         "description": "Collecting document status",
         "enum": [
           "created",
@@ -4329,7 +4329,7 @@
         "title": "Collecting document status",
         "type": "string"
       },
-      "Org webhook response": {
+      "Org_webhook_response": {
         "description": "A org webhook for communication",
         "example": {
           "data": {
@@ -4360,13 +4360,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Org%20webhook%20response"
+            "$ref": "#/components/schemas/Org_webhook_response"
           }
         },
         "title": "Org webhook response",
         "type": "object"
       },
-      "Transaction type": {
+      "Transaction_type": {
         "description": "Type of the transaction",
         "items": {
           "enum": [
@@ -4489,7 +4489,7 @@
         "title": "RecurrenceListResponse",
         "type": "object"
       },
-      "Card top up balance via qrcode params": {
+      "Card_top_up_balance_via_qrcode_params": {
         "description": "Card top up balance via qrcode params",
         "example": {
           "amount": 1000,
@@ -4534,7 +4534,7 @@
         "title": "PixRefTypeV2",
         "type": "string"
       },
-      "Transaction list response for bank account": {
+      "Transaction_list_response_for_bank_account": {
         "description": "A list of transactions for a bank account",
         "example": {
           "data": [
@@ -4562,7 +4562,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Transaction%20bank%20account%20response"
+              "$ref": "#/components/schemas/Transaction_bank_account_response"
             },
             "type": "array"
           }
@@ -4570,7 +4570,7 @@
         "title": "Transaction list response for bank account",
         "type": "object"
       },
-      "Static QRCode response": {
+      "Static_QRCode_response": {
         "description": "Response for a single static QRCode",
         "example": {
           "data": {
@@ -4597,7 +4597,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Static%20QRCode%20response"
+            "$ref": "#/components/schemas/Static_QRCode_response"
           }
         },
         "title": "Static QRCode response",
@@ -4672,7 +4672,7 @@
         "title": "UpdateParametersParams",
         "type": "object"
       },
-      "Bank Account transaction document type": {
+      "Bank_Account_transaction_document_type": {
         "description": "Document type of the transaction bank account",
         "items": {
           "enum": [
@@ -4689,7 +4689,7 @@
         "title": "Bank Account transaction document type",
         "type": "string"
       },
-      "Hash of a static QRcode": {
+      "Hash_of_a_static_QRcode": {
         "description": "Hash of a static QRcode",
         "example": {
           "data": {
@@ -4757,7 +4757,7 @@
         "title": "DynamicQRCodeResponse",
         "type": "object"
       },
-      "Check key create payload": {
+      "Check_key_create_payload": {
         "description": "Payload to check a key",
         "example": {
           "entity_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
@@ -4779,7 +4779,7 @@
         "title": "Check key create payload",
         "type": "object"
       },
-      "List payment document refunds response": {
+      "List_payment_document_refunds_response": {
         "description": "A list of payment document refunds response",
         "example": {
           "data": [
@@ -4818,7 +4818,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Payment%20document%20refund%20response"
+              "$ref": "#/components/schemas/Payment_document_refund_response"
             },
             "type": "array"
           }
@@ -4880,7 +4880,7 @@
         "title": "UUID",
         "type": "string"
       },
-      "Create virtual account params": {
+      "Create_virtual_account_params": {
         "description": "Creates a virtual account params",
         "example": {
           "bank_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bb888",
@@ -4903,7 +4903,7 @@
         "title": "Create virtual account params",
         "type": "object"
       },
-      "Bank account transaction ref type": {
+      "Bank_Account_transaction_ref_type": {
         "description": "Ref type of the transaction bank account",
         "items": {
           "enum": [
@@ -4920,7 +4920,7 @@
         "title": "Bank account transaction ref type",
         "type": "string"
       },
-      "Refund creation body params": {
+      "Refund_creation_body_params": {
         "description": "Refund creation body params",
         "example": {
           "amount": 10,
@@ -5099,7 +5099,7 @@
         "title": "DynamicBrcodeDueDetailDiscountCalculationDays",
         "type": "string"
       },
-      "Statement CSV response": {
+      "Statement_CSV_response": {
         "description": "Statement CSV response",
         "example": {
           "data": {
@@ -5132,7 +5132,7 @@
         "title": "Statement CSV response",
         "type": "object"
       },
-      "Payment document list response": {
+      "Payment_document_list_response": {
         "description": "A list of payment documents response",
         "example": {
           "data": [
@@ -5190,7 +5190,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Payment%20document%20response"
+              "$ref": "#/components/schemas/Payment_document_response"
             },
             "type": "array"
           }
@@ -5198,7 +5198,7 @@
         "title": "Payment document list response",
         "type": "object"
       },
-      "Card update params": {
+      "Card_update_params": {
         "description": "Card update params",
         "example": {
           "display_name": "New marketing card"
@@ -5273,7 +5273,7 @@
         "title": "RecurrenceCollectionListResponse",
         "type": "object"
       },
-      "List collecting document refunds response": {
+      "List_collecting_document_refunds_response": {
         "description": "List collecting document refunds response",
         "example": {
           "data": [
@@ -5312,7 +5312,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Collecting%20document%20refund%20response"
+              "$ref": "#/components/schemas/Collecting_document_refund_response"
             },
             "type": "array"
           }
@@ -5326,7 +5326,7 @@
         "title": "DATETIME",
         "type": "string"
       },
-      "Card response": {
+      "Card_response": {
         "description": "Card response",
         "example": {
           "data": {
@@ -5673,7 +5673,7 @@
         "title": "CheckHashResponse",
         "type": "object"
       },
-      "Document type of the counterparty limits": {
+      "Document_type_of_the_counterparty_limits": {
         "description": "Document type of the counterparty",
         "items": {
           "enum": [
@@ -5805,7 +5805,7 @@
         "title": "Boleto_wallet_type",
         "type": "string"
       },
-      "Metric data": {
+      "Metric_data": {
         "description": "Collected metric totals",
         "example": {
           "collecting_document": {
@@ -5819,16 +5819,16 @@
         },
         "properties": {
           "collecting_document": {
-            "$ref": "#/components/schemas/Collecting%20document%20metrics"
+            "$ref": "#/components/schemas/Collecting_document_metrics"
           },
           "payment_document": {
-            "$ref": "#/components/schemas/Payment%20document%20metrics"
+            "$ref": "#/components/schemas/Payment_document_metrics"
           }
         },
         "title": "Metric data",
         "type": "object"
       },
-      "Card Sensitive Data": {
+      "Card_Sensitive_Data": {
         "description": "Card sensitive data",
         "example": {
           "data": {
@@ -5864,7 +5864,7 @@
         "title": "Card Sensitive Data",
         "type": "object"
       },
-      "Payment document status": {
+      "Payment_document_status": {
         "description": "Payment document status",
         "items": {
           "enum": [
@@ -5880,7 +5880,7 @@
         "title": "Payment document status",
         "type": "string"
       },
-      "Check brcode payload": {
+      "Check_brcode_payload": {
         "description": "Payload to check a brcode",
         "example": {
           "entity_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
@@ -5903,7 +5903,7 @@
         "title": "Check brcode payload",
         "type": "object"
       },
-      "Purchase Document Stage": {
+      "Purchase_Document_Stage": {
         "description": "Stage of the purchase document",
         "example": {
           "is_partially_allowed": false,
@@ -6217,7 +6217,7 @@
         "title": "RecurrenceOrigintype",
         "type": "string"
       },
-      "QR Code data": {
+      "QR_Code_data": {
         "description": "QR Code data",
         "example": {
           "amount": {
@@ -6265,7 +6265,7 @@
         "title": "QR Code data",
         "type": "object"
       },
-      "Transfer create params": {
+      "Transfer_create_params": {
         "description": "Body params to generate a transfer",
         "example": {
           "amount": 100,
@@ -6311,7 +6311,7 @@
         "title": "Transfer create params",
         "type": "object"
       },
-      "List invoice lines response": {
+      "List_invoice_lines_response": {
         "description": "List invoice lines response",
         "example": {
           "data": [
@@ -6336,7 +6336,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Card%20Invoice%20Line"
+              "$ref": "#/components/schemas/Card_Invoice_Line"
             },
             "type": "array"
           }
@@ -6344,7 +6344,7 @@
         "title": "List invoice lines response",
         "type": "object"
       },
-      "Payment document ref type": {
+      "Payment_document_ref_type": {
         "description": "Payment document ref type",
         "items": {
           "enum": [
@@ -6376,7 +6376,7 @@
         "title": "CancelRecurrenceParams",
         "type": "object"
       },
-      "Static QRCode payload": {
+      "Static_QRCode_payload": {
         "description": "Body params to create a static QRCode",
         "example": {
           "amount": {
@@ -6434,7 +6434,7 @@
         "title": "Static QRCode payload",
         "type": "object"
       },
-      "Counterparty limits params": {
+      "Counterparty_limits_params": {
         "description": "Body params to counterparty limits",
         "example": {
           "bank_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bb888",
@@ -6462,7 +6462,7 @@
             "type": "string"
           },
           "document_type": {
-            "$ref": "#/components/schemas/Document%20type%20of%20the%20counterparty%20limits"
+            "$ref": "#/components/schemas/Document_type_of_the_counterparty_limits"
           },
           "id": {
             "$ref": "#/components/schemas/UUID"
@@ -6485,7 +6485,7 @@
         "title": "Counterparty limits params",
         "type": "object"
       },
-      "Virtual account type": {
+      "Virtual_account_type": {
         "description": "Type of the virtual account",
         "items": {
           "enum": [
@@ -7180,7 +7180,7 @@
         "title": "DataWithStageAndRequest",
         "type": "object"
       },
-      "Transfer Document Status": {
+      "Transfer_Document_Status": {
         "description": "Status of the transfer document",
         "items": {
           "enum": [
@@ -7247,7 +7247,7 @@
         "title": "RecurrenceCollectionAttemptStatus",
         "type": "string"
       },
-      "Refund document stage response": {
+      "Refund_document_stage_response": {
         "description": "Refund document stage response",
         "properties": {
           "error_code": {
@@ -7263,7 +7263,7 @@
             "type": "Elixir.SchemaUUID"
           },
           "status": {
-            "$ref": "#/components/schemas/Refund%20document%20status"
+            "$ref": "#/components/schemas/Refund_document_status"
           },
           "timestamp": {
             "description": "Refund document stage timestamp",
@@ -7386,10 +7386,10 @@
             "type": "object"
           },
           "status": {
-            "$ref": "#/components/schemas/Virtual%20account%20status"
+            "$ref": "#/components/schemas/Virtual_account_status"
           },
           "type": {
-            "$ref": "#/components/schemas/Virtual%20account%20type"
+            "$ref": "#/components/schemas/Virtual_account_type"
           }
         },
         "title": "VirtualAccount",
@@ -7527,7 +7527,7 @@
         "title": "401",
         "type": "object"
       },
-      "Payment document refund response": {
+      "Payment_document_refund_response": {
         "description": "Payment document refund response",
         "example": {
           "data": {
@@ -7563,13 +7563,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Payment%20document%20refund%20response"
+            "$ref": "#/components/schemas/Payment_document_refund_response"
           }
         },
         "title": "Payment document refund response",
         "type": "object"
       },
-      "Card top up balance params": {
+      "Card_top_up_balance_params": {
         "description": "Card top up balance params",
         "example": {
           "amount": 1000,
@@ -7598,7 +7598,7 @@
         "title": "Card top up balance params",
         "type": "object"
       },
-      "Refund within a collecting document": {
+      "Refund_within_a_collecting_document": {
         "description": "Refund within a collecting document",
         "example": {
           "data": {
@@ -7618,7 +7618,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Refund%20within%20a%20collecting%20document"
+            "$ref": "#/components/schemas/Refund_within_a_collecting_document"
           }
         },
         "title": "Refund within a collecting document",
@@ -7664,7 +7664,7 @@
         "title": "Boleto_due_detail_discount_calculation_type",
         "type": "string"
       },
-      "List Purchase Document response": {
+      "List_Purchase_Document_response": {
         "description": "A List of Purchase Documents",
         "example": {
           "data": [
@@ -7720,7 +7720,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Card%20Purchase%20Document"
+              "$ref": "#/components/schemas/Card_Purchase_Document"
             },
             "type": "array"
           }
@@ -7775,7 +7775,7 @@
         "title": "DynamicQRCodeCounterpartyBankAccount",
         "type": "object"
       },
-      "Payment document type": {
+      "Payment_document_type": {
         "description": "Payment document type",
         "items": {
           "enum": [
@@ -7812,7 +7812,7 @@
         "title": "Generate_V2_Tax_Response",
         "type": "object"
       },
-      "Collecting document metrics": {
+      "Collecting_document_metrics": {
         "description": "Collecting document grouped metrics",
         "example": {
           "failed": 2,
@@ -7849,7 +7849,7 @@
         "title": "RecurrenceReferenceType",
         "type": "string"
       },
-      "Entity response": {
+      "Entity_response": {
         "description": "An entity for compliance",
         "example": {
           "data": {
@@ -7872,13 +7872,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Entity%20response"
+            "$ref": "#/components/schemas/Entity_response"
           }
         },
         "title": "Entity response",
         "type": "object"
       },
-      "Transaction posting type": {
+      "Transaction_posting_type": {
         "description": "Posting Type transaction",
         "items": {
           "enum": [
@@ -7890,7 +7890,7 @@
         "title": "Transaction posting type",
         "type": "string"
       },
-      "Payment document response": {
+      "Payment_document_response": {
         "description": "Payment document response",
         "example": {
           "data": {
@@ -7945,7 +7945,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Payment%20document%20response"
+            "$ref": "#/components/schemas/Payment_document_response"
           }
         },
         "title": "Payment document response",
@@ -8297,15 +8297,15 @@
         "title": "RecurrenceCollectionAttemptListData",
         "type": "array"
       },
-      "Refund document stage list response": {
+      "Refund_document_stage_list_response": {
         "description": "Refund document stage list response",
         "items": {
-          "$ref": "#/components/schemas/Refund%20document%20stage%20response"
+          "$ref": "#/components/schemas/Refund_document_stage_response"
         },
         "title": "Refund document stage list response",
         "type": "array"
       },
-      "Refund document status": {
+      "Refund_document_status": {
         "description": "Refund document status",
         "enum": [
           "created",
@@ -8339,7 +8339,7 @@
         "title": "DynamicQRCodeHashResponse",
         "type": "object"
       },
-      "Card Invoice response": {
+      "Card_Invoice_response": {
         "description": "Card Invoice response",
         "example": {
           "data": {
@@ -8357,13 +8357,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Card%20Invoice"
+            "$ref": "#/components/schemas/Card_Invoice"
           }
         },
         "title": "Card Invoice response",
         "type": "object"
       },
-      "Pix Key response": {
+      "Pix_Key_response": {
         "description": "Pix Key response",
         "example": {
           "data": {
@@ -8439,7 +8439,7 @@
         "title": "CancelCollectionParams",
         "type": "object"
       },
-      "List transfer documents response": {
+      "List_Transfer_Documents_Response": {
         "description": "A list of transfer documents response",
         "example": {
           "data": [
@@ -8475,7 +8475,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Transfer%20document%20schema"
+              "$ref": "#/components/schemas/Transfer_document_schema"
             },
             "type": "array"
           }
@@ -8483,7 +8483,7 @@
         "title": "List transfer documents response",
         "type": "object"
       },
-      "Generate pix create params": {
+      "Generate_pix_create_params": {
         "description": "Body params to generate a pix",
         "example": {
           "amount": 100,
@@ -8599,7 +8599,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Counterparty%20data%20params"
+              "$ref": "#/components/schemas/Counterparty_data_params"
             },
             "type": "array"
           }
@@ -8607,17 +8607,17 @@
         "title": "ListCounterpartyResponse",
         "type": "object"
       },
-      "Card Purchase Document with Stages": {
+      "Card_Purchase_Document_with_Stages": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Card%20Purchase%20Document"
+            "$ref": "#/components/schemas/Card_Purchase_Document"
           },
           {
             "properties": {
               "stages": {
                 "description": "Stages of the purchase document",
                 "items": {
-                  "$ref": "#/components/schemas/Purchase%20Document%20Stage"
+                  "$ref": "#/components/schemas/Purchase_Document_Stage"
                 },
                 "type": "array"
               }
@@ -8897,7 +8897,7 @@
         "title": "Generate_V2_Boleto_create_params",
         "type": "object"
       },
-      "Bank account list response": {
+      "Bank_account_list_response": {
         "description": "A list of bank account from TrioCore's account management",
         "example": {
           "data": [
@@ -8914,7 +8914,7 @@
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/Bank%20account%20schema"
+              "$ref": "#/components/schemas/Bank_account_schema"
             },
             "type": "array"
           }
@@ -8922,7 +8922,7 @@
         "title": "Bank account list response",
         "type": "object"
       },
-      "Counterparty response": {
+      "Counterparty_response": {
         "description": "Body response of the counterparty",
         "example": {
           "data": {
@@ -8935,7 +8935,7 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Counterparty%20data%20params"
+            "$ref": "#/components/schemas/Counterparty_data_params"
           }
         },
         "title": "Counterparty response",
@@ -8988,7 +8988,7 @@
         "title": "Generate_Tax_V1",
         "type": "object"
       },
-      "Collecting refund counterparty": {
+      "Collecting_refund_counterparty": {
         "description": "Collecting refund counterparty",
         "properties": {
           "name": {
@@ -9003,7 +9003,7 @@
         "title": "Collecting refund counterparty",
         "type": "object"
       },
-      "Card transfer balance params": {
+      "Card_transfer_balance_params": {
         "description": "Card transfer balance params",
         "example": {
           "amount": 1000,
@@ -9168,7 +9168,7 @@
         "title": "500",
         "type": "object"
       },
-      "Card Top up balance QR Code response": {
+      "Card_Top_up_balance_QR_Code_response": {
         "description": "Card Top up balance QR Code response",
         "example": {
           "data": {
@@ -9184,13 +9184,13 @@
         },
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/QR%20Code%20data"
+            "$ref": "#/components/schemas/QR_Code_data"
           }
         },
         "title": "Card Top up balance QR Code response",
         "type": "object"
       },
-      "Bank account creation parameters": {
+      "Bank_account_creation_parameters": {
         "description": "Parameters used to create a bank account",
         "example": {
           "description": "Bank account Test",
@@ -9506,7 +9506,7 @@
         "title": "Boleto_Response_Params",
         "type": "object"
       },
-      "Card Invoice Line": {
+      "Card_Invoice_Line": {
         "description": "An Card Invoice Line",
         "example": {
           "amount": {
@@ -9620,7 +9620,7 @@
         "title": "Boleto_update_params",
         "type": "object"
       },
-      "Collecting refund counterparty bank account": {
+      "Collecting_refund_counterparty_bank_account": {
         "description": "Collecting refund counterparty",
         "properties": {
           "digit": {
@@ -9667,7 +9667,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Check%20brcode%20payload"
+                "$ref": "#/components/schemas/Check_brcode_payload"
               }
             }
           },
@@ -9743,7 +9743,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Static%20QRCode%20response"
+                  "$ref": "#/components/schemas/Static_QRCode_response"
                 }
               }
             },
@@ -9807,7 +9807,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collecting%20document"
+                  "$ref": "#/components/schemas/Collecting_document"
                 }
               }
             },
@@ -9861,7 +9861,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pix%20Key%20response"
+                  "$ref": "#/components/schemas/Pix_Key_response"
                 }
               }
             },
@@ -9915,7 +9915,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20bank%20account%20list%20response"
+                  "$ref": "#/components/schemas/Counterparty_bank_account_list_response"
                 }
               }
             },
@@ -9966,7 +9966,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Counterparty%20bank%20account%20data%20params"
+                "$ref": "#/components/schemas/Counterparty_bank_account_data_params"
               }
             }
           },
@@ -9978,7 +9978,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20bank%20account%20response"
+                  "$ref": "#/components/schemas/Counterparty_bank_account_response"
                 }
               }
             },
@@ -10077,7 +10077,7 @@
             "name": "status",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Transfer%20Document%20Status"
+              "$ref": "#/components/schemas/Transfer_Document_Status"
             }
           },
           {
@@ -10106,7 +10106,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20transfer%20documents%20response"
+                  "$ref": "#/components/schemas/List_transfer_documents_response"
                 }
               }
             },
@@ -10147,7 +10147,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Transfer%20create%20params"
+                "$ref": "#/components/schemas/Transfer_create_params"
               }
             }
           },
@@ -10212,7 +10212,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Check%20key%20create%20payload"
+                "$ref": "#/components/schemas/Check_key_create_payload"
               }
             }
           },
@@ -10431,7 +10431,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Hash%20of%20a%20static%20QRcode"
+                  "$ref": "#/components/schemas/Hash_of_a_static_QRcode"
                 }
               }
             },
@@ -10494,7 +10494,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Card%20top%20up%20balance%20via%20qrcode%20params"
+                "$ref": "#/components/schemas/Card_top_up_balance_via_qrcode_params"
               }
             }
           },
@@ -10506,7 +10506,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Card%20Top%20up%20balance%20QR%20Code%20response"
+                  "$ref": "#/components/schemas/Card_Top_up_balance_QR_Code_response"
                 }
               }
             },
@@ -10722,7 +10722,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Payment%20document%20response"
+                  "$ref": "#/components/schemas/Payment_document_response"
                 }
               }
             },
@@ -10829,7 +10829,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Refund%20creation%20body%20params"
+                "$ref": "#/components/schemas/Refund_creation_body_params"
               }
             }
           },
@@ -10841,7 +10841,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Refund%20within%20a%20collecting%20document"
+                  "$ref": "#/components/schemas/Refund_within_a_collecting_document"
                 }
               }
             },
@@ -11115,7 +11115,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bank%20account%20list%20response"
+                  "$ref": "#/components/schemas/Bank_account_list_response"
                 }
               }
             },
@@ -11156,7 +11156,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Bank%20account%20creation%20parameters"
+                "$ref": "#/components/schemas/Bank_account_creation_parameters"
               }
             }
           },
@@ -11168,7 +11168,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bank%20account%20response"
+                  "$ref": "#/components/schemas/Bank_account_response"
                 }
               }
             },
@@ -11301,7 +11301,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Generate%20pix%20create%20params"
+                "$ref": "#/components/schemas/Generate_pix_create_params"
               }
             }
           },
@@ -11596,7 +11596,7 @@
             "name": "ref_type",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Collecting%20document%20ref%20type"
+              "$ref": "#/components/schemas/Collecting_document_ref_type"
             }
           },
           {
@@ -11605,7 +11605,7 @@
             "name": "status",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Collecting%20document%20status"
+              "$ref": "#/components/schemas/Collecting_document_status"
             }
           },
           {
@@ -11614,7 +11614,7 @@
             "name": "type",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Collecting%20document%20type"
+              "$ref": "#/components/schemas/Collecting_document_type"
             }
           },
           {
@@ -11643,7 +11643,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20of%20collecting%20documents"
+                  "$ref": "#/components/schemas/List_of_collecting_documents"
                 }
               }
             },
@@ -11697,7 +11697,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Transfer%20document%20response"
+                  "$ref": "#/components/schemas/Transfer_document_response"
                 }
               }
             },
@@ -11896,7 +11896,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pix%20Key%20response"
+                  "$ref": "#/components/schemas/Pix_Key_response"
                 }
               }
             },
@@ -11987,7 +11987,7 @@
             "name": "ref_type",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Payment%20document%20ref%20type"
+              "$ref": "#/components/schemas/Payment_document_ref_type"
             }
           },
           {
@@ -11996,7 +11996,7 @@
             "name": "status",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Payment%20document%20status"
+              "$ref": "#/components/schemas/Payment_document_status"
             }
           },
           {
@@ -12005,7 +12005,7 @@
             "name": "type",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Payment%20document%20type"
+              "$ref": "#/components/schemas/Payment_document_type"
             }
           },
           {
@@ -12034,7 +12034,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Payment%20document%20list%20response"
+                  "$ref": "#/components/schemas/Payment_document_list_response"
                 }
               }
             },
@@ -12180,7 +12180,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Balance%20virtual%20account%20response"
+                  "$ref": "#/components/schemas/Balance_virtual_account_response"
                 }
               }
             },
@@ -12648,7 +12648,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Statement%20CSV%20response"
+                  "$ref": "#/components/schemas/Statement_CSV_response"
                 }
               }
             },
@@ -12861,7 +12861,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Transactions%20virtual%20account%20list%20response"
+                  "$ref": "#/components/schemas/Transactions_virtual_account_list_response"
                 }
               }
             },
@@ -12942,7 +12942,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Payment%20document%20refund%20response"
+                  "$ref": "#/components/schemas/Payment_document_refund_response"
                 }
               }
             },
@@ -12986,7 +12986,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Entity%20list%20response"
+                  "$ref": "#/components/schemas/Entity_list_response"
                 }
               }
             },
@@ -13197,7 +13197,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pix%20Key%20list%20response"
+                  "$ref": "#/components/schemas/Pix_Key_list_response"
                 }
               }
             },
@@ -13238,7 +13238,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Pix%20Key%20create%20payload"
+                "$ref": "#/components/schemas/Pix_Key_create_payload"
               }
             }
           },
@@ -13250,7 +13250,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pix%20Key%20response"
+                  "$ref": "#/components/schemas/Pix_Key_response"
                 }
               }
             },
@@ -13387,7 +13387,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20card%20invoices%20response"
+                  "$ref": "#/components/schemas/List_card_invoices_response"
                 }
               }
             },
@@ -13488,7 +13488,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20payment%20document%20refunds%20response"
+                  "$ref": "#/components/schemas/List_payment_document_refunds_response"
                 }
               }
             },
@@ -13598,7 +13598,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Transaction%20list%20response%20for%20bank%20account"
+                  "$ref": "#/components/schemas/Transaction_list_response_for_bank_account"
                 }
               }
             },
@@ -14043,7 +14043,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Metric%20response"
+                  "$ref": "#/components/schemas/Metric_response"
                 }
               }
             },
@@ -14097,7 +14097,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Card%20Sensitive%20Data"
+                  "$ref": "#/components/schemas/Card_Sensitive_Data"
                 }
               }
             },
@@ -14352,7 +14352,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20bank%20account%20response"
+                  "$ref": "#/components/schemas/Counterparty_bank_account_response"
                 }
               }
             },
@@ -14692,7 +14692,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Card%20transfer%20balance%20params"
+                "$ref": "#/components/schemas/Card_transfer_balance_params"
               }
             }
           },
@@ -14758,7 +14758,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20response"
+                  "$ref": "#/components/schemas/Counterparty_response"
                 }
               }
             },
@@ -14809,7 +14809,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Update%20counterparty%20limits%20params"
+                "$ref": "#/components/schemas/Update_counterparty_limits_params"
               }
             }
           },
@@ -14821,7 +14821,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20limits%20response"
+                  "$ref": "#/components/schemas/Counterparty_limits_response"
                 }
               }
             },
@@ -14913,7 +14913,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20invoice%20lines%20response"
+                  "$ref": "#/components/schemas/List_invoice_lines_response"
                 }
               }
             },
@@ -15265,7 +15265,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org%20webhook%20response"
+                  "$ref": "#/components/schemas/Org_webhook_response"
                 }
               }
             },
@@ -15316,7 +15316,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Org%20webhook%20update%20parameters"
+                "$ref": "#/components/schemas/Org_webhook_update_parameters"
               }
             }
           },
@@ -15328,7 +15328,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org%20webhook%20response"
+                  "$ref": "#/components/schemas/Org_webhook_response"
                 }
               }
             },
@@ -15382,7 +15382,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Card%20response"
+                  "$ref": "#/components/schemas/Card_response"
                 }
               }
             },
@@ -15433,7 +15433,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Card%20update%20params"
+                "$ref": "#/components/schemas/Card_update_params"
               }
             }
           },
@@ -15499,7 +15499,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collecting%20document%20refund%20response"
+                  "$ref": "#/components/schemas/Collecting_document_refund_response"
                 }
               }
             },
@@ -15553,7 +15553,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Image%20of%20a%20static%20QRcode"
+                  "$ref": "#/components/schemas/Image_of_a_static_QRcode"
                 }
               }
             },
@@ -15726,7 +15726,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Payment%20document%20response"
+                  "$ref": "#/components/schemas/Payment_document_response"
                 }
               }
             },
@@ -15842,7 +15842,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Card%20Invoice%20response"
+                  "$ref": "#/components/schemas/Card_Invoice_response"
                 }
               }
             },
@@ -15988,7 +15988,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20Purchase%20Document%20response"
+                  "$ref": "#/components/schemas/List_Purchase_Document_response"
                 }
               }
             },
@@ -16041,7 +16041,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Card%20top%20up%20balance%20params"
+                "$ref": "#/components/schemas/Card_top_up_balance_params"
               }
             }
           },
@@ -16107,7 +16107,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Bank%20account%20response"
+                  "$ref": "#/components/schemas/Bank_account_response"
                 }
               }
             },
@@ -16226,7 +16226,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20Cards%20Response"
+                  "$ref": "#/components/schemas/List_Cards_Response"
                 }
               }
             },
@@ -16267,7 +16267,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Card%20create%20params"
+                "$ref": "#/components/schemas/Card_create_params"
               }
             }
           },
@@ -16279,7 +16279,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Card%20response"
+                  "$ref": "#/components/schemas/Card_response"
                 }
               }
             },
@@ -16322,7 +16322,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Static%20QRCode%20payload"
+                "$ref": "#/components/schemas/Static_QRCode_payload"
               }
             }
           },
@@ -16334,7 +16334,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Static%20QRCode%20response"
+                  "$ref": "#/components/schemas/Static_QRCode_response"
                 }
               }
             },
@@ -16397,7 +16397,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Purchase%20Document%20response"
+                  "$ref": "#/components/schemas/Purchase_Document_response"
                 }
               }
             },
@@ -16543,7 +16543,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collecting%20document%20refund%20response"
+                  "$ref": "#/components/schemas/Collecting_document_refund_response"
                 }
               }
             },
@@ -16706,7 +16706,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/List%20collecting%20document%20refunds%20response"
+                  "$ref": "#/components/schemas/List_collecting_document_refunds_response"
                 }
               }
             },
@@ -16877,7 +16877,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Generate%20pix%20v2%20create%20params"
+                "$ref": "#/components/schemas/Generate_pix_v2_create_params"
               }
             }
           },
@@ -16962,7 +16962,7 @@
             "name": "status",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/Virtual%20account%20status"
+              "$ref": "#/components/schemas/Virtual_account_status"
             }
           },
           {
@@ -17039,7 +17039,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Create%20virtual%20account%20params"
+                "$ref": "#/components/schemas/Create_virtual_account_params"
               }
             }
           },
@@ -17105,7 +17105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Payment%20document%20refund%20response"
+                  "$ref": "#/components/schemas/Payment_document_refund_response"
                 }
               }
             },
@@ -17159,7 +17159,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Purchase%20Document%20response"
+                  "$ref": "#/components/schemas/Purchase_Document_response"
                 }
               }
             },
@@ -17222,7 +17222,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org%20webhook%20response"
+                  "$ref": "#/components/schemas/Org_webhook_response"
                 }
               }
             },
@@ -17263,7 +17263,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Org%20webhook%20creation%20parameters"
+                "$ref": "#/components/schemas/Org_webhook_creation_parameters"
               }
             }
           },
@@ -17275,7 +17275,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org%20webhook%20response"
+                  "$ref": "#/components/schemas/Org_webhook_response"
                 }
               }
             },
@@ -17328,7 +17328,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Pix%20Key%20confirm%20payload"
+                "$ref": "#/components/schemas/Pix_Key_confirm_payload"
               }
             }
           },
@@ -17399,7 +17399,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Balance%20for%20bank%20account%20response"
+                  "$ref": "#/components/schemas/Balance_for_bank_account_response"
                 }
               }
             },
@@ -17463,7 +17463,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Entity%20response"
+                  "$ref": "#/components/schemas/Entity_response"
                 }
               }
             },
@@ -17617,7 +17617,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collecting%20document"
+                  "$ref": "#/components/schemas/Collecting_document"
                 }
               }
             },
@@ -17750,7 +17750,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Create%20counterparty%20params"
+                "$ref": "#/components/schemas/Create_counterparty_params"
               }
             }
           },
@@ -17762,7 +17762,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Counterparty%20response"
+                  "$ref": "#/components/schemas/Counterparty_response"
                 }
               }
             },
