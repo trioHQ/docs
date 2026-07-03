@@ -117,10 +117,18 @@
                 ]
               },
               {
+                "group": "Counterparties",
+                "pages": []
+              },
+              {
+                "group": "Bank accounts",
+                "pages": []
+              },
+              {
                 "group": "Receivables",
                 "pages": [
                   {
-                    "group": "Pix - Static QR Code",
+                    "group": "Static QR Code (Pix)",
                     "pages": [
                       "api-reference/banking-api/receivables/qrcode-static/post",
                       "api-reference/banking-api/receivables/qrcode-static/get",
@@ -129,7 +137,7 @@
                     ]
                   },
                   {
-                    "group": "Pix - Dynamic QR Code",
+                    "group": "Dynamic QR Code (Pix)",
                     "pages": [
                       "api-reference/banking-api/receivables/qrcode-dynamic/post",
                       "api-reference/banking-api/receivables/qrcode-dynamic/get",
@@ -146,8 +154,53 @@
                       "api-reference/banking-api/receivables/boletos/update",
                       "api-reference/banking-api/receivables/boletos/cancel"
                     ]
+                  },
+                  {
+                    "group": "Recurrences (Pix)",
+                    "pages": []
                   }
                 ]
+              },
+              {
+                "group": "Payments",
+                "pages": [
+                  {
+                    "group": "Transfer (Pix)",
+                    "pages": []
+                  },
+                  {
+                    "group": "QRcode (Pix)",
+                    "pages": []
+                  },
+                  {
+                    "group": "Boleto",
+                    "pages": []
+                  },
+                  {
+                    "group": "Utility",
+                    "pages": []
+                  },
+                  {
+                    "group": "Tax (ISS, DAS)",
+                    "pages": []
+                  },
+                  {
+                    "group": "Darf (manual)",
+                    "pages": []
+                  }
+                ]
+              },
+              {
+                "group": "Transfers",
+                "pages": []
+              },
+              {
+                "group": "Documents",
+                "pages": []
+              },
+              {
+                "group": "Cards",
+                "pages": []
               },
               {
                 "group": "Institutions",
