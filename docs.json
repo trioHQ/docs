@@ -108,17 +108,23 @@
         "groups": [
           {
             "group": "Banking API",
-            "openapi": {
-              "source": "api-reference/banking-api/openapi.json",
-              "directory": "banking-api-reference"
-            }
-          },
-          {
-            "group": "Initiation API",
-            "openapi": {
-              "source": "api-reference/initiation-api/openapi.json",
-              "directory": "initiation-api-reference"
-            }
+            "pages": [
+              {
+                "group": "Receivables",
+                "pages": [
+                  {
+                    "group": "Static QR Code",
+                    "openapi": {
+                      "source": "api-reference/banking-api/openapi.json"
+                    },
+                    "pages": [
+                      "POST /banking/cashin/pix/qrcodes/static",
+                      "GET /banking/cashin/pix/qrcodes/static/{id}"
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
