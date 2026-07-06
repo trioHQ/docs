@@ -65,7 +65,7 @@ Campos opcionais relevantes:
 * **`external_id`**: sua referência interna para a recorrência.
 * **`amounts`**: define o valor (ver abaixo). Se omitido, a recorrência é criada com **valor variável sem mínimo**.
 * **`first_payment`**: configura o primeiro pagamento conjugado à autorização (ver variações de jornada).
-* **`options`**: bloco de configurações da recorrência (ver seção [Opções e configurações](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#opcoes-e-configuracoes-na-criacao)).
+* **`options`**: bloco de configurações da recorrência (ver seção [Opções e configurações](#)).
 
 #### Valor fixo x valor variável
 
@@ -256,7 +256,7 @@ O bloco `options` define o comportamento da recorrência ao longo do tempo. Todo
 
 Com `automatic_schedule: true` (padrão), a Trio cria e agenda automaticamente cada cobrança na periodicidade definida. Você não precisa fazer nada a cada ciclo — basta reagir aos webhooks. Use este modo quando o valor é fixo ou quando você já consegue determinar o valor com antecedência.
 
-Com `automatic_schedule: false` (gestão manual), você é responsável por criar e agendar cada cobrança a cada ciclo. Esse modo é necessário, por exemplo, quando o valor variável só é conhecido perto da data de cobrança. Veja a seção [Gestão manual de cobranças](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#gestao-manual).
+Com `automatic_schedule: false` (gestão manual), você é responsável por criar e agendar cada cobrança a cada ciclo. Esse modo é necessário, por exemplo, quando o valor variável só é conhecido perto da data de cobrança. Veja a seção [Gestão manual de cobranças](#).
 
 #### Retentativa e o cliente que não paga
 
@@ -265,7 +265,7 @@ A `retry_policy` controla o que acontece quando uma cobrança não é liquidada:
 * **`3r_7d`** — a cobrança é retentada 3 vezes ao longo de 7 dias, em dias alternados. Cada retentativa gera uma nova *tentativa* (`attempt`). Se nenhuma tentativa for liquidada, a cobrança vai para um status final de falha/expiração.
 * **`none`** — não há retentativa. Uma tentativa falha encerra a cobrança.
 
-> **Cancelar a recorrência quando o cliente não paga.** A política de retentativa atua no nível da *cobrança*, não da recorrência. Se a sua regra de negócio é encerrar a assinatura após uma cobrança não paga, monitore os webhooks de tentativa (`recurrence_collection_attempt` com tipo `failed`/`expired`) e/ou de cobrança (`recurrence_collection` com tipo `expired`/`rejected`) e, ao detectar o esgotamento das retentativas, chame o [cancelamento da recorrência](https://claude.ai/chat/5d1e0ddf-cd69-4a30-b603-be1cec1e7791#cancelando-a-recorrencia). Assim você implementa o "cancelamento automático por inadimplência" de forma controlada pela sua aplicação.
+> **Cancelar a recorrência quando o cliente não paga.** A política de retentativa atua no nível da *cobrança*, não da recorrência. Se a sua regra de negócio é encerrar a assinatura após uma cobrança não paga, monitore os webhooks de tentativa (`recurrence_collection_attempt` com tipo `failed`/`expired`) e/ou de cobrança (`recurrence_collection` com tipo `expired`/`rejected`) e, ao detectar o esgotamento das retentativas, chame o [cancelamento da recorrência](#). Assim você implementa o "cancelamento automático por inadimplência" de forma controlada pela sua aplicação.
 
 ***
 
