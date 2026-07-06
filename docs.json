@@ -118,7 +118,15 @@
               },
               {
                 "group": "Counterparties",
-                "pages": []
+                "pages": [
+                  "api-reference/banking-api/counterparties/list-counterparties",
+                  "api-reference/banking-api/counterparties/get-counterparty",
+                  "api-reference/banking-api/counterparties/create-counterparty",
+                  "api-reference/banking-api/counterparties/update-counterparty",
+                  "api-reference/banking-api/counterparties/list-counterparty-bank-accounts",
+                  "api-reference/banking-api/counterparties/get-counterparty-bank-account",
+                  "api-reference/banking-api/counterparties/create-counterparty-bank-account"
+                ]
               },
               {
                 "group": "Bank accounts",
@@ -127,6 +135,16 @@
               {
                 "group": "Receivables",
                 "pages": [
+                  {
+                    "group": "Boleto",
+                    "pages": [
+                      "api-reference/banking-api/receivables/boletos/post",
+                      "api-reference/banking-api/receivables/boletos/list",
+                      "api-reference/banking-api/receivables/boletos/get",
+                      "api-reference/banking-api/receivables/boletos/update",
+                      "api-reference/banking-api/receivables/boletos/cancel"
+                    ]
+                  },
                   {
                     "group": "Static QR Code (Pix)",
                     "pages": [
@@ -146,18 +164,28 @@
                     ]
                   },
                   {
-                    "group": "Boleto",
+                    "group": "Refund (Pix)",
                     "pages": [
-                      "api-reference/banking-api/receivables/boletos/post",
-                      "api-reference/banking-api/receivables/boletos/list",
-                      "api-reference/banking-api/receivables/boletos/get",
-                      "api-reference/banking-api/receivables/boletos/update",
-                      "api-reference/banking-api/receivables/boletos/cancel"
+                      "api-reference/banking-api/receivables/refunds/post"
                     ]
                   },
                   {
                     "group": "Recurrences (Pix)",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/receivables/recurrences/list-recurrences",
+                      "api-reference/banking-api/receivables/recurrences/generate-recurrence",
+                      "api-reference/banking-api/receivables/recurrences/get-recurrence",
+                      "api-reference/banking-api/receivables/recurrences/cancel-recurrence",
+                      "api-reference/banking-api/receivables/recurrences/list-recurrence-collections",
+                      "api-reference/banking-api/receivables/recurrences/get-collection",
+                      "api-reference/banking-api/receivables/recurrences/update-collection",
+                      "api-reference/banking-api/receivables/recurrences/cancel-collection",
+                      "api-reference/banking-api/receivables/recurrences/schedule-collection",
+                      "api-reference/banking-api/receivables/recurrences/create-next-collection",
+                      "api-reference/banking-api/receivables/recurrences/list-collection-attempts",
+                      "api-reference/banking-api/receivables/recurrences/get-collection-attempt",
+                      "api-reference/banking-api/receivables/recurrences/get-recurrence-request"
+                    ]
                   }
                 ]
               },
@@ -166,33 +194,58 @@
                 "pages": [
                   {
                     "group": "Transfer (Pix)",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/payments/transfer-pix/check-key",
+                      "api-reference/banking-api/payments/transfer-pix/generate-pix-payment-v1",
+                      "api-reference/banking-api/payments/transfer-pix/generate-pix-payment-v2"
+                    ]
                   },
                   {
-                    "group": "QRcode (Pix)",
-                    "pages": []
+                    "group": "QR Code (Pix)",
+                    "pages": [
+                      "api-reference/banking-api/payments/brcode/check-brcode",
+                      "api-reference/banking-api/payments/brcode/generate-pix-payment-brcode"
+                    ]
                   },
                   {
                     "group": "Boleto",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/payments/boleto/check-boleto",
+                      "api-reference/banking-api/payments/boleto/pay-boleto",
+                      "api-reference/banking-api/payments/boleto/pay-boleto-v2"
+                    ]
                   },
                   {
                     "group": "Utility",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/payments/utility/check-utility",
+                      "api-reference/banking-api/payments/utility/pay-utility-v1",
+                      "api-reference/banking-api/payments/utility/pay-utility-v2"
+                    ]
                   },
                   {
                     "group": "Tax (ISS, DAS)",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/payments/tax/check-tax",
+                      "api-reference/banking-api/payments/tax/pay-tax-v1",
+                      "api-reference/banking-api/payments/tax/pay-tax-v2"
+                    ]
                   },
                   {
                     "group": "Darf (manual)",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/payments/darf/check-darf",
+                      "api-reference/banking-api/payments/darf/pay-darf-v1",
+                      "api-reference/banking-api/payments/darf/pay-darf-v2"
+                    ]
                   }
                 ]
               },
               {
                 "group": "Transfers",
-                "pages": []
+                "pages": [
+                  "api-reference/banking-api/transfers/transfer"
+                ]
               },
               {
                 "group": "Documents",
@@ -213,7 +266,25 @@
               },
               {
                 "group": "Cards",
-                "pages": []
+                "pages": [
+                  "api-reference/banking-api/cards/create-card",
+                  "api-reference/banking-api/cards/list-cards",
+                  "api-reference/banking-api/cards/get-card",
+                  "api-reference/banking-api/cards/update-card",
+                  "api-reference/banking-api/cards/block-card",
+                  "api-reference/banking-api/cards/unblock-card",
+                  "api-reference/banking-api/cards/cancel-card",
+                  "api-reference/banking-api/cards/get-card-details",
+                  "api-reference/banking-api/cards/top-up-card-balance",
+                  "api-reference/banking-api/cards/transfer-card-balance",
+                  "api-reference/banking-api/cards/list-card-invoices",
+                  "api-reference/banking-api/cards/get-card-current-invoice",
+                  "api-reference/banking-api/cards/list-card-invoice-lines",
+                  "api-reference/banking-api/cards/generate-card-invoice-statement-csv-url",
+                  "api-reference/banking-api/cards/list-card-purchase-documents",
+                  "api-reference/banking-api/cards/show-card-purchase-document-by-id",
+                  "api-reference/banking-api/cards/show-card-purchase-document-by-end-to-end-id"
+                ]
               },
               {
                 "group": "Institutions",
