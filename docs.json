@@ -196,7 +196,20 @@
               },
               {
                 "group": "Documents",
-                "pages": []
+                "pages": [
+                  {
+                    "group": "Receivables",
+                    "pages": []
+                  },
+                  {
+                    "group": "Payments",
+                    "pages": []
+                  },
+                  {
+                    "group": "Transfers",
+                    "pages": []
+                  }
+                ]
               },
               {
                 "group": "Cards",
