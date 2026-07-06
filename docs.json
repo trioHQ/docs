@@ -252,15 +252,48 @@
                 "pages": [
                   {
                     "group": "Receivables",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/documents/receivables/list-receivables",
+                      "api-reference/banking-api/documents/receivables/get-receivable",
+                      "api-reference/banking-api/documents/receivables/search-receivables"
+                    ]
+                  },
+                  {
+                    "group": "Receivables - Refunds",
+                    "pages": [
+                      "api-reference/banking-api/documents/receivables-refunds/list-receivable-refunds",
+                      "api-reference/banking-api/documents/receivables-refunds/get-receivable-refund",
+                      "api-reference/banking-api/documents/receivables-refunds/search-receivable-refunds"
+                    ]
                   },
                   {
                     "group": "Payments",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/documents/payments/list-payments",
+                      "api-reference/banking-api/documents/payments/get-payment",
+                      "api-reference/banking-api/documents/payments/search-payments"
+                    ]
+                  },
+                  {
+                    "group": "Payments - Refunds",
+                    "pages": [
+                      "api-reference/banking-api/documents/payments-refunds/list-payment-refunds",
+                      "api-reference/banking-api/documents/payments-refunds/get-payment-refund",
+                      "api-reference/banking-api/documents/payments-refunds/search-payment-refunds"
+                    ]
                   },
                   {
                     "group": "Transfers",
-                    "pages": []
+                    "pages": [
+                      "api-reference/banking-api/documents/transfers/list-transfers",
+                      "api-reference/banking-api/documents/transfers/get-transfer"
+                    ]
+                  },
+                  {
+                    "group": "Metrics",
+                    "pages": [
+                      "api-reference/banking-api/documents/metrics/get-bank-account-metrics"
+                    ]
                   }
                 ]
               },
@@ -290,6 +323,21 @@
                 "group": "Institutions",
                 "pages": [
                   "api-reference/banking-api/institutions/list"
+                ]
+              },
+              {
+                "group": "Developers",
+                "pages": [
+                  {
+                    "group": "Webhooks",
+                    "pages": [
+                      "api-reference/banking-api/developers/webhooks/list-webhooks",
+                      "api-reference/banking-api/developers/webhooks/get-webhook",
+                      "api-reference/banking-api/developers/webhooks/create-webhook",
+                      "api-reference/banking-api/developers/webhooks/delete-webhook",
+                      "api-reference/banking-api/developers/webhooks/update-webhook"
+                    ]
+                  }
                 ]
               }
             ]
