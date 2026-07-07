@@ -84,6 +84,7 @@
             "pages": [
               "guides/sandbox_account",
               "guides/creating-your-first-api-credential",
+              "guides/creating-your-first-webhook",
               "guides/qr-codes",
               "guides/using-pix-key",
               "guides/using-pix-automatic",
