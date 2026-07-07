@@ -130,8 +130,25 @@
                 ]
               },
               {
-                "group": "Bank accounts",
-                "pages": []
+                "group": "Bank Accounts",
+                "pages": [
+                  "api-reference/banking-api/bank-accounts/list-bank-accounts",
+                  "api-reference/banking-api/bank-accounts/get-bank-account",
+                  "api-reference/banking-api/bank-accounts/create-bank-account",
+                  "api-reference/banking-api/bank-accounts/list-bank-account-transactions",
+                  "api-reference/banking-api/bank-accounts/get-bank-account-balances"
+                ]
+              },
+              {
+                "group": "Virtual Accounts",
+                "pages": [
+                  "api-reference/banking-api/virtual-accounts/list-virtual-accounts",
+                  "api-reference/banking-api/virtual-accounts/get-virtual-account",
+                  "api-reference/banking-api/virtual-accounts/create-virtual-account",
+                  "api-reference/banking-api/virtual-accounts/update-virtual-account",
+                  "api-reference/banking-api/virtual-accounts/get-virtual-account-balances",
+                  "api-reference/banking-api/virtual-accounts/list-virtual-account-transactions"
+                ]
               },
               {
                 "group": "Receivables",
