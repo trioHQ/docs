@@ -6722,6 +6722,7 @@
             "virtual_account_id": "019f2433-fe07-c3a0-0cd9-d48cb9882b4f",
             "company_id": "019f2433-fe07-209c-d0ff-2586f01636c4",
             "automatic_schedule": false,
+            "automated_attempt_retry": true,
             "end_date": "2026-07-02T19:00:14.983686Z",
             "status": "approved",
             "next_working_day": true,
