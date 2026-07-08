@@ -361,6 +361,10 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "User Manual",
+        "groups": []
       }
     ]
   },

@@ -200,7 +200,8 @@ Para assinaturas em que o valor muda a cada ciclo (consumo, uso, parcelas variá
   },
   "options": {
     "authorization_type": "qrcode",
-    "automatic_schedule": false
+    "automatic_schedule": false,
+    "automated_attempt_retry": true
   }
 }
 ```
@@ -244,13 +245,14 @@ Ofereça ao pagador o `hash` em "Copia e Cola" e/ou renderize a imagem do QR Cod
 
 O bloco `options` define o comportamento da recorrência ao longo do tempo. Todos os campos são opcionais e têm valores padrão.
 
-| Campo                       | Padrão   | Descrição                                                                                                                        |
-| --------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `authorization_type`        | `qrcode` | `qrcode` gera QR Code; `app` envia a solicitação direto ao app do pagador (exige `counterparty.bank_account`).                   |
-| `automatic_schedule`        | `true`   | Gestão automática das cobranças. Se `false`, cada cobrança precisa ser criada e agendada manualmente.                            |
-| `retry_policy`              | `3r_7d`  | Política de retentativa quando a cobrança falha. `3r_7d`: 3 retentativas em 7 dias, em dias alternados. `none`: sem retentativa. |
-| `next_working_day`          | `false`  | Se `true`, não cobra em feriados; transfere a cobrança para o próximo dia útil do pagador.                                       |
-| `qrcode_expiration_seconds` | `86400`  | Tempo de expiração (em segundos) do QR Code dinâmico. Ignorado para QR Code estático.                                            |
+| Campo | Padrão | Descrição |
+| ------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `authorization_type` | `qrcode` | `qrcode` gera um QR Code; `app` envia a solicitação diretamente para o aplicativo do pagador (exige `counterparty.bank_account`). |
+| `automatic_schedule` | `true` | Gestão automática das cobranças. Se `false`, cada cobrança precisa ser criada e agendada manualmente. |
+| `automated_attempt_retry` | `true` | Define quem gerencia as retentativas em caso de falha no pagamento. Se `true`, a Trio gerencia automaticamente as retentativas. Se `false`, elas ficam sob responsabilidade do cliente. |
+| `retry_policy` | `3r_7d` | Política de retentativa quando a cobrança falha. `3r_7d`: 3 retentativas em 7 dias, em dias alternados. `none`: sem retentativa. |
+| `next_working_day` | `false` | Se `true`, não realiza cobranças em feriados, transferindo a cobrança para o próximo dia útil do pagador. |
+| `qrcode_expiration_seconds` | `86400` | Tempo de expiração (em segundos) do QR Code dinâmico. Ignorado para QR Code estático. |
 
 #### Gestão de cobrança automática
 
@@ -258,14 +260,16 @@ Com `automatic_schedule: true` (padrão), a Trio cria e agenda automaticamente c
 
 Com `automatic_schedule: false` (gestão manual), você é responsável por criar e agendar cada cobrança a cada ciclo. Esse modo é necessário, por exemplo, quando o valor variável só é conhecido perto da data de cobrança. Veja a seção [Gestão manual de cobranças](#).
 
-#### Retentativa e o cliente que não paga
+#### Retentativas e clientes que não pagam
 
-A `retry_policy` controla o que acontece quando uma cobrança não é liquidada:
+A `retry_policy` define o que acontece quando uma cobrança não é liquidada.
 
-* **`3r_7d`** — a cobrança é retentada 3 vezes ao longo de 7 dias, em dias alternados. Cada retentativa gera uma nova *tentativa* (`attempt`). Se nenhuma tentativa for liquidada, a cobrança vai para um status final de falha/expiração.
-* **`none`** — não há retentativa. Uma tentativa falha encerra a cobrança.
+Se `automated_attempt_retry` for enviado como `true`, a **Trio** será responsável por criar e gerenciar automaticamente essas retentativas. Caso seja enviado como `false`, o gerenciamento das retentativas fica sob responsabilidade da sua aplicação.
 
-> **Cancelar a recorrência quando o cliente não paga.** A política de retentativa atua no nível da *cobrança*, não da recorrência. Se a sua regra de negócio é encerrar a assinatura após uma cobrança não paga, monitore os webhooks de tentativa (`recurrence_collection_attempt` com tipo `failed`/`expired`) e/ou de cobrança (`recurrence_collection` com tipo `expired`/`rejected`) e, ao detectar o esgotamento das retentativas, chame o [cancelamento da recorrência](#). Assim você implementa o "cancelamento automático por inadimplência" de forma controlada pela sua aplicação.
+* **`3r_7d`** — a cobrança é retentada 3 vezes ao longo de 7 dias, em dias alternados. Cada retentativa gera uma nova *attempt*. Se nenhuma tentativa for liquidada, a cobrança vai para um status final de falha ou expiração.
+* **`none`** — não há retentativas. Uma tentativa com falha encerra a cobrança.
+
+> **Cancelar a recorrência quando o cliente não paga.** A política de retentativas atua no nível da *cobrança*, não da recorrência. Se a sua regra de negócio é encerrar a assinatura após uma cobrança não paga, monitore os webhooks de *attempt* (`recurrence_collection_attempt` com tipo `failed` ou `expired`) e/ou de cobrança (`recurrence_collection` com tipo `expired` ou `rejected`). Ao detectar o esgotamento das retentativas, chame o endpoint de cancelamento da recorrência para implementar o cancelamento automático por inadimplência.
 
 ***
 

@@ -3923,6 +3923,12 @@
                 "nullable": true,
                 "type": "boolean"
               },
+              "automated_attempt_retry": {
+                "default": true,
+                "description": "Automatically manages retry attempts when a payment fails. If set to true, Trio creates and manages retries according to the configured retry_policy. If false, retry attempts must be created and managed by the client application.",
+                "nullable": true,
+                "type": "boolean"
+              },
               "next_working_day": {
                 "default": false,
                 "description": "Do not bill on Holidays, bill on the counterparty's next working day",
