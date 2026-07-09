@@ -6,14 +6,15 @@ Considering that a Pix key represents a bank account within the Pix ecosystem, t
 
 The only information required from the customer is their Pix key. Currently, we support 5 different key types, and we use **RegEx** validation to verify the format.
 
+> **Note:** As of July 01, 2026, the **CNPJ** may contain alphanumeric characters. Our validation supports both the legacy numeric format and the new alphanumeric format defined by the Brazilian Federal Revenue Service.
+
 | Type | Regex | Example |
 | --- | --- | --- |
 | Email | `^[a-z0-9.!#$%&'*+/=?^_{}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*$` | `johndoe@example.com` |
 | Phone Number | `^\+[1-9][0-9]\d{1,14}$` | `+5510998765432` |
 | CPF (Tax Number) | `^[0-9]{11}$` | `12345678901` |
-| CNPJ (Tax Number) | `^[0-9]{14}$` | `12345678901234` |
+| CNPJ (Tax Number) | `^[A-Z0-9]{12}[0-9]{2}$` | `AB12CD3400EF95` *(also accepts `12345678901234`)* |
 | Random Key | `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$` | `123e4567-e89b-12d3-a456-426655440000` |
-
 ## Generating a New Payout
 
 When creating a new payout, pay attention to the following parameters (`*` indicates required fields):
