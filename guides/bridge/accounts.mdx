@@ -1,0 +1,252 @@
+The Accounts section displays financial operations. It includes endpoints for:
+
+- Accounts list including all your accounts details, including UID, account number and type.
+- Real-Time Balance Checking: Instantly view the current account balance to ensure sufficient funds for transactions.
+- Transaction History Review: Examine past account activities with detailed insights into credits and debits.
+- Operational Summary Reporting: Summarize transactional data over a specific time frame for auditing and performance analysis.
+
+These tools enable effective financial monitoring, detailed transaction auditing, and periodic cash flow evaluations.
+
+### Multiple Bank Accounts and Information Recovery
+
+Paybrokers lets you use multiple bank accounts with one API key. Settings are managed only in the admin panel, such as:
+
+- The creation and linking of new bank accounts to an existing API key.
+- The selection of which account will be used to process the requested transactions.
+
+### Account API
+
+Allows access to existing bank account information and balance queries by period and account category. (Reference https://dev.paybrokers.com/docs/accounts-api)
+
+### Payment API
+
+Allows payment requests. The access scope is limited to the account linked to the API key issued via admin portal. However, payments may be executed through a second transactional bank account configured for redundancy purposes. (Reference https://dev.paybrokers.com/docs/payments)
+
+### Transaction API
+
+This API segment allows querying transaction request information.
+
+**View Transaction**\
+This endpoint returns transaction details using the Paybrokers ID as the search parameter. The query is performed across all transactional bank accounts associated with the key and capable of operating.
+
+This endpoint must be used for recovering the status of existing transactions, be it ongoing or in any final status. (Reference https://dev.paybrokers.com/reference/view-transaction)
+
+**List Transactions**\
+This endpoint retrieves transactions based on multiple criteria, such as date range and Platform ID as search parameters.
+
+This endpoint can be used in situations where the Paybrokers’ transaction id is unknown (eg. request timeout or HTTP response errors).
+
+> 🚧 Before invoking this endpoint
+> 
+> 
+> Due to data processing constraints, we recommend introducing a short delay (5+ minutes) before invoking this endpoint, based on the transaction timestamp. (Reference https://dev.paybrokers.com/reference/list-transactions)
+> 
+
+> ❗️ IMPORTANT
+> 
+> 
+> Currently, the endpoint searches only within the bank account for which the API key was created. A future update will enable cross-account queries across all transactional accounts, better aligning with the concept of multiple accounts.
+> 
+
+# Check Balance
+
+**API REFERENCE**
+
+This endpoint allows merchants to retrieve both the closing balance for a specific date and the current balance of their account. It provides the final account balance for the selected day and the real-time balance as of the query moment.
+
+---
+
+## Request Endpoint
+
+All methods use the same endpoint, differing only in their request payload structure
+
+`GET /partners-int/accounts/balance`
+
+## Path Parameters
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| accountUid (optional) | string (UUID) | The specific account ID to retrieve the balance for (optional). If omitted, the balance of the authenticated account will be returned. |
+
+## Query Parameters
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| filterDate | string (ISO8601) | The specific date for which the closing balance is requested (optional). |
+
+## Check Balance for a Specific Account
+
+**To retrieve the balance of a specific account**, include the **accountUid** parameter in your GET request. If the accountId is provided, the balance returned will correspond to the specified account, provided the user has the necessary access permissions.
+
+GET \{\{baseUrl}}/partners-int/accounts/balance/1ac29487-1a20-455d-8a47-1b6c0752ae98
+
+## Check current Balance
+
+**To retrieve the current balance**, send a GET request to the endpoint without specifying the filterDate parameter. The current balance reflects the real-time amount available in the account at the moment of the query.
+
+`GET {{baseUrl}}/partners-int/accounts/balance`
+
+## Check Balance for an specific Date
+
+**To retrieve the closing balance for a specific date**, include the filterDate parameter in your GET request. The filterDate parameter must be in ISO 8601 format (UTC timezone).
+
+> 📘 Attention
+> 
+> 
+> Always use the **zeroed time (00:00:00.000Z)** for the desired date. If a client wants to check the closing balance for January 1, 2025, they must use 2025-01-01T00:00:00.000Z.
+> 
+- Closing balance for January 1, 2025
+
+`GET {{baseUrl}}/partners-int/accounts/balance?filterDate=2025-01-01T00:00:00:000Z`
+
+- Closing balance for January 2, 2025:
+
+`GET {{baseUrl}}/partners-int/accounts/balance?filterDate=2025-01-02T00:00:00.000Z`
+
+- Closing balance for January 3, 2025:
+
+`GET {{baseUrl}}/partners-int/accounts/balance?filterDate=2025-01-03T00:00:00.000Z`
+
+---
+
+### Success Response Fields
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| statusCode | string | Status of the request, e.g., "Done". |
+| data | object | Contains details of the account balance. |
+| data.accountActualBalance | string | Contain the available value in your account. |
+
+# Get Accounts
+
+**API-REFERENCE**
+
+This service is needed so you can retrieve all of your account information.
+
+---
+
+## Account Types
+
+- **Proprietary**
+
+A deposit or prepaid payment account owned and freely operated by the betting operator. It is used for operational expenses and liquidity management.
+
+- **Transaction**
+
+A payment processing account used by operators to receive funds from customers, essential for managing the financial flow of bets.
+
+- **Integration**
+
+A bank provider account also used for transactions, designed to ensure redundancy in the integration.
+
+## Account Categories
+
+- **ProprietaryAccount**
+
+One **ProprietaryAccount** has the Account Type of **Proprietary**
+
+- **TransactionalAccount**
+
+One **TransactionalAccount** can have the Account Type of **Transaction** or **Integration**
+
+---
+
+## Responses
+
+```json
+{
+    "statusCode": "Done",
+    "data": [
+        {
+            "uid": "b773c60a-0550-431e-94a7-24a762594e03",
+            "accountName": "1",
+            "accountNumber": "52892351",
+            "accountType": "Transaction",
+            "category": "TransactionalAccount",
+            "accountState": "Active"
+        },
+        {
+            "uid": "99b935be-201d-4fad-bbc6-8a48af01eb2e",
+            "accountName": "2",
+            "accountNumber": "65090949",
+            "accountType": "Proprietary",
+            "category": "ProprietaryAccount",
+            "accountState": "Active"
+        },
+        {
+            "uid": "99b935be-201d-4fad-bbc6-8a48af01eb2e",
+            "accountName": "2",
+            "accountNumber": "65090949",
+            "accountType": "Integration",
+            "category": "TransactionalAccount",
+            "accountState": "Active"
+        }
+    ]
+}
+```
+
+```json
+{
+    "statusCode": "Error",
+    "error": {
+        "name": "AuthenticationError",
+        "message": "The authorization token is invalid",
+        "details": {
+            "reason": "AuthenticationTokenInvalid"
+        }
+    }
+}
+```
+
+# Check Overall Balance
+
+**API REFERENCE**
+
+The Overall Balance endpoint returns a **consolidated view** of the current and past balances for all accounts that the authenticated user can access. It shows each individual account’s balances as well as an aggregated total by category.
+
+## Request Endpoint
+
+All methods use the same endpoint, differing only in their request payload structure
+
+`GET /partners-int/accounts/balance/overall`
+
+## Query Parameters
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| filterDate (optional) | string (ISO8601) | **Used to retrieve the closing (final) balance as of the specified date/time**. If omitted, returns the current real-time balances. |
+
+<br />
+
+## Retrieving the Overall (Current) Balance
+
+If filterDate parameter is not included, the endpoint responds with the current balances.
+
+`GET {{baseUrl}}/partners-int/accounts/balance/overall`
+
+## Retrieving the Overall Balance on a Specific Date
+
+This request returns the balances as of the **specified date** (historical/closing balance).
+
+`GET {{baseUrl}}/partners-int/accounts/balance/overall?filterDate=2025-03-03T03:00:00.000Z`
+
+<br />
+
+## Success response Fields
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| statusCode | string | Indicates the general status of the request (e.g., "Done"). |
+| data | object | Contains both the list of individual accounts and the overall, aggregated balances. |
+| data.accounts | array of objects | Lists each account’s unique information and balances. |
+| accounts\[n].uid | string (UUID) | Unique identifier of the account. |
+| accounts\[n].accountActualBalance | string (decimal) | Current (or specified date’s) available balance for the account. |
+| accounts\[n].accountTotalBalance | string (decimal) | Total (or specified date’s) balance for the account, which may include pending amounts depending on the business rules. |
+| accounts\[n].category | string | Account category, e.g. "TransactionalAccount", "ProprietaryAccount", etc. |
+| accounts\[n].institution | string | Institution associated with this account, e.g. "PayBrokers", "TRIO". |
+| data.overall | object | Aggregated balances by category. |
+| overall.\<Category>.actualBalance | string (decimal) | Sum of the actual balances for all accounts in this category. |
+| overall.\<Category>.accountTotalBalance | string (decimal) | Sum of the total balances for all accounts in this category. |
+
+> If you want to learn more about account categories, check Get accounts
+>

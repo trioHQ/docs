@@ -1,0 +1,197 @@
+The **Create PIX Payment** endpoint is a robust tool for businesses to automate and simplify cash-in transactions. Here's an overview of how it operates:
+
+- **Send Payment Information:**
+    - Include details such as the transaction amount, payer information, and a description of the order.
+    - Provide the necessary webhook URL to receive notifications about the payment status.
+    - **Multiple Bank Account Validation:** You can optionally provide multiple bank accounts for validation (up to 3). You can check the example in the Request Endpoint section below.
+- **Generate Dynamic QR Code:**
+    - Once the request is processed, the system generates a unique QR Code linked to the payment.
+    - This QR Code can be displayed to the payer for scanning and completing the payment directly from their bank account.
+- **Receive Real-Time Updates:**
+    - After the payment is completed, a webhook notification is sent to your specified URL.
+    - The notification includes the transaction ID, status (e.g., "PAID"), and other relevant details for tracking and reconciliation.
+
+Let’s explore how to seamlessly integrate this endpoint into your organization.
+
+---
+
+## Request Endpoint
+
+First, let’s start by using this endpoint.
+
+`POST /partners-int/accounts/pix/cashin`
+
+---
+
+> ❗️ Attention:
+> 
+> 
+> For scenarios involving the **Regulated Market** based on recent legislation, it is recommended to include the `payment.payer.account` details.
+> 
+> ### Please check https://dev.paybrokers.com/docs/bank-details for more details
+> 
+
+---
+
+### Request Body
+
+By including these parameters in the request body, it will look like this:
+
+> ⚠️ Attention:
+> 
+> - **Payer's Name\[ WILL BE REQUIRED SOON. If not informed, will assume value "*"]\[ WILL BE REQUIRED SOON. If not informed, will assume value "*" ]**
+> - **You will need to save our Transaction ID (id) in your database, because after the end user made the PIX payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.**
+
+```json
+{
+  "transaction": {
+    "orderId": "<string>",
+    "orderDescription": "<string>"
+  },
+  "payment": {
+    "value": {
+      "original": "<string>",
+    },
+    "payer": {
+      "name": "<string>",
+      "cpf": "<string>",
+      "account": {
+        "ispb": "<string>",
+        "branch": "<string>",
+        "number": "<string>",
+        "digit":"<string>"
+      }
+    }
+  },
+  "webhook": {
+    "url": "<string>",
+    "customHeaderName": "<string>",
+    "customHeaderValue": "<string>"
+  }
+}
+```
+
+```json
+{
+  "transaction": {
+    "orderId": "<string>",
+    "orderDescription": "<string>"
+  },
+  "payment": {
+    "value": {
+      "original": "<string>",
+    },
+    "payer": {
+      "name": "<string>",
+      "cpf": "<string>",
+      "validationAccounts": [
+        {
+          "ispb": "40820176",
+          "branch": "0001",
+          "number": "85793450"
+        },
+        {
+          "ispb": "40820176",
+          "branch": "0001",
+          "number": "85793451"
+        },
+        {
+          "ispb": "40820176",
+          "branch": "0001",
+          "number": "85793452"
+        },
+      ]
+    }
+  },
+  "webhook": {
+    "url": "<string>",
+    "customHeaderName": "<string>",
+    "customHeaderValue": "<string>"
+  }
+}
+```
+
+> ⚠️ Important:
+> 
+> - You can now include multiple bank accounts for validation by providing an array named validationAccounts in the request body. This array accepts up to **3 bank account objects.** The system will validate the deposit using the accounts in the order provided. If more than 3 accounts are supplied, the endpoint will reject the request with a validation error.
+> - When a request includes the account object with bank **account** details, you cannot include **validationAccounts** or vice versa.
+
+<br />
+
+## Success Response Fields
+
+| **Field** | **Type** | **Description** |
+| --- | --- | --- |
+| `statusCode` | string | Status of the request (e.g., "Incomplete"). |
+| `data` | object | Contains details of the transaction and payment. |
+| `data.transaction` | object | Object holding transaction information. |
+| `data.transaction.id` | string | Unique identifier for the transaction. |
+| `data.transaction.state` | string | Current state of the transaction (e.g., "Cancelled"). |
+| `data.transaction.date` | date | Date of the transaction. |
+| `data.transaction.orderId` | string | Client-defined order identifier. |
+| `data.transaction.amount` | string | Amount involved in the transaction. |
+| `data.payment` | object | Object holding payment details. |
+| `data.payment.qrCode` | string | A code tailored for PIX Copy and Paste feature on bank apps, facilitating the seamless execution of the payment. |
+| `data.payment.qrCodeLocation` | string | The URL for a base64 string of graphical QR Code to be scanned using PIX bank apps, enabling the payment's initiation. |
+| `data.transaction.institution` | string | Bank institution that has made the transaction |
+| `data.transaction.accountNumber` | string | Bank account that has made the transaction |
+| `data.transaction.ispb` | string | ISPB of data.transaction.institution |
+
+---
+
+## Transaction Lifecycle
+
+After completing your transaction, you can identify a field called **`state`** in the payload (or in the table above), which represents the initial state of the transaction's lifecycle. For a **`Cash In`** request, there are five possible states, as described below:
+
+- **Registered**: The initial state of the transaction, indicating that it has been created and is awaiting payment.
+- **Completed**: The final state of the transaction, indicating that the payment has been successfully completed.
+- **Error**: The state reached when a predictable error occurs during the transaction process.
+- **Reversed**: Indicates that the transaction was not completed and was returned by the receiving bank.
+- **Cancelled**: Indicates that the transaction was not completed due to factors such as timeout.
+
+---
+
+## Webhook Returned Parameters
+
+After the user makes the payment via PIX, the system sends a webhook notification to the configured URL (`webhook_url`provided when the transaction was created). This webhook contains information about the transaction status, allowing the client system to track and update the payment status accurately.
+
+> 📘 Note:
+> 
+> 
+> Learn more about webhook parameters in the Webhook Event Verification guide.
+> 
+
+The webhook returned from the status change will follow this format.
+
+```json
+{
+  "id": "<string>",
+  "transactionState": "Completed",
+  "transactionDate": "<date>",
+  "transactionAmount": "<value>",
+  "transactionType": "<string>",
+  "transactionPaymentType": "<string>",
+  "transactionOrderId": "",
+  "transactionOrderDescription": "<string>",
+  "transactionCharges": "<value>",
+  "webhookUrl": "<string>",
+  "transactionReceipt": "<string>",
+  "transactionReceiptDate": "<date>",
+  "transactionReceiptVoucher": "<string>",
+  "stateRegisteredDate": "<date>",
+  "stateCompletedDate": "<date>",
+  "payer": {
+    "name": "<string>",
+    "taxNumber": "<string>",
+    "bankCode": "<string>",
+    "accountAgency": "<string>",
+    "accountNumber": "<string>",
+    "accountDigit": "<string>",
+    "accountType" : "<string>"
+  }
+}
+```
+
+> The accountType attribute respects the same enums used for requests:
+> 
+> - CheckingsAccount, SavingsAccount, SalaryAccount, PaymentAccount

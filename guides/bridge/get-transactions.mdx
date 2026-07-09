@@ -1,0 +1,124 @@
+The Transaction Requests endpoint allows retrieving transaction data. This endpoint is particularly useful when you need to validate the status of one or more transactions or locate a specific one. Its usage is straightforward, as it does not require a Request Body. There are two main use cases:
+
+- To retrieve a single transaction using transactionId.
+- To retrieve multiple transactions using transactionOrderId and date filters.
+- To retrieve transactions from a specified or multiple accounts
+
+Let’s explore these functionalities in more detail:
+
+---
+
+## 1. Get a Single Transaction using transactionId
+
+This operation aims to fetch details about a specific transaction by using transactionId as a Path Variable in the following endpoint:
+
+---
+
+### Request Endpoint
+
+`GET {{baseUrl}}/partners-int/accounts/transactions/pix/:transactionId`
+
+---
+
+### Path Parameters
+
+As previously mentioned, this endpoint does not use a request body. Instead, it requires the transactionId as a Path Variable, as outlined below:
+
+| Parameter | Format | Description |
+| --- | --- | --- |
+| transactionId | string (UUID) | Identifier of the transaction to find |
+
+By executing this endpoint, you can view the details of a specific transaction.
+
+---
+
+## 2. Get Multiple Transactions using transactionOrderId and Date Filters
+
+This operation is intended to list all transactions associated with an orderId and within a specified date range. To perform this query, you will use Query Parameters.
+
+### Request Endpoint
+
+`GET {{baseUrl}}/partners-int/accounts/transactions/pix`
+
+---
+
+## 3. Retrieve transactions from a specific account (multi-account support)
+
+With the multi-account support (see more in Accounts), you can now specify the account parameter to filter transactions by a specific account. **If not provided, only transactions from the account associated with the current API Key will be returned.** You may pass:
+
+- a specific account UID (e.g. 1ac29487-1a20-455d-8a47-1b6c0752ae98), or
+- all to search across all accounts
+
+### Request Example
+
+```json
+curl --request GET \\
+     --url "<https://api.sandbox.paybrokers.com/v1/partners-int/accounts/transactions/pix?startDate=2025-03-22T00:00:00.000Z&endDate=2025-03-23T00:00:00.000Z&dataset.limit=50&dataset.offset=0&account=all>" \\
+     --header 'accept: application/json'
+```
+
+```json
+curl --request GET \\
+     --url "<https://api.sandbox.paybrokers.com/v1/partners-int/accounts/transactions/pix?startDate=2025-03-22T00:00:00.000Z&endDate=2025-03-23T00:00:00.000Z&account=1ac29487-1a20-455d-8a47-1b6c0752ae98>" \\
+     --header 'accept: application/json'
+```
+
+## Query Parameters
+
+Similar to the previous endpoint, this one does not require a request body. Instead, the filters are applied via Query Parameters. These parameters are as follows:
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `startDate` | string | The start date for filtering transactions (in ISO 8601 format, e.g., `2023-01-01T00:00:00Z`). |
+| `endDate` | string | The end date for filtering transactions (in ISO 8601 format, e.g., `2023-12-31T23:59:59Z`). |
+| `account` | string | Account identifier. Can be a specific account UID or the keyword `all`. |
+| `dataset.limit` | number | Maximum number of transactions to return in the response. |
+| `transactionOrderId` | string | Identifier for the transaction order to filter the results |
+| `dataset.offset` | number | Offset for pagination, indicating the starting point for the dataset. |
+
+---
+
+## Sucess Response Fields
+
+The responses for both cases contain a significant amount of data. To interpret them correctly, it is important to understand the meaning of each field. Refer to the table below for detailed field descriptions:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| statusCode | string | Status of the API response (e.g., "Done"). |
+| data.limit | number | Number of items per page. |
+| data.offset | number | Offset for pagination. |
+| data.total | number | Total number of results matching the filters. |
+| transaction.id | string (UUID) | Unique identifier of the transaction. |
+| transaction.orderId | string | ID of the order associated with the transaction. |
+| transaction.orderDescription | string | Description of the transaction order. |
+| transaction.date | string (ISO 8601) | Date and time when the transaction occurred. |
+| transaction.stateRegisteredDate | string (ISO 8601) | Timestamp when transaction was registered. |
+| transaction.stateCompletedDate | string (ISO 8601) | Timestamp when transaction was completed. |
+| transaction.stateCancelledDate | string (ISO 8601) | Timestamp when transaction was cancelled. |
+| transaction.stateRefundDate | string (ISO 8601) | Timestamp when transaction was refunded. |
+| transaction.stateReversedDate | string (ISO 8601) | Timestamp when transaction was reversed. |
+| transaction.stateErrorDate | string (ISO 8601) | Timestamp when transaction encountered an error. |
+| transaction.stateErrorCause | string | Description of the error cause. |
+| transaction.type | string | Type of transaction (e.g., Credit, Debit). |
+| transaction.paymentType | string | Method of payment (e.g., PIX). |
+| transaction.amount | string | Value of the transaction. |
+| transaction.refundsAmount | string | Amount refunded for the transaction. |
+| transaction.currency | string | Currency used (e.g., BRL). |
+| transaction.state | string | Status of the transaction (e.g., Completed, Registered). |
+| transaction.charges | string | Total charges applied. |
+| chargesObject.costValue | string | Base cost of the transaction. |
+| chargesObject.rateValue | string | Value applied as rate. |
+| chargesObject.rate | string | Rate percentage applied. |
+| transaction.receiptVoucher | string | Voucher or receipt reference. |
+| transaction.payer.name | string | Name of the payer. |
+| transaction.payer.taxNumber | string | Tax ID of the payer (CPF/CNPJ). |
+| account.accountNumber | string | Account number involved in the transaction. |
+| account.accountType | string | Type of account (e.g., Transaction, Integration). |
+| account.institution | string | Institution name. |
+| account.ispb | string | ISPB (Central Bank) identifier of the bank. |
+| payment.payer.name | string | Name of the payer in the payment section. |
+| payment.payer.cpf | string | CPF of the payer. |
+| payment.payer.cnpj | string | CNPJ of the payer (if applicable). |
+| payment.recipient.name | string | Name of the payment recipient. |
+| payment.recipient.cpf | string | CPF of the recipient. |
+| webhook.deliveryStatus | string | Status of the webhook delivery (e.g., Pending, Failed). |

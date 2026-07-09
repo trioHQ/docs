@@ -1,0 +1,229 @@
+The Cash Out endpoint facilitates secure and efficient PIX-based transfers, empowering businesses with seamless payment solutions for commissions, refunds, or other disbursements. This service offers flexibility and reliability by supporting the following methods:
+
+> 📘 This guide outlines the integration process for three cash-out solutions:
+> 
+> 1. **Withdraw via PIX Key**: Use a recipient's PIX key for straightforward and direct payments.
+> 2. **Withdraw via PIX Key and Bank Account Details**: Combine a PIX key with recipient bank account details for enhanced precision.
+> 3. **Withdraw via Bank Account Details**: Use only detailed bank account information to execute the transfer.
+
+---
+
+## Request Endpoint
+
+All methods use the same endpoint, differing only in their request payload structure
+
+`POST /partners-int/accounts/pix/cashout/`
+
+Regardless of the withdrawal method, the endpoint remains the same. However, the body structure varies as detailed below.
+
+> ⚠️ Attention:
+> 
+> - **Recipient's Name\[ WILL BE REQUIRED SOON. If not informed, will assume value "*"]\[ WILL BE REQUIRED SOON. If not informed, will assume value "*" ]**
+
+## 1. Create a Withdrawal Using Only a Bank Account
+
+### Request Body
+
+> ❗️ Account digit in Cash out's
+> 
+> 
+> The conversion of **cashout requests exclusively via bank account details mandatorily requires the account digit**. If the digit field is not provided, the operation will fail.
+> 
+> On the other hand, **for cashout requests made using a PIX key, the digit field is not necessary,** as the transaction is directly linked to the key registered in the banking system.
+> 
+
+Use this case when the only information available about the recipient is their bank account. In the PIX system, any bank account can receive a withdrawal through the payment system. Example:
+
+```json
+{
+  "payment": {
+    "value": "<string>",
+    "recipient": {
+      "name": "<string>",
+      "cpf": "<string>",
+      "account": {
+        "ispb": "<string>",
+        "branch": "<string>",
+        "number": "<string>",
+        "digit": "<string>",
+        "type": "<string>"
+      }
+    }
+  },
+  "transaction": {
+    "orderId": "<string>",
+    "orderDescription": "<string>"
+  },
+  "webhook": {
+    "url": "<string>",
+    "customHeaderName": "<string>",
+    "customHeaderValue": "<string>"
+  }
+}
+```
+
+<br />
+
+> 📘 Note about accounts
+> 
+> 1. **ispb** is an eight digits string that identifies each bank or financial institution by the Central Bank of Brazil.
+> 2. **branch** is a four digits number that identifies the branch of a financial institution.
+> 3. **number** is a unique identifier of the customer’s account within the branch. If needed, you may include the account digit as the last character in this field, or send it on its proper field.
+> 4. **digit** is a verification number used to ensure the accuracy of the account number. Despite not being mandatory in the API, it is mandatory for BACEN. Make sure to send it here or together as the last character of the number field.
+> 5. **type** is the recipient account type. It accepts the following types: "CheckingsAccount", "SavingsAccount", "SalaryAccount", "PaymentAccount".
+>     1. PaymentAccount (Conta Pagamento) is a type of account provided specially by Fintechs in Brazil.
+>     2. If no type is sent, we assume it as "CheckingsAccount"
+
+---
+
+## 2. Create a Withdrawal Using Only a PIX Key
+
+### Request body
+
+You can use this to request payments using a PIX key. Here's an example request body:
+
+```json
+{
+  "payment": {
+    "key": {
+      "value": "string",
+      "type": "<string>"
+    },
+    "value": "<string>",
+    "recipient": {
+      "name": "<string>",
+      "cpf": "<string>",
+    }
+  },
+  "transaction": {
+    "orderId": "<string>",
+    "orderDescription": "<string>"
+  },
+  "webhook": {
+    "url": "<string>",
+    "customHeaderName": "<string>",
+    "customHeaderValue": "<string>"
+  }
+}
+```
+
+---
+
+## 3. Create a Withdrawal Using a PIX Key and Bank Account
+
+### Request body
+
+Use this in cases where the owner of the PIX key needs to be validated. For instance, when the PIX key must be linked to a specific bank account for regulatory purposes. Example:
+
+```json
+{
+  "payment": {
+    "key": {
+      "value": "string",
+      "type": "<string>"
+    },
+    "value": "<string>",
+    "recipient": {
+      "name": "<string>",
+      "cpf": "<string>",
+      "account": {
+        "ispb": "<string>",
+        "branch": "<string>",
+        "number": "<string>",
+        "digit": "<string>",
+        "type": "<string>"
+      }
+    }
+  },
+  "transaction": {
+    "orderId": "<string>",
+    "orderDescription": "<string>"
+  },
+  "webhook": {
+    "url": "<string>",
+    "customHeaderName": "<string>",
+    "customHeaderValue": "<string>"
+  }
+}
+```
+
+<br />
+
+> ⚠️ Attention
+> 
+> 1. To save our Transaction ID in your database, because after the end user made the PIX payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.
+> 2. For scenarios involving the **Regulated Market** based on recent legislation, it is recommended to include the `payment.payer.account` details.
+>     
+>     ### Please check https://dev.paybrokers.com/docs/bank-details for more details
+>     
+
+---
+
+## Success Response Fields
+
+| **Field** | **Type** | **Description** |
+| --- | --- | --- |
+| `statusCode` | string | Status of the request (e.g., "Incomplete"). |
+| `data` | object | Contains details of the transaction. |
+| `data.transaction` | object | Object holding transaction information. |
+| `data.transaction.id` | string | Unique identifier for the transaction. |
+| `data.transaction.state` | string | Current state of the transaction (e.g., "Error"). |
+| `data.transaction.date` | date | Date of the transaction. |
+| `data.transaction.orderId` | string | Client-defined order identifier. |
+| `data.transaction.amount` | string | Amount involved in the transaction. |
+| `data.transaction.institution` | string | Bank institution that has made the transaction |
+| `data.transaction.accountNumber` | string | Bank account that has made the transaction |
+| `data.transaction.ispb` | string | ISPB of data.transaction.institution |
+
+---
+
+## Webhook Return
+
+After the user receives the funds via PIX, the system sends a webhook notification to the specified URL (provided as `webhook_url` during the transaction setup). This notification includes detailed information about the transaction status, enabling the client system to monitor and update the payment status efficiently and in real time.
+
+> 📘 Note:
+> 
+> 
+> Learn more about webhook parameters in the Webhook Event Verification guide.
+> 
+
+The webhook returned from the status change will follow this format.
+
+```json
+{
+  "id": "<string>",
+  "transactionState": "Completed",
+  "transactionDate": "<date>",
+  "transactionAmount": "<value>",
+  "transactionType": "<string>",
+  "transactionPaymentType": "<string>",
+  "transactionOrderId": "",
+  "transactionOrderDescription": "<string>",
+  "transactionCharges": "<value>",
+  "webhookUrl": "<string>",
+  "transactionReceipt": "<string>",
+  "transactionReceiptDate": "<date>",
+  "transactionReceiptVoucher": "<string>",
+  "stateRegisteredDate": "<date>",
+  "stateCompletedDate": "<date>",
+  "recipient": {
+    "name": "<string>",
+    "taxNumber": "<string>",
+    "bankCode": "<string>",
+    "accountAgency": "<string>",
+    "accountNumber": "<string>",
+    "accountDigit": "<string>",
+		"accountType": "<string>"
+  }
+}
+```
+
+In this object, a few considerations apply regarding the **recipient** Object:
+
+- **name**: the requester name
+- **TaxNumber**: the requester CPF or CNPJ.
+- **bankCode**: the bank ISPB;
+- **accountAgency**: the bank branch;
+- **accountNumber**: is the account number;
+- **accountDigit**: the account number verification digit.
+- **accountType**: the account type as one of CheckingsAccount, SavingsAccount, SalaryAccount, PaymentAccount.
