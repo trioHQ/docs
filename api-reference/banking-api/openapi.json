@@ -1600,7 +1600,7 @@
         "type": "object"
       },
       "Generate_pix_v2_create_params": {
-        "description": "Body params to generate a pix v2",
+        "description": "Body params to generate a Pix v2",
         "example": {
           "amount": 100,
           "description": "description",
@@ -1630,7 +1630,7 @@
             "type": "string"
           },
           "reference": {
-            "description": "Receiver pix key or receiver brcode",
+            "description": "Receiver Pix key or receiver brcode",
             "type": "string"
           },
           "reference_bank_accounts": {
@@ -2785,7 +2785,7 @@
         "type": "object"
       },
       "TransferResponse": {
-        "description": "Response schema for a single pix generation",
+        "description": "Response schema for a single Pix generation",
         "example": {
           "data": {
             "transfer_document_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
@@ -4969,7 +4969,7 @@
         "type": "object"
       },
       "DynamicQRCodeImageResponse": {
-        "description": "Image of a dynamic pix QRcode",
+        "description": "Image of a dynamic Pix QRcode",
         "example": {
           "data": {
             "image": "12389HV8AHRIKVHQ374HFULAGLE8FAH0H4F890QHO2HEFOA7EUG8FU"
@@ -6294,7 +6294,7 @@
         "description": "Body params to generate a transfer",
         "example": {
           "amount": 100,
-          "description": "description pix",
+          "description": "description Pix",
           "external_id": "external_id",
           "from_virtual_account_id": "1a760495-cb95-4023-96e8-0cff5776b010",
           "to_virtual_account_id": "1a760495-cb95-4023-96e8-0cff5776b010"
@@ -8511,7 +8511,7 @@
         "type": "object"
       },
       "Generate_pix_create_params": {
-        "description": "Body params to generate a pix",
+        "description": "Body params to generate a Pix",
         "example": {
           "amount": 100,
           "description": "description",
@@ -8587,7 +8587,7 @@
             "type": "object"
           },
           "pix_ref_id": {
-            "description": "Pix unique identifier from DICT. Must be informed with pix ref type is key or brcode",
+            "description": "Pix unique identifier from DICT. Must be informed with Pix ref type is key or brcode",
             "type": "string"
           },
           "pix_ref_type": {
@@ -8607,7 +8607,7 @@
           "pix_ref_type",
           "virtual_account_id"
         ],
-        "title": "Generate pix create params",
+        "title": "Generate Pix create params",
         "type": "object"
       },
       "ListCounterpartyResponse": {
@@ -9242,7 +9242,7 @@
         "type": "object"
       },
       "GeneratePixResponse": {
-        "description": "Response schema for a single pix generation",
+        "description": "Response schema for a single Pix generation",
         "example": {
           "data": {
             "payment_document_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
@@ -9870,7 +9870,7 @@
     "/banking/cashin/pix/keys/{id}/resend_token": {
       "post": {
         "callbacks": {},
-        "description": "Resend pix key confirmation token",
+        "description": "Resend Pix key confirmation token",
         "operationId": "TrioFoundationWeb.Banking.Cashin.KeyController.resend_token",
         "parameters": [
           {
@@ -9915,7 +9915,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Resend pix key confirmation token",
+        "summary": "Resend Pix key confirmation token",
         "tags": [
           "cashin"
         ]
@@ -11321,7 +11321,7 @@
     "/banking/cashout/pix": {
       "post": {
         "callbacks": {},
-        "description": "Generates a pix payment",
+        "description": "Generates a Pix payment",
         "operationId": "TrioFoundationWeb.Banking.Cashout.Pix.V1Controller.generate",
         "parameters": [],
         "requestBody": {
@@ -11377,7 +11377,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Generate a pix payment",
+        "summary": "Generate a Pix payment",
         "tags": [
           "cashout"
         ]
@@ -13122,7 +13122,7 @@
     "/banking/cashin/pix/qrcodes/{id}/image": {
       "get": {
         "callbacks": {},
-        "description": "Gets a dynamic pix QRCode image",
+        "description": "Gets a dynamic Pix QRCode image",
         "operationId": "TrioFoundationWeb.Banking.Cashin.DynamicBrcodeController.get_image",
         "parameters": [
           {
@@ -13177,7 +13177,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Get dynamic pix QRCode image",
+        "summary": "Get dynamic Pix QRCode image",
         "tags": [
           "Dynamic QR Codes"
         ]
@@ -13258,7 +13258,7 @@
       },
       "post": {
         "callbacks": {},
-        "description": "Creates a new pix key",
+        "description": "Creates a new Pix key",
         "operationId": "TrioFoundationWeb.Banking.Cashin.KeyController.create",
         "parameters": [],
         "requestBody": {
@@ -13304,7 +13304,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Creates a new pix key",
+        "summary": "Creates a new Pix key",
         "tags": [
           "cashin"
         ]
@@ -13796,7 +13796,7 @@
       },
       "put": {
         "callbacks": {},
-        "description": "Updates a dynamic pix QRCode",
+        "description": "Updates a dynamic Pix QRCode",
         "operationId": "TrioFoundationWeb.Banking.Cashin.DynamicBrcodeController.update",
         "parameters": [
           {
@@ -13852,7 +13852,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Update a dynamic pix QRCode",
+        "summary": "Update a dynamic Pix QRCode",
         "tags": [
           "Dynamic QR Codes"
         ]
@@ -14160,7 +14160,7 @@
     "/banking/cashin/pix/qrcodes": {
       "post": {
         "callbacks": {},
-        "description": "Creates a new dynamic pix QRCode",
+        "description": "Creates a new dynamic Pix QRCode",
         "operationId": "TrioFoundationWeb.Banking.Cashin.DynamicBrcodeController.create",
         "parameters": [],
         "requestBody": {
@@ -14206,7 +14206,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Create a new dynamic pix QRCode",
+        "summary": "Create a new dynamic Pix QRCode",
         "tags": [
           "Dynamic QR Codes"
         ]
@@ -16897,7 +16897,7 @@
     "/banking/cashout/pix/v2": {
       "post": {
         "callbacks": {},
-        "description": "Generates a pix v2",
+        "description": "Generates a Pix v2",
         "operationId": "TrioFoundationWeb.Banking.Cashout.Pix.V2Controller.generate",
         "parameters": [],
         "requestBody": {
@@ -16908,7 +16908,7 @@
               }
             }
           },
-          "description": "The generation pix v2 attributes",
+          "description": "The generation Pix v2 attributes",
           "required": true
         },
         "responses": {
@@ -16953,7 +16953,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Generates a pix v2",
+        "summary": "Generates a Pix v2",
         "tags": [
           "cashout"
         ]
@@ -17390,7 +17390,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Confirm pix key",
+        "summary": "Confirm Pix key",
         "tags": [
           "cashin"
         ]
@@ -17825,7 +17825,7 @@
     "/banking/cashin/pix/keys/{id}/cancel": {
       "post": {
         "callbacks": {},
-        "description": "Cancel pix key",
+        "description": "Cancel Pix key",
         "operationId": "TrioFoundationWeb.Banking.Cashin.KeyController.cancel",
         "parameters": [
           {
@@ -17876,7 +17876,7 @@
             "description": "Internal server error"
           }
         },
-        "summary": "Cancel pix key",
+        "summary": "Cancel Pix key",
         "tags": [
           "cashin"
         ]

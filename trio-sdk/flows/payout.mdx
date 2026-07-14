@@ -5,7 +5,7 @@ In order to generate a payout through our Checkout SDK, you must create a Checko
 - **options**
   - `session_type`\*: session type, in this case **payout**.
   - `expiration_in_seconds`: integer value. If set, the Checkout session will only remain active up until this time. If not, the default time is 300 seconds (5 minutes).
-  - `allow_other_pix_key`: boolean value. If true, the Checkout will allow for a Pix Key different from the ones informed in the Session creation to be input. At the Cash-Out step, they will be verified and only successfully paid if the pix key belongs to the tax number initially provided. If not, the payment will fail.
+  - `allow_other_pix_key`: boolean value. If true, the Checkout will allow for a Pix Key different from the ones informed in the Session creation to be input. At the Cash-Out step, they will be verified and only successfully paid if the Pix key belongs to the tax number initially provided. If not, the payment will fail.
 - **transaction**
   - `tax_number`\*: the document/tax number (CPF/CNPJ) that represents the person you intend to pay money to.
   - `phone_number`: a Pix key in the format of a _phone number_ that you would like to allow the user to select. Optional.

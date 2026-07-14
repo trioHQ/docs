@@ -181,7 +181,7 @@
             "type": "string"
           },
           "allow_other_pix_key": {
-            "description": "Whether other PIX keys are allowed",
+            "description": "Whether other Pix keys are allowed",
             "type": "boolean"
           },
           "button_color": {
@@ -203,7 +203,7 @@
             "type": "string"
           },
           "pix_qrcode_id": {
-            "description": "PIX QR Code ID",
+            "description": "Pix QR Code ID",
             "format": "uuid",
             "nullable": true,
             "type": "string"
@@ -810,7 +810,7 @@
             "type": "string"
           },
           "method": {
-            "description": "PIX Method",
+            "description": "Pix Method",
             "type": "string"
           },
           "fee": {
@@ -1244,7 +1244,7 @@
           "options": {
             "properties": {
               "allow_other_pix_key": {
-                "description": "Whether other PIX keys are allowed",
+                "description": "Whether other Pix keys are allowed",
                 "type": "boolean"
               },
               "expiration_in_seconds": {

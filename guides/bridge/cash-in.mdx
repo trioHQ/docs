@@ -1,4 +1,4 @@
-The **Create PIX Payment** endpoint is a robust tool for businesses to automate and simplify cash-in transactions. Here's an overview of how it operates:
+The **Create Pix Payment** endpoint is a robust tool for businesses to automate and simplify cash-in transactions. Here's an overview of how it operates:
 
 - **Send Payment Information:**
     - Include details such as the transaction amount, payer information, and a description of the order.
@@ -40,7 +40,7 @@ By including these parameters in the request body, it will look like this:
 > ⚠️ Attention:
 > 
 > - **Payer's Name\[ WILL BE REQUIRED SOON. If not informed, will assume value "*"]\[ WILL BE REQUIRED SOON. If not informed, will assume value "*" ]**
-> - **You will need to save our Transaction ID (id) in your database, because after the end user made the PIX payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.**
+> - **You will need to save our Transaction ID (id) in your database, because after the end user made the Pix payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.**
 
 ```json
 {
@@ -131,8 +131,8 @@ By including these parameters in the request body, it will look like this:
 | `data.transaction.orderId` | string | Client-defined order identifier. |
 | `data.transaction.amount` | string | Amount involved in the transaction. |
 | `data.payment` | object | Object holding payment details. |
-| `data.payment.qrCode` | string | A code tailored for PIX Copy and Paste feature on bank apps, facilitating the seamless execution of the payment. |
-| `data.payment.qrCodeLocation` | string | The URL for a base64 string of graphical QR Code to be scanned using PIX bank apps, enabling the payment's initiation. |
+| `data.payment.qrCode` | string | A code tailored for Pix Copy and Paste feature on bank apps, facilitating the seamless execution of the payment. |
+| `data.payment.qrCodeLocation` | string | The URL for a base64 string of graphical QR Code to be scanned using Pix bank apps, enabling the payment's initiation. |
 | `data.transaction.institution` | string | Bank institution that has made the transaction |
 | `data.transaction.accountNumber` | string | Bank account that has made the transaction |
 | `data.transaction.ispb` | string | ISPB of data.transaction.institution |
@@ -153,7 +153,7 @@ After completing your transaction, you can identify a field called **`state`** i
 
 ## Webhook Returned Parameters
 
-After the user makes the payment via PIX, the system sends a webhook notification to the configured URL (`webhook_url`provided when the transaction was created). This webhook contains information about the transaction status, allowing the client system to track and update the payment status accurately.
+After the user makes the payment via Pix, the system sends a webhook notification to the configured URL (`webhook_url`provided when the transaction was created). This webhook contains information about the transaction status, allowing the client system to track and update the payment status accurately.
 
 > 📘 Note:
 > 

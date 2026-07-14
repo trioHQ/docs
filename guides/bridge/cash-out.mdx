@@ -1,9 +1,9 @@
-The Cash Out endpoint facilitates secure and efficient PIX-based transfers, empowering businesses with seamless payment solutions for commissions, refunds, or other disbursements. This service offers flexibility and reliability by supporting the following methods:
+The Cash Out endpoint facilitates secure and efficient Pix-based transfers, empowering businesses with seamless payment solutions for commissions, refunds, or other disbursements. This service offers flexibility and reliability by supporting the following methods:
 
 > 📘 This guide outlines the integration process for three cash-out solutions:
 > 
-> 1. **Withdraw via PIX Key**: Use a recipient's PIX key for straightforward and direct payments.
-> 2. **Withdraw via PIX Key and Bank Account Details**: Combine a PIX key with recipient bank account details for enhanced precision.
+> 1. **Withdraw via Pix Key**: Use a recipient's Pix key for straightforward and direct payments.
+> 2. **Withdraw via Pix Key and Bank Account Details**: Combine a Pix key with recipient bank account details for enhanced precision.
 > 3. **Withdraw via Bank Account Details**: Use only detailed bank account information to execute the transfer.
 
 ---
@@ -29,10 +29,10 @@ Regardless of the withdrawal method, the endpoint remains the same. However, the
 > 
 > The conversion of **cashout requests exclusively via bank account details mandatorily requires the account digit**. If the digit field is not provided, the operation will fail.
 > 
-> On the other hand, **for cashout requests made using a PIX key, the digit field is not necessary,** as the transaction is directly linked to the key registered in the banking system.
+> On the other hand, **for cashout requests made using a Pix key, the digit field is not necessary,** as the transaction is directly linked to the key registered in the banking system.
 > 
 
-Use this case when the only information available about the recipient is their bank account. In the PIX system, any bank account can receive a withdrawal through the payment system. Example:
+Use this case when the only information available about the recipient is their bank account. In the Pix system, any bank account can receive a withdrawal through the payment system. Example:
 
 ```json
 {
@@ -76,11 +76,11 @@ Use this case when the only information available about the recipient is their b
 
 ---
 
-## 2. Create a Withdrawal Using Only a PIX Key
+## 2. Create a Withdrawal Using Only a Pix Key
 
 ### Request body
 
-You can use this to request payments using a PIX key. Here's an example request body:
+You can use this to request payments using a Pix key. Here's an example request body:
 
 ```json
 {
@@ -109,11 +109,11 @@ You can use this to request payments using a PIX key. Here's an example request 
 
 ---
 
-## 3. Create a Withdrawal Using a PIX Key and Bank Account
+## 3. Create a Withdrawal Using a Pix Key and Bank Account
 
 ### Request body
 
-Use this in cases where the owner of the PIX key needs to be validated. For instance, when the PIX key must be linked to a specific bank account for regulatory purposes. Example:
+Use this in cases where the owner of the Pix key needs to be validated. For instance, when the Pix key must be linked to a specific bank account for regulatory purposes. Example:
 
 ```json
 {
@@ -151,7 +151,7 @@ Use this in cases where the owner of the PIX key needs to be validated. For inst
 
 > ⚠️ Attention
 > 
-> 1. To save our Transaction ID in your database, because after the end user made the PIX payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.
+> 1. To save our Transaction ID in your database, because after the end user made the Pix payment through the QRCode, we will send you a webhook callback notification to your URL address (webhook\_url), with our Transaction ID and status PAID in the content.
 > 2. For scenarios involving the **Regulated Market** based on recent legislation, it is recommended to include the `payment.payer.account` details.
 >     
 >     ### Please check https://dev.paybrokers.com/docs/bank-details for more details
@@ -179,7 +179,7 @@ Use this in cases where the owner of the PIX key needs to be validated. For inst
 
 ## Webhook Return
 
-After the user receives the funds via PIX, the system sends a webhook notification to the specified URL (provided as `webhook_url` during the transaction setup). This notification includes detailed information about the transaction status, enabling the client system to monitor and update the payment status efficiently and in real time.
+After the user receives the funds via Pix, the system sends a webhook notification to the specified URL (provided as `webhook_url` during the transaction setup). This notification includes detailed information about the transaction status, enabling the client system to monitor and update the payment status efficiently and in real time.
 
 > 📘 Note:
 > 
