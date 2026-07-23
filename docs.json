@@ -114,6 +114,7 @@
                 "group": "Entities",
                 "pages": [
                   "api-reference/banking-api/entities/list",
+                  "api-reference/banking-api/entities/create",
                   "api-reference/banking-api/entities/get"
                 ]
               },
@@ -361,6 +362,13 @@
         ]
       }
     ]
+  },
+  "api": {
+    "mdx": {
+      "auth": {
+        "method": "basic"
+      }
+    }
   },
   "logo": {
     "light": "/images/LOGO_TRIO-02.png",

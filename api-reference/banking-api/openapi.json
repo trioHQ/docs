@@ -3090,6 +3090,129 @@
         "title": "Entity list response",
         "type": "object"
       },
+      "Create_entity_contact_params": {
+        "description": "Contact information of the entity",
+        "properties": {
+          "email": {
+            "description": "Email of the entity",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Phone number of the entity",
+            "type": "string"
+          }
+        },
+        "title": "Create entity contact params",
+        "type": "object"
+      },
+      "Create_entity_address_params": {
+        "description": "Address information of the entity",
+        "properties": {
+          "street": {
+            "description": "Street of the entity",
+            "type": "string"
+          },
+          "city": {
+            "description": "City of the entity",
+            "type": "string"
+          },
+          "district": {
+            "description": "District of the entity",
+            "type": "string"
+          },
+          "zip_code": {
+            "description": "Zip code of the entity",
+            "type": "string"
+          },
+          "state": {
+            "description": "State of the entity",
+            "type": "string"
+          },
+          "number": {
+            "description": "Address number of the entity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "street",
+          "city",
+          "district",
+          "zip_code",
+          "state",
+          "number"
+        ],
+        "title": "Create entity address params",
+        "type": "object"
+      },
+      "Create_entity_business_params": {
+        "description": "Business information of the entity",
+        "properties": {
+          "average_ticket": {
+            "description": "Average ticket of the entity",
+            "type": "integer"
+          },
+          "anual_revenue": {
+            "description": "Anual revenue of the entity",
+            "type": "integer"
+          }
+        },
+        "title": "Create entity business params",
+        "type": "object"
+      },
+      "Create_entity_params": {
+        "description": "Body params create entity",
+        "example": {
+          "legal_name": "Entity Test LLC",
+          "tax_number": "56HSK1O0ATI054",
+          "contact": {
+            "email": "entity@gmail.com",
+            "phone": "+5541999381724"
+          },
+          "address": {
+            "street": "Avenida Paulista",
+            "city": "Sao Paulo",
+            "district": "Bela Vista",
+            "zip_code": "01311000",
+            "state": "SP",
+            "number": "1000"
+          },
+          "business_infos": {
+            "average_ticket": 10000,
+            "anual_revenue": 10000000
+          },
+          "trade_name": "Entity Test"
+        },
+        "properties": {
+          "legal_name": {
+            "description": "Legal name of the entity",
+            "type": "string"
+          },
+          "tax_number": {
+            "description": "Tax number of the entity",
+            "type": "string"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Create_entity_contact_params"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Create_entity_address_params"
+          },
+          "business_infos": {
+            "$ref": "#/components/schemas/Create_entity_business_params"
+          },
+          "trade_name": {
+            "description": "Trade name of the entity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tax_number",
+          "legal_name",
+          "address"
+        ],
+        "title": "Create entity params",
+        "type": "object"
+      },
       "Create_counterparty_params": {
         "description": "Body params create counterparty",
         "example": {
@@ -9672,7 +9795,7 @@
       }
     },
     "securitySchemes": {
-      "authorization": {
+      "basic": {
         "scheme": "basic",
         "type": "http"
       }
@@ -13041,6 +13164,59 @@
           }
         },
         "summary": "List entities",
+        "tags": [
+          "entities"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "description": "Create an entity",
+        "operationId": "TrioFoundationWeb.Banking.EntityController.create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Create_entity_params"
+              }
+            }
+          },
+          "description": "The create entity legal, contact, address, business, and trade name attributes",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entity_response"
+                }
+              }
+            },
+            "description": "Entity"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Create entity",
         "tags": [
           "entities"
         ]

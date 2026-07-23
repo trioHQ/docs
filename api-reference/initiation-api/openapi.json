@@ -1440,6 +1440,12 @@
         "title": "UUID",
         "type": "string"
       }
+    },
+    "securitySchemes": {
+      "basic": {
+        "scheme": "basic",
+        "type": "http"
+      }
     }
   },
   "info": {
