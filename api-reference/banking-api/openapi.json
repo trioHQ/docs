@@ -5935,7 +5935,7 @@
         "type": "object"
       },
       "Boleto_wallet_type": {
-        "description": "Boleto wallet type",
+        "description": "Boleto wallet type. See the [Wallet Type guide](/guides/boleto-types#wallet-type).",
         "enum": [
           "direct_electronic_partial_emission_booklet",
           "book_entry_electronic_booklet",
@@ -9387,7 +9387,7 @@
         "type": "object"
       },
       "Boleto_invoice_type": {
-        "description": "Boleto invoice type",
+        "description": "Boleto invoice type. See the [Invoice Type guide](/guides/boleto-types#invoice-type).",
         "enum": [
           "commercial_duplicate",
           "indicated_commercial_duplicate",

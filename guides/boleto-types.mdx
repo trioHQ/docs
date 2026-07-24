@@ -1,0 +1,106 @@
+---
+title: Invoice Type & Wallet Type
+---
+
+When issuing a boleto, there are two fields used to classify the payment:
+
+- **Invoice Type**: identifies **which document or obligation originated the charge**.
+- **Wallet Type**: identifies **how the boleto will be registered and managed by the bank**.
+
+Although both fields are used when issuing boletos, they serve different purposes.
+
+---
+
+# Invoice Type
+
+The **Invoice Type** represents the **type of document that originated the charge**.
+
+In other words, it describes **the reason the boleto was issued**, such as an invoice, tax invoice, school fee, or duplicate.
+
+## Most commonly used types
+
+| Value | Description |
+|--------|-------------|
+| `invoice` | Fatura |
+| `invoice_note` | Nota Fiscal |
+| `receipt` | Recibo |
+| `commercial_duplicate` | Duplicata Mercantil |
+| `service_duplicate` | Duplicata de Prestação de Serviços |
+| `promissory_note` | Nota Promissória |
+| `school_fee` | Mensalidade Escolar |
+| `condominium_fee` | Taxa de Condomínio |
+| `credit_card` | Fatura de Cartão de Crédito |
+| `others` | Outros |
+
+> If there is no specific type that matches your charge, use `others`.
+
+## All Invoice Types
+
+| Value | Description |
+|--------|-------------|
+| `commercial_duplicate` | Duplicata Mercantil |
+| `indicated_commercial_duplicate` | Duplicata Mercantil por Indicação |
+| `service_duplicate` | Duplicata de Prestação de Serviços |
+| `indicated_service_duplicate` | Duplicata de Serviços por Indicação |
+| `rural_duplicate` | Duplicata Rural |
+| `bill_of_exchange` | Letra de Câmbio |
+| `commercial_credit_note` | Nota de Crédito Comercial |
+| `export_credit_note` | Nota de Crédito à Exportação |
+| `industrial_credit_note` | Nota de Crédito Industrial |
+| `rural_credit_note` | Nota de Crédito Rural |
+| `promissory_note` | Nota Promissória |
+| `rural_promissory_note` | Nota Promissória Rural |
+| `triplicate_commercial` | Triplicata Mercantil |
+| `triplicate_service` | Triplicata de Serviços |
+| `insurance_note` | Nota de Seguro |
+| `receipt` | Recibo |
+| `invoice` | Fatura |
+| `debit_note` | Nota de Débito |
+| `insurance_policy` | Apólice de Seguro |
+| `school_fee` | Mensalidade Escolar |
+| `consortium_installment` | Parcela de Consórcio |
+| `invoice_note` | Nota Fiscal |
+| `debt_document` | Documento de Dívida |
+| `rural_product_certificate` | Cédula de Produto Rural (CPR) |
+| `warrant` | Warrant |
+| `state_active_debt` | Dívida Ativa Estadual |
+| `municipal_active_debt` | Dívida Ativa Municipal |
+| `federal_active_debt` | Dívida Ativa Federal |
+| `condominium_fee` | Taxa de Condomínio |
+| `credit_card` | Fatura de Cartão de Crédito |
+| `others` | Outros |
+
+---
+
+# Wallet Type
+
+The **Wallet Type** (Collection Wallet) defines **the operational method used by the bank to register, issue, and manage the boleto**.
+
+This field **does not change the information displayed to the payer**. It is only used to tell the bank how the boleto should be processed.
+
+## Default value
+
+By default, use the following value:
+
+| Value | Description |
+|--------|-------------|
+| `book_entry_electronic_bloquete` | Carteira Escritural Eletrônica (Bloquete) |
+
+## All Wallet Types
+
+| Value | Description |
+|--------|-------------|
+| `direct_electronic_partial_emission_booklet` | Cobrança Direta Eletrônica com emissão parcial de boleto |
+| `book_entry_electronic_booklet` | Carteira Escritural Eletrônica (Boleto) |
+| `direct_electronic_with_emission_booklet` | Cobrança Direta Eletrônica com emissão do boleto |
+| `direct_electronic_no_emission_block_client` | Cobrança Direta Eletrônica sem emissão (cliente emite) |
+| `direct_electronic_no_emission_block_us` | Cobrança Direta Eletrônica sem emissão (modalidade do banco) |
+| `book_entry_electronic_bloquete` | Carteira Escritural Eletrônica (Bloquete) |
+| `direct_electronic_no_emission_block_client2` | Cobrança Direta Eletrônica sem emissão (variante) |
+| `direct_electronic_partial_emission_bloquete` | Cobrança Direta Eletrônica com emissão parcial (Bloquete) |
+| `direct_electronic_with_emission_bloquete` | Cobrança Direta Eletrônica com emissão (Bloquete) |
+| `direct_electronic_no_emission_us_emission` | Cobrança Direta Eletrônica sem emissão (variante) |
+| `direct_electronic_our_number_emission_banks_bloquete` | Banco responsável pela geração do Nosso Número (Bloquete) |
+| `direct_electronic_our_number_emission_banks_booklet` | Banco responsável pela geração do Nosso Número (Boleto) |
+
+---

@@ -90,6 +90,7 @@
               "guides/using-pix-automatic",
               "guides/cash-in",
               "guides/cash-out",
+              "guides/boleto-types",
               "guides/webhook",
               "guides/simulating-deposit-success",
               "guides/simulating-deposit-failures"
