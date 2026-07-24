@@ -306,13 +306,13 @@
         "example": {
           "amount": 402,
           "counterparty": {
-            "address": "Rua Arapongas, 368",
-            "city": "Araucaria",
-            "district": "Capela Velha",
-            "name": "Luiz Paulo Pilegi de Almeida",
+            "address": "Rua sem nome, 100",
+            "city": "Curitiba",
+            "district": "Centro",
+            "name": "NOME DO PARTICIPANTE",
             "postal_code": "83706160",
             "state": "PR",
-            "tax_number": "09122209964"
+            "tax_number": "05964110000197"
           },
           "description": "Pago a trio.com.br",
           "due_detail": {
@@ -618,9 +618,9 @@
             "inserted_at": "2026-02-20T17:38:42.001475Z",
             "name": "Trio Pagamentos S.A.",
             "org_id": "1a760495-cb95-4023-96e8-0cff5776b011",
-            "payer_name": "09122219965",
-            "payer_tax_number": "Luiz Felipe de Carvalho",
-            "tax_number": "13712912235011",
+            "payer_name": "12345678910",
+            "payer_tax_number": "NOME DO PAYER",
+            "tax_number": "05964110000197",
             "timestamp": "2026-02-20T17:38:42.001475Z",
             "type": "utility",
             "updated_at": "2026-02-20T17:38:42.001475Z"
@@ -1355,9 +1355,9 @@
             "inserted_at": "2026-02-20T17:38:42.001475Z",
             "name": "Trio Pagamentos S.A.",
             "org_id": "1a760495-cb95-4023-96e8-0cff5776b011",
-            "payer_name": "09122219965",
-            "payer_tax_number": "Luiz Felipe de Carvalho",
-            "tax_number": "13712912235011",
+            "payer_name": "12345678910",
+            "payer_tax_number": "NOME DO PAYER",
+            "tax_number": "05964110000197",
             "timestamp": "2026-02-20T17:38:42.001475Z",
             "type": "tax",
             "updated_at": "2026-02-20T17:38:42.001475Z"
@@ -1605,8 +1605,8 @@
           "amount": 100,
           "description": "description",
           "external_id": "external_id 1",
-          "reference": "12345678920",
-          "reference_tax_number": "12345678920",
+          "reference": "05964110000197",
+          "reference_tax_number": "05964110000197",
           "type": "key",
           "virtual_account_id": "1a760495-cb95-4023-96e8-0cff5776b010"
         },
@@ -2515,7 +2515,7 @@
               }
             ],
             "name": "counterparty_name",
-            "tax_number": "45261517001"
+            "tax_number": "05964110000197"
           },
           "description": "description",
           "expiration_datetime": "2026-07-02T19:00:14.934158Z",
@@ -2813,9 +2813,9 @@
               "data": {
                 "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
                 "inserted_at": "2020-01-10T10:00:00Z",
-                "key": "32165998093",
+                "key": "05964110000197",
                 "status": "created",
-                "tax_number": "32165998093",
+                "tax_number": "05964110000197",
                 "type": "tax_number",
                 "updated_at": "2020-01-10T10:00:00Z",
                 "virtual_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
@@ -3802,7 +3802,7 @@
           "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
           "inserted_at": "2026-07-02T19:00:14.821966Z",
           "name": "participant_1",
-          "tax_number": "12345678910",
+          "tax_number": "05964110000197",
           "updated_at": "2026-07-02T19:00:14.821974Z"
         },
         "properties": {
@@ -3865,7 +3865,7 @@
               "number": "123456"
             },
             "name": "John Doe",
-            "tax_number": "80617053000195"
+            "tax_number": "05964110000197"
           },
           "description": "Monthly payment for services",
           "external_id": "external_id_123",
@@ -5152,7 +5152,7 @@
           "percentage": 2,
           "phone": "+5541999381724",
           "reference_number": 123456789,
-          "tax_number": "12345678901234"
+          "tax_number": "05964110000197"
         },
         "properties": {
           "accumulated_revenue_amount": {
@@ -5802,7 +5802,7 @@
               },
               "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
               "name": "John Doe",
-              "tax_number": "14633666800"
+              "tax_number": "05964110000197"
             },
             "expiration_datetime": "2020-01-10T10:00:00",
             "hash": "2941H29481H827GGY2G873GR1H893RG1793GFYI71G7",
@@ -6746,9 +6746,9 @@
             "inserted_at": "2026-02-20T17:38:42.001475Z",
             "name": "Trio Pagamentos S.A.",
             "org_id": "1a760495-cb95-4023-96e8-0cff5776b011",
-            "payer_name": "09122219965",
-            "payer_tax_number": "Luiz Felipe de Carvalho",
-            "tax_number": "13712912235011",
+            "payer_name": "12345678910",
+            "payer_tax_number": "NOME DO PAYER",
+            "tax_number": "05964110000197",
             "timestamp": "2026-02-20T17:38:42.001475Z",
             "type": "boleto",
             "updated_at": "2026-02-20T17:38:42.001475Z"
@@ -8016,7 +8016,7 @@
             "monthly_income": 10000000,
             "name": "Entity Test",
             "org_id": "019f2433-fd74-a253-0feb-f3262971e83e",
-            "tax_number": "56HSK1O0ATI054",
+            "tax_number": "05964110000197",
             "updated_at": "2026-07-02T19:00:14.854125Z"
           }
         },
@@ -8300,14 +8300,14 @@
           "description": "Consectetur esse sed irure incididunt est culpa nostrud.",
           "due_date": "2026-01-01",
           "external_id": "5b760495-cb55-4043-95e8-0cff5776b014",
-          "federal_revenue_id": "12345678901234",
+          "federal_revenue_id": "05964110000197",
           "fine_amount": 10,
           "interest_amount": 5,
           "name": "John Doe",
           "percentage": 2,
           "phone": "+5541999381724",
           "reference_number": 123456789,
-          "tax_number": "12345678901234",
+          "tax_number": "05964110000197",
           "virtual_account_id": "1a760495-cb95-4023-96e8-0cff5776b010"
         },
         "properties": {
@@ -8519,9 +8519,9 @@
           "data": {
             "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
             "inserted_at": "2020-01-10T10:00:00Z",
-            "key": "32165998093",
+            "key": "05964110000197",
             "status": "created",
-            "tax_number": "32165998093",
+            "tax_number": "05964110000197",
             "type": "tax_number",
             "updated_at": "2020-01-10T10:00:00Z",
             "virtual_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
@@ -8645,7 +8645,7 @@
             "ispb": "12345678",
             "name": "Name Test",
             "number": "123456",
-            "tax_number": "06811334061",
+            "tax_number": "05964110000197",
             "type": "checking"
           },
           "pix_ref_id": "1a760495-cb95-4023-96e8-0cff5776b010",
@@ -9236,12 +9236,12 @@
               },
               "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
               "name": "John Doe",
-              "tax_number": "14633666800"
+              "tax_number": "05964110000197"
             },
             "hash": "2941H29481H827GGY2G873GR1H893RG1793GFYI71G7",
             "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
             "inserted_at": "2020-01-10T10:00:00",
-            "key": "32165998093",
+            "key": "05964110000197",
             "key_type": "tax_number",
             "updated_at": "2024-01-10T10:00:00"
           }
