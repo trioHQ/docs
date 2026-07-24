@@ -364,22 +364,22 @@
           "counterparty": {
             "properties": {
               "address": {
-                "maxLength": 255,
+                "maxLength": 40,
                 "minLength": 1,
                 "type": "string"
               },
               "city": {
-                "maxLength": 255,
+                "maxLength": 20,
                 "minLength": 1,
                 "type": "string"
               },
               "district": {
-                "maxLength": 255,
+                "maxLength": 20,
                 "minLength": 1,
                 "type": "string"
               },
               "name": {
-                "maxLength": 255,
+                "maxLength": 40,
                 "minLength": 3,
                 "type": "string"
               },
