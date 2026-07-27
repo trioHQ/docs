@@ -1,0 +1,163 @@
+Events that belong to the category `initiation_document`.
+
+These events track the lifecycle of a payment initiated through Pix biometrics. All status updates include the full payment document data.
+
+<table><thead><tr><th width="180">Type</th><th>Description</th></tr></thead><tbody><tr><td><a href="#initiation_document.created">created</a></td><td>A biometrics payment has been created.</td></tr><tr><td><a href="#initiation_document.awaiting_consent">awaiting_consent</a></td><td>The payment is waiting for the customer to authorize via biometrics (WebAuthn).</td></tr><tr><td><a href="#initiation_document.awaiting_payment">awaiting_payment</a></td><td>Biometric authorization completed, the bank is processing the payment.</td></tr><tr><td><a href="#initiation_document.settled">settled</a></td><td>The payment was completed successfully.</td></tr><tr><td><a href="#initiation_document.rejected">rejected</a></td><td>The payment was rejected by the participant.</td></tr><tr><td><a href="#initiation_document.failed">failed</a></td><td>The payment failed due to an error.</td></tr></tbody></table>
+
+### Examples
+
+#### initiation\_document.created
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "created",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:38.800558Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "created",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document.awaiting\_consent
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_consent",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:38.800558Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_consent",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document.awaiting\_payment
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_payment",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:44.587366Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_payment",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document.settled
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "settled",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:12:40.102228Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": "019fa158-8065-eb54-986e-6aa7c8f9609e"
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "settled",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```

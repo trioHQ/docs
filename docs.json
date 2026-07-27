@@ -69,7 +69,9 @@
                   "webhooks/events/transfer-document",
                   "webhooks/events/recurrence",
                   "webhooks/events/recurrences-collection",
-                  "webhooks/events/recurrence-collections-attempt"
+                  "webhooks/events/recurrence-collections-attempt",
+                  "webhooks/events/pix-biometrics-enrollment",
+                  "webhooks/events/initiation-document"
                 ]
               }
             ]
@@ -93,7 +95,8 @@
               "guides/boleto-types",
               "guides/webhook",
               "guides/simulating-deposit-success",
-              "guides/simulating-deposit-failures"
+              "guides/simulating-deposit-failures",
+              "guides/pix-biometrics-web"
             ]
           },
           {
@@ -161,6 +164,21 @@
                       "api-reference/banking-api/receivables/boletos/get",
                       "api-reference/banking-api/receivables/boletos/update",
                       "api-reference/banking-api/receivables/boletos/cancel"
+                    ]
+                  },
+                  {
+                    "group": "Biometrics",
+                    "pages": [
+                      "api-reference/banking-api/receivables/biometrics/find-or-create-device",
+                      "api-reference/banking-api/receivables/biometrics/list-participants",
+                      "api-reference/banking-api/receivables/biometrics/list-enrollments",
+                      "api-reference/banking-api/receivables/biometrics/create-enrollment",
+                      "api-reference/banking-api/receivables/biometrics/get-registration-options",
+                      "api-reference/banking-api/receivables/biometrics/register-credential",
+                      "api-reference/banking-api/receivables/biometrics/create-payment",
+                      "api-reference/banking-api/receivables/biometrics/get-payment",
+                      "api-reference/banking-api/receivables/biometrics/get-authorization-options",
+                      "api-reference/banking-api/receivables/biometrics/authorize-payment"
                     ]
                   },
                   {

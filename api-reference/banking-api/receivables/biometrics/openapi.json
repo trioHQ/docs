@@ -1,0 +1,1774 @@
+{
+  "components": {
+    "responses": {},
+    "schemas": {
+      "Authorization_options_response": {
+        "description": "Response schema for FIDO authorization options",
+        "example": {
+          "data": {
+            "public_key_encoded": "{timeout:60000,challenge:example_challenge,allowCredentials:[{id:id,type:public-key}],rpId:example.com.br,userVerification:preferred}"
+          }
+        },
+        "properties": {
+          "data": {
+            "properties": {
+              "public_key_encoded": {
+                "description": "Public key encoded",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "title": "Authorization_options_response",
+        "type": "object"
+      },
+      "Biometrics_Participant": {
+        "description": "A biometrics participant",
+        "example": {
+          "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+          "id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+          "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+          "is_enrollment_available": true,
+          "ispb": "12345678",
+          "name": "Mock Bank",
+          "slug": "mock-bank",
+          "status": "active",
+          "unavailable": false
+        },
+        "properties": {
+          "avatar": {
+            "description": "Avatar URL",
+            "type": "string"
+          },
+          "id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "integration_id": {
+            "description": "Integration ID",
+            "type": "string"
+          },
+          "is_enrollment_available": {
+            "description": "Whether enrollment is available",
+            "type": "boolean"
+          },
+          "ispb": {
+            "description": "ISPB code",
+            "type": "string"
+          },
+          "name": {
+            "description": "Participant name",
+            "type": "string"
+          },
+          "slug": {
+            "description": "Slug",
+            "type": "string"
+          },
+          "status": {
+            "description": "Participant status",
+            "type": "string"
+          },
+          "unavailable": {
+            "description": "Whether participant is unavailable",
+            "type": "boolean"
+          }
+        },
+        "title": "Biometrics_Participant",
+        "type": "object"
+      },
+      "Biometrics_Participant_Enrollment": {
+        "description": "Enrollment data attached to a participant",
+        "example": {
+          "device_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+          "expiration_datetime": "2026-08-26T00:00:00Z",
+          "id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+          "inserted_at": "2026-07-26T00:00:00Z",
+          "participant_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+          "status": "completed",
+          "updated_at": "2026-07-26T00:00:00Z"
+        },
+        "properties": {
+          "device_id": {
+            "description": "Device ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "expiration_datetime": {
+            "description": "Expiration datetime",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "Enrollment ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Created at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "status": {
+            "description": "Enrollment status",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Biometrics_Participant_Enrollment",
+        "type": "object"
+      },
+      "Biometrics_Participant_with_Enrollment": {
+        "description": "A biometrics participant with enrollment info",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Biometrics_Participant"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "enrolled?": {
+                "description": "Whether participant is enrolled, only displayed when enrollment info is included",
+                "type": "boolean"
+              },
+              "enrollment": {
+                "description": "Enrollment data, or null if not enrolled",
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Biometrics_Participant_Enrollment"
+                  },
+                  {
+                    "type": "string",
+                    "nullable": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "example": {
+          "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+          "id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+          "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+          "is_enrollment_available": true,
+          "ispb": "12345678",
+          "name": "Mock Bank",
+          "slug": "mock-bank",
+          "status": "active",
+          "unavailable": false,
+          "enrolled?": true,
+          "enrollment": {
+            "device_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+            "expiration_datetime": "2026-08-26T00:00:00Z",
+            "id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+            "inserted_at": "2026-07-26T00:00:00Z",
+            "participant_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+            "status": "completed",
+            "updated_at": "2026-07-26T00:00:00Z"
+          }
+        },
+        "title": "Biometrics_Participant_with_Enrollment",
+        "type": "object"
+      },
+      "Biometrics_Participants_list_response": {
+        "description": "List of biometrics participants",
+        "example": {
+          "data": [
+            {
+              "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+              "id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+              "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+              "is_enrollment_available": true,
+              "ispb": "12345678",
+              "name": "Mock Bank",
+              "slug": "mock-bank",
+              "status": "active",
+              "unavailable": false
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Biometrics_Participant"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Biometrics_Participants_list_response",
+        "type": "object"
+      },
+      "Biometrics_Participants_with_enrollments_list_response": {
+        "description": "List of biometrics participants with enrollment info",
+        "example": {
+          "data": [
+            {
+              "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+              "id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+              "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+              "is_enrollment_available": true,
+              "ispb": "12345678",
+              "name": "Mock Bank",
+              "slug": "mock-bank",
+              "status": "active",
+              "unavailable": false,
+              "enrolled?": true,
+              "enrollment": {
+                "device_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+                "expiration_datetime": "2026-08-26T00:00:00Z",
+                "id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+                "inserted_at": "2026-07-26T00:00:00Z",
+                "participant_id": "019fa021-d9f8-a4b4-0683-068db83a1f65",
+                "status": "completed",
+                "updated_at": "2026-07-26T00:00:00Z"
+              }
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Biometrics_Participant_with_Enrollment"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Biometrics_Participants_with_enrollments_list_response",
+        "type": "object"
+      },
+      "Device": {
+        "description": "A biometrics device",
+        "example": {
+          "account_tenure": "2023-01-01",
+          "counterparty_id": "019f9fbf-2c94-7193-fd30-47955e3fde9e",
+          "fingerprint": "fingerprint_example",
+          "id": "019f9fbf-2c94-2361-0226-a2feb129698b",
+          "inserted_at": "2026-07-26T00:00:00Z",
+          "language": "pt-BR",
+          "os": "iOS",
+          "os_version": "15.4",
+          "screen_height": "1136",
+          "screen_width": "640",
+          "timezone_offset": "-03:00",
+          "updated_at": "2026-07-26T00:00:00Z"
+        },
+        "properties": {
+          "account_tenure": {
+            "description": "Account tenure",
+            "type": "string"
+          },
+          "counterparty_id": {
+            "description": "Counterparty ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "fingerprint": {
+            "description": "Device fingerprint",
+            "type": "string"
+          },
+          "id": {
+            "description": "Device ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Created at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "language": {
+            "description": "Language",
+            "type": "string"
+          },
+          "os": {
+            "description": "Operating system",
+            "type": "string"
+          },
+          "os_version": {
+            "description": "OS version",
+            "type": "string"
+          },
+          "screen_height": {
+            "description": "Screen height",
+            "type": "string"
+          },
+          "screen_width": {
+            "description": "Screen width",
+            "type": "string"
+          },
+          "timezone_offset": {
+            "description": "Timezone offset",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Device",
+        "type": "object"
+      },
+      "Device_find_or_create_parameters": {
+        "description": "Parameters for finding or creating a biometrics device",
+        "example": {
+          "account_tenure": "2023-01-01",
+          "counterparty_name": "Ronaldo Nazário de Lima",
+          "counterparty_tax_number": "86229976005",
+          "fingerprint": "fingerprint_example",
+          "language": "pt-BR",
+          "os": "iOS",
+          "os_version": "15.4",
+          "load_enrollments": false,
+          "screen_height": "1136",
+          "screen_width": "640",
+          "timezone_offset": "-03:00"
+        },
+        "properties": {
+          "account_tenure": {
+            "description": "Account tenure",
+            "type": "string"
+          },
+          "counterparty_name": {
+            "description": "Counterparty name",
+            "type": "string"
+          },
+          "counterparty_tax_number": {
+            "description": "Counterparty tax number",
+            "type": "string"
+          },
+          "fingerprint": {
+            "description": "Device fingerprint",
+            "type": "string"
+          },
+          "language": {
+            "description": "Language",
+            "type": "string"
+          },
+          "os": {
+            "description": "Operating system",
+            "type": "string"
+          },
+          "os_version": {
+            "description": "OS version",
+            "type": "string"
+          },
+          "load_enrollments": {
+            "description": "load enrollments",
+            "nullable": true,
+            "type": "boolean"
+          },
+          "screen_height": {
+            "description": "Screen height",
+            "type": "string"
+          },
+          "screen_width": {
+            "description": "Screen width",
+            "type": "string"
+          },
+          "timezone_offset": {
+            "description": "Timezone offset",
+            "type": "string"
+          }
+        },
+        "required": [
+          "counterparty_tax_number",
+          "counterparty_name",
+          "fingerprint",
+          "account_tenure",
+          "language",
+          "os",
+          "os_version",
+          "screen_width",
+          "screen_height",
+          "timezone_offset"
+        ],
+        "title": "Device_find_or_create_parameters",
+        "type": "object"
+      },
+      "Device_response": {
+        "description": "Response schema for a biometrics device",
+        "example": {
+          "data": {
+            "account_tenure": "2022-01-01",
+            "counterparty_id": "019f9fbf-2cba-e739-5b73-4921e5fee3e2",
+            "fingerprint": "device-fingerprint-unique-id",
+            "id": "019f9fbf-2cba-8348-bcfe-5abfc1464f79",
+            "inserted_at": "2026-07-26T00:00:00Z",
+            "language": "pt-BR",
+            "os": "Android",
+            "os_version": "14",
+            "screen_height": 2400,
+            "screen_width": 1080,
+            "timezone_offset": "-03",
+            "updated_at": "2026-07-26T00:00:00Z"
+          }
+        },
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Device"
+          }
+        },
+        "title": "Device_response",
+        "type": "object"
+      },
+      "Enrollment": {
+        "description": "A biometrics enrollment",
+        "example": {
+          "device_id": "019f9fbf-2cb3-fd23-8e3e-05ab526f484e",
+          "expiration_datetime": "2026-08-26T00:00:00Z",
+          "external_id": "external_id_example",
+          "id": "019f9fbf-2cb3-3924-4e1b-67a839a86c83",
+          "inserted_at": "2026-07-26T00:00:00Z",
+          "participant_id": "019f9fbf-2cb3-63d1-5f56-6472a1eb9c8b",
+          "redirect_url": "http://teste.com",
+          "status": "awaiting_enrollment",
+          "updated_at": "2026-07-26T00:00:00Z"
+        },
+        "properties": {
+          "device_id": {
+            "description": "Device ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "expiration_datetime": {
+            "description": "Expiration datetime",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Enrollment ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Created at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "Redirect URL",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Enrollment status",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Enrollment",
+        "type": "object"
+      },
+      "Enrollment_with_participant": {
+        "description": "A biometrics enrollment with participant info",
+        "example": {
+          "device_id": "019f9fbf-2cb3-fd23-8e3e-05ab526f484e",
+          "expiration_datetime": "2026-08-26T00:00:00Z",
+          "external_id": "external_id_example",
+          "id": "019f9fbf-2cb3-3924-4e1b-67a839a86c83",
+          "inserted_at": "2026-07-26T00:00:00Z",
+          "participant_id": "019f9fbf-2cb3-63d1-5f56-6472a1eb9c8b",
+          "redirect_url": "http://teste.com",
+          "status": "awaiting_enrollment",
+          "updated_at": "2026-07-26T00:00:00Z",
+          "participant": {
+            "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+            "id": "019f9fbf-2cb3-63d1-5f56-6472a1eb9c8b",
+            "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+            "is_enrollment_available": true,
+            "ispb": "12345678",
+            "name": "Mock Bank",
+            "slug": "mock-bank",
+            "status": "active",
+            "unavailable": false
+          }
+        },
+        "properties": {
+          "device_id": {
+            "description": "Device ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "expiration_datetime": {
+            "description": "Expiration datetime",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Enrollment ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Created at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "redirect_url": {
+            "description": "Redirect URL",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Enrollment status",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "participant": {
+            "description": "Participant data. Only present when load_participants query parameter is true.",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Biometrics_Participant"
+              },
+              {
+                "type": "string",
+                "nullable": true
+              }
+            ]
+          }
+        },
+        "title": "Enrollment_with_participant",
+        "type": "object"
+      },
+      "Enrollment_creation_parameters": {
+        "description": "Parameters for creating a biometrics enrollment",
+        "example": {
+          "account_branch": "0001",
+          "account_digit": "6",
+          "account_number": "12345",
+          "account_type": "checking",
+          "device_id": "019f9fbf-2c57-04a6-037c-c8684d749591",
+          "external_id": "external_id_example",
+          "participant_id": "019f9fbf-2c55-2ea9-9690-bf5151689383"
+        },
+        "properties": {
+          "account_branch": {
+            "description": "Account branch",
+            "nullable": true,
+            "type": "string"
+          },
+          "account_digit": {
+            "description": "Account digit",
+            "nullable": true,
+            "type": "string"
+          },
+          "account_number": {
+            "description": "Account number",
+            "nullable": true,
+            "type": "string"
+          },
+          "account_type": {
+            "description": "Account type",
+            "enum": [
+              "checking",
+              "payment",
+              "salary",
+              "savings"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "device_id": {
+            "description": "Device ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "participant_id": {
+            "description": "Participant ID",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "participant_id",
+          "device_id"
+        ],
+        "title": "Enrollment_creation_parameters",
+        "type": "object"
+      },
+      "Enrollment_list_response": {
+        "description": "Response schema for listing biometrics enrollments",
+        "example": {
+          "data": [
+            {
+              "device_id": "019f9fbf-2cf4-10b2-6c9b-9c75a62a232d",
+              "expiration_datetime": "2026-08-26T00:00:00Z",
+              "external_id": "external_id_example",
+              "id": "019f9fbf-2cf3-e70b-9e1c-2ccb4ec54c4c",
+              "inserted_at": "2026-07-26T00:00:00Z",
+              "participant_id": "019f9fbf-2cf4-f5a3-751e-7ed72303fa36",
+              "redirect_url": "http://teste.com",
+              "status": "awaiting_enrollment",
+              "updated_at": "2026-07-26T00:00:00Z",
+              "participant": {
+                "avatar": "https://cdn.raidiam.io/directory-ui/brand/obbrazil/0.2.0.112/favicon.svg",
+                "id": "019f9fbf-2cf4-f5a3-751e-7ed72303fa36",
+                "integration_id": "019fa021-d9f9-7fa9-6f53-afc7b32f7b93",
+                "is_enrollment_available": true,
+                "ispb": "12345678",
+                "name": "Mock Bank",
+                "slug": "mock-bank",
+                "status": "active",
+                "unavailable": false
+              }
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "description": "List of enrollments",
+            "items": {
+              "$ref": "#/components/schemas/Enrollment_with_participant"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Enrollment_list_response",
+        "type": "object"
+      },
+      "Enrollment_response": {
+        "description": "Response schema for a biometrics enrollment",
+        "example": {
+          "data": {
+            "account_info": {
+              "branch": "0001",
+              "digit": "6",
+              "ispb": "12345678",
+              "name": "John Doe",
+              "number": "12345",
+              "tax_number": "12345678901",
+              "type": "checking"
+            },
+            "device_id": "019f9fbf-2cd6-2659-0db8-5af4bb657392",
+            "expiration_datetime": "2026-08-26T00:00:00Z",
+            "external_id": "external_id_example",
+            "id": "019f9fbf-2cd6-3625-7a85-9832c5787c32",
+            "inserted_at": "2026-07-26T00:00:00Z",
+            "participant_id": "019f9fbf-2cd6-5fa6-c1d7-1e367f8ef4fe",
+            "redirect_url": "http://teste.com",
+            "status": "awaiting_enrollment",
+            "updated_at": "2026-07-26T00:00:00Z"
+          }
+        },
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Enrollment"
+          }
+        },
+        "title": "Enrollment_response",
+        "type": "object"
+      },
+      "FIDO_assertion_parameters": {
+        "description": "FIDO assertion for authorizing a payment",
+        "example": {
+          "fido_assertion": {
+            "id": "credential_id_example",
+            "raw_id": "raw_credential_id_example",
+            "response": {
+              "authenticator_data": "authenticator_data_example",
+              "client_data_JSON": "client_data_json_example",
+              "signature": "signature_example",
+              "user_handle": "user_handle_example"
+            },
+            "type": "public-key"
+          },
+          "riskSignals": null
+        },
+        "properties": {
+          "fido_assertion": {
+            "$ref": "#/components/schemas/FIDO_assertion"
+          },
+          "riskSignals": {
+            "description": "Risk signals",
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "fido_assertion"
+        ],
+        "title": "FIDO_assertion_parameters",
+        "type": "object"
+      },
+      "FIDO_assertion": {
+        "description": "FIDO assertion credential object",
+        "type": "object",
+        "required": ["id", "raw_id", "response", "type"],
+        "properties": {
+          "id": {
+            "description": "Credential ID",
+            "type": "string"
+          },
+          "raw_id": {
+            "description": "Raw credential ID",
+            "type": "string"
+          },
+          "response": {
+            "$ref": "#/components/schemas/FIDO_assertion_response"
+          },
+          "type": {
+            "description": "Credential type",
+            "type": "string"
+          }
+        }
+      },
+      "FIDO_assertion_response": {
+        "description": "FIDO assertion response data",
+        "type": "object",
+        "required": ["authenticator_data", "client_data_JSON", "signature", "user_handle"],
+        "properties": {
+          "authenticator_data": {
+            "description": "Authenticator data",
+            "type": "string"
+          },
+          "client_data_JSON": {
+            "description": "Client data JSON",
+            "type": "string"
+          },
+          "signature": {
+            "description": "Signature",
+            "type": "string"
+          },
+          "user_handle": {
+            "description": "User handle",
+            "type": "string"
+          }
+        }
+      },
+      "FIDO_attestation_parameters": {
+        "description": "FIDO attestation for registering biometrics",
+        "example": {
+          "fido_assertion": {
+            "id": "credential_id_example",
+            "raw_id": "raw_credential_id_example",
+            "response": {
+              "attestation_object": "attestation_object_example",
+              "client_data_JSON": "client_data_json_example"
+            },
+            "type": "public-key"
+          }
+        },
+        "properties": {
+          "fido_assertion": {
+            "$ref": "#/components/schemas/FIDO_attestation"
+          }
+        },
+        "required": [
+          "fido_assertion"
+        ],
+        "title": "FIDO_attestation_parameters",
+        "type": "object"
+      },
+      "FIDO_attestation": {
+        "description": "FIDO attestation credential object",
+        "type": "object",
+        "required": ["id", "raw_id", "response", "type"],
+        "properties": {
+          "id": {
+            "description": "Credential ID",
+            "type": "string"
+          },
+          "raw_id": {
+            "description": "Raw credential ID",
+            "type": "string"
+          },
+          "response": {
+            "$ref": "#/components/schemas/FIDO_attestation_response"
+          },
+          "type": {
+            "description": "Credential type",
+            "type": "string"
+          }
+        }
+      },
+      "FIDO_attestation_response": {
+        "description": "FIDO attestation response data",
+        "type": "object",
+        "required": ["attestation_object", "client_data_JSON"],
+        "properties": {
+          "attestation_object": {
+            "description": "Attestation object",
+            "type": "string"
+          },
+          "client_data_JSON": {
+            "description": "Client data JSON",
+            "type": "string"
+          }
+        }
+      },
+      "JsonErrorResponse": {
+        "properties": {
+          "errors": {
+            "items": {
+              "properties": {
+                "detail": {
+                  "example": "null value where string expected",
+                  "type": "string"
+                },
+                "source": {
+                  "properties": {
+                    "pointer": {
+                      "example": "/data/attributes/petName",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "pointer"
+                  ],
+                  "type": "object"
+                },
+                "title": {
+                  "example": "Invalid value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "detail"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "errors"
+        ],
+        "title": "JsonErrorResponse",
+        "type": "object"
+      },
+      "Payment": {
+        "description": "A biometric payment initiation",
+        "example": {
+          "amount": {
+            "amount": 1000,
+            "currency": "BRL"
+          },
+          "description": "Payment description example",
+          "end_to_end_id": null,
+          "external_id": "external_id_example",
+          "id": "019f9fbf-2cb3-a8d4-9ebe-0c7781f37117",
+          "inserted_at": "2026-07-26T00:00:00Z",
+          "status": "pending",
+          "transaction_date": null,
+          "updated_at": "2026-07-26T00:00:00Z",
+          "virtual_account_id": "019f9fbf-2cb4-4e0d-1e20-2d6b9b27dbf0"
+        },
+        "properties": {
+          "amount": {
+            "description": "Amount",
+            "type": "object",
+            "properties": {
+              "amount": {
+                "description": "Amount in cents",
+                "type": "integer"
+              },
+              "currency": {
+                "description": "Currency code",
+                "type": "string"
+              }
+            }
+          },
+          "description": {
+            "description": "Payment description",
+            "type": "string"
+          },
+          "end_to_end_id": {
+            "description": "End to end ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Payment ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "inserted_at": {
+            "description": "Created at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "description": "Payment status",
+            "type": "string"
+          },
+          "transaction_date": {
+            "description": "Transaction date",
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "virtual_account_id": {
+            "description": "Virtual account ID",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "title": "Payment",
+        "type": "object"
+      },
+      "Payment_creation_parameters": {
+        "description": "Parameters for creating a biometric payment initiation",
+        "example": {
+          "amount": 1000,
+          "description": "Payment description example",
+          "entity_id": "019f9fbf-2c55-8e72-2fcd-0017e7303e00",
+          "external_id": "external_id_example",
+          "virtual_account_id": "019f9fbf-2c57-3533-9ffc-f34868af636a"
+        },
+        "properties": {
+          "amount": {
+            "description": "Amount in cents",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Payment description",
+            "type": "string"
+          },
+          "entity_id": {
+            "description": "Entity ID",
+            "format": "uuid",
+            "type": "string"
+          },
+          "external_id": {
+            "description": "External ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "virtual_account_id": {
+            "description": "Bank account ID",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_id",
+          "virtual_account_id",
+          "amount",
+          "description"
+        ],
+        "title": "Payment_creation_parameters",
+        "type": "object"
+      },
+      "Payment_response": {
+        "description": "Response schema for a biometric payment",
+        "example": {
+          "data": {
+            "amount": {
+              "amount": 1000,
+              "currency": "BRL"
+            },
+            "description": "Payment description example",
+            "end_to_end_id": "E12345678202607252301s6AO2vwTrlD",
+            "external_id": "external_id_example",
+            "id": "019f9fbf-2cd7-160a-b0ae-3b02f310bcc8",
+            "inserted_at": "2026-07-26T00:00:00Z",
+            "status": "pending",
+            "transaction_date": "2026-07-26",
+            "updated_at": "2026-07-26T00:00:00Z",
+            "virtual_account_id": "019f9fbf-2cd7-ae17-3015-a65b66719fc0"
+          }
+        },
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Payment"
+          }
+        },
+        "title": "Payment_response",
+        "type": "object"
+      },
+      "Registration_options_response": {
+        "description": "Response schema for FIDO registration options",
+        "example": {
+          "data": {
+            "public_key_encoded": "{timeout:60000,user:{id:user_id,name:User,displayName:User},extensions:{credProps:true},rp:{id:example.com.br,name:Example},challenge:example_challenge,authenticatorSelection:{userVerification:required,requireResidentKey:false,authenticatorAttachment:platform,residentKey:preferred},excludeCredentials:[],pubKeyCredParams:[{type:public-key,alg:-7},{type:public-key,alg:-257}],attestation:none}"
+          }
+        },
+        "properties": {
+          "data": {
+            "properties": {
+              "public_key_encoded": {
+                "description": "Public key encoded",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "title": "Registration_options_response",
+        "type": "object"
+      },
+      "UUID": {
+        "description": "Unique identifier",
+        "format": "uuid",
+        "title": "UUID",
+        "type": "string"
+      }
+    }
+  },
+  "info": {
+    "title": "Trio Biometrics API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/biometrics/devices": {
+      "post": {
+        "callbacks": {},
+        "description": "Finds or creates a biometrics device associated with a counterparty.",
+        "operationId": "TrioInitiationWeb.Biometrics.DeviceController.find_or_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Device_find_or_create_parameters"
+              }
+            }
+          },
+          "description": "Device find or create parameters",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device_response"
+                }
+              }
+            },
+            "description": "Device"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Find or create biometrics device",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments": {
+      "get": {
+        "callbacks": {},
+        "description": "Retrieves a list of biometrics enrollments for a given device.",
+        "operationId": "TrioInitiationWeb.Biometrics.EnrollmentController.index",
+        "parameters": [
+          {
+            "description": "Device ID",
+            "in": "query",
+            "name": "device_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Load participants",
+            "in": "query",
+            "name": "load_participants",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment_list_response"
+                }
+              }
+            },
+            "description": "Enrollments"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "List biometrics enrollments by device_id",
+        "tags": [
+          "biometrics"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "description": "Creates a biometrics enrollment for a device in a participant.",
+        "operationId": "TrioInitiationWeb.Biometrics.EnrollmentController.create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Enrollment_creation_parameters"
+              }
+            }
+          },
+          "description": "Enrollment creation parameters",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment_response"
+                }
+              }
+            },
+            "description": "Enrollment"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Create biometrics enrollment",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/credentials": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns FIDO registration options for the enrollment.",
+        "operationId": "TrioInitiationWeb.Biometrics.EnrollmentController.registration_options",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Registration_options_response"
+                }
+              }
+            },
+            "description": "Registration options"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "List enrollment registration options",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/payments": {
+      "post": {
+        "callbacks": {},
+        "description": "Creates a payment initiation for a biometrics enrollment.",
+        "operationId": "TrioInitiationWeb.Biometrics.PaymentController.create",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payment_creation_parameters"
+              }
+            }
+          },
+          "description": "Payment creation parameters",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment_response"
+                }
+              }
+            },
+            "description": "Payment"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Create biometric payment",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns the current status of a biometric payment.",
+        "operationId": "TrioInitiationWeb.Biometrics.PaymentController.show",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ITP Document ID (payment)",
+            "in": "path",
+            "name": "payment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment_response"
+                }
+              }
+            },
+            "description": "Payment"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Get payment status",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize": {
+      "post": {
+        "callbacks": {},
+        "description": "Authorizes a payment using a FIDO assertion.",
+        "operationId": "TrioInitiationWeb.Biometrics.PaymentController.authorize",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ITP Document ID (payment)",
+            "in": "path",
+            "name": "payment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FIDO_assertion_parameters"
+              }
+            }
+          },
+          "description": "FIDO assertion",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment_response"
+                }
+              }
+            },
+            "description": "Payment"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Authorize payment with biometrics",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns FIDO authorization options for a payment.",
+        "operationId": "TrioInitiationWeb.Biometrics.PaymentController.authorize_options",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ITP Document ID (payment)",
+            "in": "path",
+            "name": "payment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Authorization_options_response"
+                }
+              }
+            },
+            "description": "Authorization options"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Get payment authorization options",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/enrollments/{enrollment_id}/register": {
+      "post": {
+        "callbacks": {},
+        "description": "Registers a FIDO credential for the enrollment.",
+        "operationId": "TrioInitiationWeb.Biometrics.EnrollmentController.register",
+        "parameters": [
+          {
+            "description": "Enrollment ID",
+            "in": "path",
+            "name": "enrollment_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FIDO_attestation_parameters"
+              }
+            }
+          },
+          "description": "FIDO attestation",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enrollment_response"
+                }
+              }
+            },
+            "description": "Enrollment"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Register FIDO biometrics for enrollment",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    },
+    "/biometrics/participants": {
+      "get": {
+        "callbacks": {},
+        "description": "Lists participants for a device. Optionally filter by ISPB. When load_enrollments is true, each participant includes enrolled? and enrollment fields, and enrolled participants are returned first.",
+        "operationId": "TrioInitiationWeb.Biometrics.ParticipantController.index",
+        "parameters": [
+          {
+            "description": "Device ID",
+            "in": "query",
+            "name": "device_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "List of ISPBs to filter by",
+            "in": "query",
+            "name": "ispbs",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "description": "Whether to load enrollments for each participant",
+            "in": "query",
+            "name": "load_enrollments",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Biometrics_Participants_with_enrollments_list_response"
+                }
+              }
+            },
+            "description": "Participants"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "List participants with enrollments by device",
+        "tags": [
+          "biometrics"
+        ]
+      }
+    }
+  },
+  "security": [],
+  "servers": [
+    {
+      "url": "http://api.trio.com.br",
+      "variables": {}
+    }
+  ],
+  "tags": []
+}

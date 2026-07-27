@@ -1,0 +1,523 @@
+---
+title: "Pix biometrics API (web)"
+---
+
+Pix biometrics allows your customers to authorize Pix payments using biometric authentication (WebAuthn/FIDO) instead of being redirected to their bank app each time. The customer authorizes once at their bank to create an **enrollment**, registers their biometric credential, and from that point on can authorize payments with a fingerprint or face scan directly in your application.
+
+The flow consists of two main phases:
+
+1. **Enrollment** — a one-time setup where the customer links their bank account and registers a biometric credential.
+2. **Payment** — creating and authorizing payments using the registered biometric credential.
+
+> All examples use the **sandbox** environment (`https://api.sandbox.trio.com.br`). In production, use `https://api.trio.com.br`.
+
+---
+
+### Endpoints
+
+| Action                     | Method | Endpoint                                                                    |
+| -------------------------- | ------ | --------------------------------------------------------------------------- |
+| Find or create device      | `POST` | `/biometrics/devices`                                                       |
+| List participants          | `GET`  | `/biometrics/participants`                                                  |
+| List enrollments           | `GET`  | `/biometrics/enrollments`                                                   |
+| Create enrollment          | `POST` | `/biometrics/enrollments`                                                   |
+| Get registration options   | `GET`  | `/biometrics/enrollments/{enrollment_id}/credentials`                       |
+| Register FIDO credential   | `POST` | `/biometrics/enrollments/{enrollment_id}/register`                          |
+| Create payment             | `POST` | `/biometrics/enrollments/{enrollment_id}/payments`                          |
+| Get payment                | `GET`  | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}`             |
+| Get authorization options  | `GET`  | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials` |
+| Authorize payment          | `POST` | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize`   |
+
+For complete endpoint documentation, see the [Biometrics API Reference](/api-reference/banking-api/receivables/biometrics/find-or-create-device).
+
+---
+
+## Step 1: Device Setup
+
+Before interacting with the biometrics API, you need to identify the customer's device. Collect the device information using a fingerprinting library such as [FingerprintJS](https://fingerprint.com/) and send it to the API.
+
+### Create Device
+
+```http
+POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/devices
+```
+
+```json
+{
+  "fingerprint": "a1b2c3d4e5f6",
+  "os": "iOS",
+  "os_version": "17.4",
+  "language": "pt-BR",
+  "screen_width": 390,
+  "screen_height": 844,
+  "counterparty_tax_number": "12345678900",
+  "counterparty_name": "Maria Silva",
+  "account_tenure": "2023-01-15",
+  "timezone_offset": "-03:00",
+  "load_enrollments": true
+}
+```
+
+The `load_enrollments` parameter, when set to `true`, includes the device's existing enrollments in the response. This is useful to determine if the customer already has an active enrollment and can skip directly to the payment flow.
+
+If the device already exists (matched by `fingerprint` and `counterparty_tax_number`), the existing device is returned.
+
+For complete request and response details, see the [Find or Create Device](/api-reference/banking-api/receivables/biometrics/find-or-create-device) API reference.
+
+---
+
+## Step 2: List Participants
+
+Retrieve the list of available banking participants (institutions) that support biometric enrollment. You can optionally load enrollment information for each participant to determine which flow the customer needs.
+
+### Option A: Participants with enrollments (recommended)
+
+A single request that returns participants with enrollment data attached. Enrolled participants appear first in the list.
+
+```http
+GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/participants?device_id={device_id}&load_enrollments=true
+```
+
+Each participant in the response will include:
+- `enrolled?` — whether the customer has an active enrollment with this participant
+- `enrollment` — the enrollment details (if enrolled)
+
+This lets you immediately determine which flow each participant requires:
+- **Has enrollment** → proceed to [Payment Creation](#step-4-create-payment)
+- **No enrollment** → proceed to [Enrollment Registration](#step-3-enrollment-registration)
+
+For details, see the [List Participants](/api-reference/banking-api/receivables/biometrics/list-participants) API reference.
+
+### Option B: Separate requests
+
+You can also fetch participants and enrollments independently:
+
+1. `GET /biometrics/participants?device_id={device_id}` — list all participants
+2. `GET /biometrics/enrollments?device_id={device_id}` — list existing enrollments
+
+Then match them on your end. This approach gives you more flexibility if you want to cache the participant list (which is the same for every user) and only fetch enrollments per user.
+> Participants are synchronized hourly with the Open Finance environment, and unstable participants are proactively disabled. If you choose to cache the participant list, be aware it may become out of sync.
+
+For details, see [List Enrollments](/api-reference/banking-api/receivables/biometrics/list-enrollments).
+
+---
+
+## Step 3: Enrollment Registration
+
+When a customer selects a participant and has no active enrollment, you need to create one. This is a one-time process per participant.
+
+### 3.1 Create Enrollment
+
+```http
+POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments
+```
+
+```json
+{
+  "device_id": "000e2ac2-840c-ccb3-0add-9132af7e300d",
+  "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+  "return_to_url": "https://yourapp.com/enrollment/complete",
+  "external_id": "your-internal-reference-123",
+  "account_info": {
+    "ispb": "12345678",
+    "issuer": "0001",
+    "number": "123456",
+    "account_type": "CACC"
+  }
+}
+```
+
+**Parameters:**
+- `device_id` — the device ID from Step 1
+- `participant_id` — the participant chosen by the customer
+- `return_to_url` — where to redirect after biometric registration is complete
+- `external_id` — (optional) your internal reference
+- `account_info` — (optional) suggested bank account. The bank may accept or ignore this suggestion. If the bank returns a different account, the enrollment will be blocked
+
+The response includes a `redirect_url`. **Redirect the customer to this URL** to start the bank authorization flow.
+
+For complete details, see the [Create Enrollment](/api-reference/banking-api/receivables/biometrics/create-enrollment) API reference.
+
+### 3.2 Bank Authorization
+
+After redirecting, the customer authorizes the enrollment in their banking app. During this step:
+
+1. The customer is redirected to their bank
+2. The customer authorizes the biometric enrollment
+3. The bank redirects the customer to Trio's whitelabel biometric registration page
+4. The customer registers their biometric credential (fingerprint or face)
+5. After completion, the customer is redirected to your `return_to_url`
+
+> The biometric registration (WebAuthn) is restricted to Trio's domain due to security requirements, so this step is handled automatically through a whitelabel page.
+
+### 3.3 Enrollment Webhooks
+
+Listen for enrollment status webhooks with the category `pix_biometrics_enrollment`:
+
+**Authorized** — the enrollment is ready for payments:
+
+```json
+{
+  "data": {
+    "id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "status": "authorized",
+    "inserted_at": "2026-07-26T23:18:01.931556Z",
+    "updated_at": "2026-07-26T23:18:41.884626Z",
+    "external_id": "your-internal-reference-123",
+    "redirect_url": "https://...",
+    "expiration_datetime": null,
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "device_id": "000e2ac2-840c-ccb3-0add-9132af7e300d",
+    "account_info": null
+  },
+  "timestamp": "2026-07-26T23:18:42.213037Z",
+  "type": "authorized",
+  "category": "pix_biometrics_enrollment",
+  "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338"
+}
+```
+
+Once you receive the `authorized` webhook, the enrollment is complete and you can create payments.
+
+### Enrollment Lifecycle
+
+| Status                                | Description                                                                                  |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------|
+| `awaiting_account_holder_validation`  | Enrollment created, waiting for customer to authorize at bank                                |
+| `awaiting_enrollment`                 | Bank authorization completed, waiting for registering biometrics on Trio's domain            |
+| `authorized`                          | Enrollment is active and ready for payments                                                  |
+| `rejected`                            | Bank rejected the enrollment                                                                 |
+| `revoked`                             | Customer revoked the enrollment on the bank's end                                            |
+| `inactive`                            | Enrollment expired                                                                           |
+
+---
+
+## Step 4: Create Payment
+
+Once the customer has an active enrollment, you can create payments that will be authorized using their biometric credential.
+
+### 4.1 Create Payment from Enrollment
+
+Using the `enrollment_id` from the active enrollment, create a payment:
+
+```http
+POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments
+```
+
+```json
+{
+  "entity_id": "019f9fbf-2c55-8e72-2fcd-0017e7303e00",
+  "virtual_account_id": "019f9fbf-2c57-3533-9ffc-f34868af636a",
+  "amount": 1500,
+  "description": "Order #12345",
+  "external_id": "payment-ref-456"
+}
+```
+
+**Required fields:**
+- `entity_id` — your entity ID
+- `virtual_account_id` — the virtual account that will receive the funds
+- `amount` — amount in cents (e.g., `1500` = BRL 15.00)
+- `description` — payment description
+
+**Optional fields:**
+- `external_id` — your internal reference for reconciliation
+
+For complete details, see the [Create Payment](/api-reference/banking-api/receivables/biometrics/create-payment) API reference.
+
+### 4.2 Get Authorization Options
+
+Retrieve the FIDO authorization options needed for the WebAuthn authentication:
+
+```http
+GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials
+```
+
+The response contains a `public_key_encoded` value — a JSON-encoded string with the WebAuthn `publicKeyCredentialRequestOptions`. You will pass this to the auth widget in the next step.
+
+For details, see the [Get Authorization Options](/api-reference/banking-api/receivables/biometrics/get-authorization-options) API reference.
+
+---
+
+## Step 5: Authorize Payment with Biometrics
+
+To authorize the payment, the customer must perform a WebAuthn authentication using Trio's auth widget iframe. This iframe overlay handles the `credentials.get` WebAuthn operation on Trio's domain.
+
+### 5.1 Set Up the Auth Widget
+
+Embed the iframe positioned over a button element in your page:
+
+```html
+<div style="position: relative; display: inline-block;">
+  <button style="padding: 12px 24px; pointer-events: none;">
+    Authorize Payment
+  </button>
+  <iframe
+    id="trio-auth"
+    src="https://checkout.of.trio.com.br/assets/biometrics/widget"
+    allow="publickey-credentials-get *; publickey-credentials-create *"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+           border: none; opacity: 0; cursor: pointer;"
+  ></iframe>
+</div>
+```
+
+The iframe is transparent and overlays the button, so when the customer clicks "Authorize Payment", the click is captured by the iframe and triggers the WebAuthn operation.
+
+> The `allow` attribute is required for WebAuthn to work inside the iframe.
+
+### 5.2 Communication Protocol
+
+The widget communicates via `postMessage`. All messages from the widget include `source: "trio-biometrics-sdk"`.
+
+**1. Wait for the iframe to load:**
+
+```js
+const iframe = document.getElementById("trio-auth");
+
+window.addEventListener("message", (e) => {
+  if (e.data?.source !== "trio-biometrics-sdk") return;
+
+  switch (e.data.type) {
+    case "loaded":
+      // iframe is ready — send the authorization options
+      iframe.contentWindow.postMessage({
+        action: "get",
+        options: publicKeyOptions, // public_key_encoded from Step 4.2
+        requestId: "payment-auth-1"
+      }, "*");
+      break;
+
+    case "ready":
+      // widget is waiting for user click
+      break;
+
+    case "success":
+      // send e.data.credential to authorize the payment (Step 5.3)
+      authorizePayment(e.data.credential);
+      break;
+
+    case "error":
+      console.error("WebAuthn error:", e.data.error, e.data.message);
+      break;
+  }
+});
+```
+
+**2. The customer clicks the button.** The WebAuthn prompt appears (fingerprint scanner, face recognition, etc.).
+
+**3. On success**, the widget returns the FIDO assertion credential in `e.data.credential`.
+
+### 5.3 Send the Authorization
+
+Take the credential from the widget response and send it to authorize the payment:
+
+```http
+POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize
+```
+
+```json
+{
+  "fido_assertion": {
+    "id": "credential-id",
+    "raw_id": "base64url-encoded-raw-id",
+    "type": "public-key",
+    "response": {
+      "authenticator_data": "base64url-encoded",
+      "client_data_json": "base64url-encoded",
+      "signature": "base64url-encoded",
+      "user_handle": "base64url-encoded"
+    }
+  }
+}
+```
+
+For complete details, see the [Authorize Payment](/api-reference/banking-api/receivables/biometrics/authorize-payment) API reference.
+
+---
+
+## Payment Webhooks
+
+After creating a payment, you will receive `initiation_document` webhooks for each status change. You can also listen to Pix cash-in webhooks for the final settlement confirmation.
+
+All payment webhooks share the same `initiation_document` category and include the full payment data. The `type` field indicates the current status.
+
+### Payment Lifecycle
+
+| Status             | Description                                                          |
+| ------------------ | -------------------------------------------------------------------- |
+| `created`          | Payment created, waiting for biometric authorization                 |
+| `awaiting_consent` | Waiting for the customer to authorize via biometrics                 |
+| `awaiting_payment` | Biometric authorization completed, bank is processing the payment   |
+| `settled`          | Payment completed successfully (final)                               |
+| `failed`           | Payment failed (final)                                               |
+| `rejected`         | Payment was rejected by the participant (final)                      |
+
+### Webhook Examples
+
+#### initiation\_document — created
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "created",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:38.800558Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "created",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document — awaiting\_consent
+
+The payment is waiting for the customer to authorize via biometrics (WebAuthn).
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_consent",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_consent",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document — awaiting\_payment
+
+Biometric authorization is complete. The bank is processing the payment.
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_payment",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_payment",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### initiation\_document — settled
+
+Payment completed successfully. Funds have been transferred.
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "settled",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": "019fa158-8065-eb54-986e-6aa7c8f9609e"
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "settled",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+---
+
+## End-to-End Flow Summary
+
+| Step | Action                        | Who           | Endpoint / Action                                   |
+| ---- | ----------------------------- | ------------- | --------------------------------------------------- |
+| 1    | Collect device fingerprint    | Your frontend | FingerprintJS or similar                            |
+| 2    | Find or create device         | Your backend  | `POST /biometrics/devices`                          |
+| 3    | List participants             | Your backend  | `GET /biometrics/participants`                      |
+| 4a   | Create enrollment (first time)| Your backend  | `POST /biometrics/enrollments`                      |
+| 4b   | Customer authorizes at bank   | Customer      | Redirect to `redirect_url`                          |
+| 4c   | Biometric registration        | Customer      | Trio whitelabel page (automatic)                    |
+| 5    | Create payment                | Your backend  | `POST /biometrics/enrollments/{id}/payments`        |
+| 6    | Get authorization options     | Your backend  | `GET .../payments/{id}/credentials`                 |
+| 7    | Customer authorizes payment   | Customer      | Auth widget (WebAuthn)                              |
+| 8    | Submit authorization          | Your backend  | `POST .../payments/{id}/authorize`                  |
+| 9    | Receive settlement webhook    | Your backend  | Webhook listener                                    |
+
+Steps 4a–4c only happen once per participant. After enrollment, the customer goes directly from step 5 onwards for subsequent payments.

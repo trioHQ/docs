@@ -1,0 +1,40 @@
+Events that belong to the category `pix_biometrics_enrollment`.
+
+|  |
+| --- |
+| The enrollment status has been updated to **awaiting\_account\_holder\_validation** — waiting for the customer to authorize at the bank. |
+| The enrollment status has been updated to **awaiting\_enrollment** — bank authorization completed, waiting for biometric registration. |
+| The enrollment has been **authorized** and is ready for payments. |
+| The enrollment has been **rejected** by the bank. |
+| The enrollment has been **revoked** by the customer on the bank's end. |
+| The enrollment has become **inactive** (expired). |
+
+### Examples
+
+#### pix\_biometrics\_enrollment.authorized
+
+```json
+{
+  "data": {
+    "id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "status": "authorized",
+    "inserted_at": "2026-07-26T23:18:01.931556Z",
+    "updated_at": "2026-07-26T23:18:41.884626Z",
+    "external_id": "12345",
+    "redirect_url": "https://checkout.of.sandbox.trio.com.br/sandbox/banking/enrollment?enrollment_id=000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "expiration_datetime": null,
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "device_id": "000e2ac2-840c-ccb3-0add-9132af7e300d",
+    "account_info": null
+  },
+  "timestamp": "2026-07-26T23:18:42.213037Z",
+  "type": "authorized",
+  "category": "pix_biometrics_enrollment",
+  "inserted_at": "2026-07-26T23:18:42.213082Z",
+  "origin_type": "api_client",
+  "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
