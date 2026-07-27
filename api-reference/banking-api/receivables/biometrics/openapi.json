@@ -1765,7 +1765,15 @@
   "security": [],
   "servers": [
     {
-      "url": "http://api.trio.com.br",
+      "url": "https://api.sandbox.trio.com.br",
+      "variables": {}
+    },
+    {
+      "url": "https://api.qa.trio.com.br",
+      "variables": {}
+    },
+    {
+      "url": "https://api.trio.com.br",
       "variables": {}
     }
   ],
