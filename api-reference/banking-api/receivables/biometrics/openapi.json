@@ -1,6 +1,6 @@
 {
   "components": {
-    "responses": {},
+    "responses": {}, 
     "schemas": {
       "Authorization_options_response": {
         "description": "Response schema for FIDO authorization options",
