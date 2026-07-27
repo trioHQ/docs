@@ -17,16 +17,16 @@ The flow consists of two main phases:
 
 | Action                     | Method | Endpoint                                                                    |
 | -------------------------- | ------ | --------------------------------------------------------------------------- |
-| Find or create device      | `POST` | `/biometrics/devices`                                                       |
-| List participants          | `GET`  | `/biometrics/participants`                                                  |
-| List enrollments           | `GET`  | `/biometrics/enrollments`                                                   |
-| Create enrollment          | `POST` | `/biometrics/enrollments`                                                   |
-| Get registration options   | `GET`  | `/biometrics/enrollments/{enrollment_id}/credentials`                       |
-| Register FIDO credential   | `POST` | `/biometrics/enrollments/{enrollment_id}/register`                          |
-| Create payment             | `POST` | `/biometrics/enrollments/{enrollment_id}/payments`                          |
-| Get payment                | `GET`  | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}`             |
-| Get authorization options  | `GET`  | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials` |
-| Authorize payment          | `POST` | `/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize`   |
+| Find or create device      | `POST` | `/banking/cashin/pix/biometrics/devices`                                                       |
+| List participants          | `GET`  | `/banking/cashin/pix/biometrics/participants`                                                  |
+| List enrollments           | `GET`  | `/banking/cashin/pix/biometrics/enrollments`                                                   |
+| Create enrollment          | `POST` | `/banking/cashin/pix/biometrics/enrollments`                                                   |
+| Get registration options   | `GET`  | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/credentials`                       |
+| Register FIDO credential   | `POST` | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/register`                          |
+| Create payment             | `POST` | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments`                          |
+| Get payment                | `GET`  | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}`             |
+| Get authorization options  | `GET`  | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials` |
+| Authorize payment          | `POST` | `/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize`   |
 
 For complete endpoint documentation, see the [Biometrics API Reference](/api-reference/banking-api/receivables/biometrics/find-or-create-device).
 
@@ -59,7 +59,7 @@ if (!supported) {
 ### Create Device
 
 ```http
-POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/devices
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/devices
 ```
 
 ```json
@@ -96,7 +96,7 @@ By providing the `device_id` from Step 1, the response also indicates whether th
 - **Not enrolled** → proceed to [Enrollment Registration](#step-3-enrollment-registration)
 
 ```http
-GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/participants?device_id={device_id}
+GET https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/participants?device_id={device_id}
 ```
 
 Without a `device_id`, only the participant list is returned (no enrollment info). You can also fetch enrollments separately via [List Enrollments](/api-reference/banking-api/receivables/biometrics/list-enrollments) and match them on your end — useful if you want to cache the participant list (which is the same for every user) and only fetch enrollments per device.
@@ -114,7 +114,7 @@ When a customer selects a participant and has no active enrollment for that devi
 ### 3.1 Create Enrollment
 
 ```http
-POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/enrollments
 ```
 
 ```json
@@ -206,7 +206,7 @@ Once the customer has an active enrollment, you can create payments that will be
 Using the `enrollment_id` from the active enrollment, create a payment:
 
 ```http
-POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments
 ```
 
 ```json
@@ -235,7 +235,7 @@ For complete details, see the [Create Payment](/api-reference/banking-api/receiv
 Retrieve the FIDO authorization options needed for the WebAuthn authentication:
 
 ```http
-GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials
+GET https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials
 ```
 
 The response contains a `public_key_encoded` value — a JSON-encoded string with the WebAuthn `publicKeyCredentialRequestOptions`. You will pass this to the auth widget in the next step.
@@ -318,7 +318,7 @@ window.addEventListener("message", (e) => {
 Take the credential from the widget response and send it to authorize the payment:
 
 ```http
-POST https://api.sandbox.trio.com.br/banking/initiation/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize
+POST https://api.sandbox.trio.com.br/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize
 ```
 
 ```json
@@ -516,12 +516,12 @@ Payment completed successfully. Funds have been transferred.
 | Step | Action                        | Who           | Endpoint / Action                                   |
 | ---- | ----------------------------- | ------------- | --------------------------------------------------- |
 | 1    | Collect device fingerprint    | Your frontend | FingerprintJS or similar                            |
-| 2    | Find or create device         | Your backend  | `POST /biometrics/devices`                          |
-| 3    | List participants             | Your backend  | `GET /biometrics/participants`                      |
-| 4a   | Create enrollment (first time)| Your backend  | `POST /biometrics/enrollments`                      |
+| 2    | Find or create device         | Your backend  | `POST /banking/cashin/pix/biometrics/devices`                          |
+| 3    | List participants             | Your backend  | `GET /banking/cashin/pix/biometrics/participants`                      |
+| 4a   | Create enrollment (first time)| Your backend  | `POST /banking/cashin/pix/biometrics/enrollments`                      |
 | 4b   | Customer authorizes at bank   | Customer      | Redirect to `redirect_url`                          |
 | 4c   | Biometric registration        | Customer      | Trio whitelabel page (automatic)                    |
-| 5    | Create payment                | Your backend  | `POST /biometrics/enrollments/{id}/payments`        |
+| 5    | Create payment                | Your backend  | `POST /banking/cashin/pix/biometrics/enrollments/{id}/payments`        |
 | 6    | Get authorization options     | Your backend  | `GET .../payments/{id}/credentials`                 |
 | 7    | Customer authorizes payment   | Customer      | Auth widget (WebAuthn)                              |
 | 8    | Submit authorization          | Your backend  | `POST .../payments/{id}/authorize`                  |

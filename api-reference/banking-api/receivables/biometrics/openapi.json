@@ -1072,7 +1072,7 @@
   },
   "openapi": "3.0.0",
   "paths": {
-    "/biometrics/devices": {
+    "/banking/cashin/pix/biometrics/devices": {
       "post": {
         "callbacks": {},
         "description": "Finds or creates a biometrics device associated with a counterparty.",
@@ -1137,7 +1137,7 @@
         ]
       }
     },
-    "/biometrics/enrollments": {
+    "/banking/cashin/pix/biometrics/enrollments": {
       "get": {
         "callbacks": {},
         "description": "Retrieves a list of biometrics enrollments for a given device.",
@@ -1263,7 +1263,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/credentials": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/credentials": {
       "get": {
         "callbacks": {},
         "description": "Returns FIDO registration options for the enrollment.",
@@ -1317,7 +1317,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/payments": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments": {
       "post": {
         "callbacks": {},
         "description": "Creates a payment initiation for a biometrics enrollment.",
@@ -1392,7 +1392,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}": {
       "get": {
         "callbacks": {},
         "description": "Returns the current status of a biometric payment.",
@@ -1465,7 +1465,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/authorize": {
       "post": {
         "callbacks": {},
         "description": "Authorizes a payment using a FIDO assertion.",
@@ -1549,7 +1549,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/payments/{payment_id}/credentials": {
       "get": {
         "callbacks": {},
         "description": "Returns FIDO authorization options for a payment.",
@@ -1612,7 +1612,7 @@
         ]
       }
     },
-    "/biometrics/enrollments/{enrollment_id}/register": {
+    "/banking/cashin/pix/biometrics/enrollments/{enrollment_id}/register": {
       "post": {
         "callbacks": {},
         "description": "Registers a FIDO credential for the enrollment.",
@@ -1687,7 +1687,7 @@
         ]
       }
     },
-    "/biometrics/participants": {
+    "/banking/cashin/pix/biometrics/participants": {
       "get": {
         "callbacks": {},
         "description": "Lists participants. Optionally filter by ISPB. When a device_id is provided, each participant includes enrolled? and enrollment fields, and enrolled participants are returned first.",
