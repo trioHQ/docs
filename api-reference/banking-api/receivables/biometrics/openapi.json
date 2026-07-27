@@ -138,7 +138,7 @@
             "type": "object",
             "properties": {
               "enrolled?": {
-                "description": "Whether participant is enrolled, only displayed when enrollment info is included",
+                "description": "Whether participant is enrolled. Present when device_id is provided.",
                 "type": "boolean"
               },
               "enrollment": {
@@ -181,7 +181,7 @@
         "title": "Biometrics_Participant_with_Enrollment",
         "type": "object"
       },
-      "Biometrics_Participants_list_response": {
+      "Participants_response": {
         "description": "List of biometrics participants",
         "example": {
           "data": [
@@ -206,10 +206,10 @@
             "type": "array"
           }
         },
-        "title": "Biometrics_Participants_list_response",
+        "title": "Participants_response",
         "type": "object"
       },
-      "Biometrics_Participants_with_enrollments_list_response": {
+      "Participants_with_enrollments_response": {
         "description": "List of biometrics participants with enrollment info",
         "example": {
           "data": [
@@ -244,7 +244,7 @@
             "type": "array"
           }
         },
-        "title": "Biometrics_Participants_with_enrollments_list_response",
+        "title": "Participants_with_enrollments_response",
         "type": "object"
       },
       "Device": {
@@ -1690,14 +1690,14 @@
     "/biometrics/participants": {
       "get": {
         "callbacks": {},
-        "description": "Lists participants for a device. Optionally filter by ISPB. When load_enrollments is true, each participant includes enrolled? and enrollment fields, and enrolled participants are returned first.",
+        "description": "Lists participants. Optionally filter by ISPB. When a device_id is provided, each participant includes enrolled? and enrollment fields, and enrolled participants are returned first.",
         "operationId": "TrioInitiationWeb.Biometrics.ParticipantController.index",
         "parameters": [
           {
-            "description": "Device ID",
+            "description": "Device ID. When provided, enrollments for this device are included in the response.",
             "in": "query",
             "name": "device_id",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1713,15 +1713,6 @@
               },
               "type": "array"
             }
-          },
-          {
-            "description": "Whether to load enrollments for each participant",
-            "in": "query",
-            "name": "load_enrollments",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
           }
         ],
         "responses": {
@@ -1729,7 +1720,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Biometrics_Participants_with_enrollments_list_response"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Participants_response"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Participants_with_enrollments_response"
+                    }
+                  ],
+                  "description": "When device_id is provided, returns participants with enrollment info. Otherwise, returns participants without enrollment info."
                 }
               }
             },
@@ -1756,7 +1755,7 @@
             "description": "Unprocessable Entity"
           }
         },
-        "summary": "List participants with enrollments by device",
+        "summary": "List participants",
         "tags": [
           "biometrics"
         ]

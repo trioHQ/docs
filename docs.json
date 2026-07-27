@@ -167,7 +167,7 @@
                     ]
                   },
                   {
-                    "group": "Biometrics",
+                    "group": "Biometrics (Pix)",
                     "pages": [
                       "api-reference/banking-api/receivables/biometrics/find-or-create-device",
                       "api-reference/banking-api/receivables/biometrics/list-participants",

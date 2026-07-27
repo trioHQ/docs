@@ -36,6 +36,26 @@ For complete endpoint documentation, see the [Biometrics API Reference](/api-ref
 
 Before interacting with the biometrics API, you need to identify the customer's device. Collect the device information using a fingerprinting library such as [FingerprintJS](https://fingerprint.com/) and send it to the API.
 
+The device must support biometric authentication for this flow to work. You can verify this on the frontend before proceeding:
+
+```js
+async function isBiometricsAvailable() {
+  if (!window.PublicKeyCredential) return false;
+
+  try {
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch {
+    return false;
+  }
+}
+
+// Usage
+const supported = await isBiometricsAvailable();
+if (!supported) {
+  // Show a message that biometric authentication is not available on this device
+}
+```
+
 ### Create Device
 
 ```http
@@ -68,43 +88,28 @@ For complete request and response details, see the [Find or Create Device](/api-
 
 ## Step 2: List Participants
 
-Retrieve the list of available banking participants (institutions) that support biometric enrollment. You can optionally load enrollment information for each participant to determine which flow the customer needs.
+Retrieve the list of available banking participants (institutions) that support biometric enrollment. Each participant represents a bank the customer can enroll with.
 
-### Option A: Participants with enrollments (recommended)
+By providing the `device_id` from Step 1, the response also indicates whether the customer already has an active enrollment with each participant — so you can determine the next step:
 
-A single request that returns participants with enrollment data attached. Enrolled participants appear first in the list.
+- **Already enrolled** → skip to [Payment Creation](#step-4-create-payment)
+- **Not enrolled** → proceed to [Enrollment Registration](#step-3-enrollment-registration)
 
 ```http
-GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/participants?device_id={device_id}&load_enrollments=true
+GET https://api.sandbox.trio.com.br/banking/initiation/biometrics/participants?device_id={device_id}
 ```
 
-Each participant in the response will include:
-- `enrolled?` — whether the customer has an active enrollment with this participant
-- `enrollment` — the enrollment details (if enrolled)
+Without a `device_id`, only the participant list is returned (no enrollment info). You can also fetch enrollments separately via [List Enrollments](/api-reference/banking-api/receivables/biometrics/list-enrollments) and match them on your end — useful if you want to cache the participant list (which is the same for every user) and only fetch enrollments per device.
 
-This lets you immediately determine which flow each participant requires:
-- **Has enrollment** → proceed to [Payment Creation](#step-4-create-payment)
-- **No enrollment** → proceed to [Enrollment Registration](#step-3-enrollment-registration)
-
-For details, see the [List Participants](/api-reference/banking-api/receivables/biometrics/list-participants) API reference.
-
-### Option B: Separate requests
-
-You can also fetch participants and enrollments independently:
-
-1. `GET /biometrics/participants?device_id={device_id}` — list all participants
-2. `GET /biometrics/enrollments?device_id={device_id}` — list existing enrollments
-
-Then match them on your end. This approach gives you more flexibility if you want to cache the participant list (which is the same for every user) and only fetch enrollments per user.
 > Participants are synchronized hourly with the Open Finance environment, and unstable participants are proactively disabled. If you choose to cache the participant list, be aware it may become out of sync.
 
-For details, see [List Enrollments](/api-reference/banking-api/receivables/biometrics/list-enrollments).
+For complete response details, see the [List Participants](/api-reference/banking-api/receivables/biometrics/list-participants) API reference.
 
 ---
 
 ## Step 3: Enrollment Registration
 
-When a customer selects a participant and has no active enrollment, you need to create one. This is a one-time process per participant.
+When a customer selects a participant and has no active enrollment for that device, you need to create one. This is a one-time process per participant per device_id.
 
 ### 3.1 Create Enrollment
 
@@ -338,7 +343,9 @@ For complete details, see the [Authorize Payment](/api-reference/banking-api/rec
 
 ## Payment Webhooks
 
-After creating a payment, you will receive `initiation_document` webhooks for each status change. You can also listen to Pix cash-in webhooks for the final settlement confirmation.
+After creating a payment, you will receive `initiation_document` webhooks for each status change. The initiation document works similarly to a QR code — it's the initiation method for a Pix transaction. It carries all the status updates and will ultimately trigger a regular Pix transaction webhook as well.
+
+To validate the settlement, you should listen to Pix cash-in webhooks, as they are the ones that actually confirm SPI has processed the transaction.
 
 All payment webhooks share the same `initiation_document` category and include the full payment data. The `type` field indicates the current status.
 
