@@ -1920,7 +1920,7 @@
             "type": "string"
           },
           "start_date": {
-            "description": "Recurrence Start Date",
+            "description": "Recurrence Start Date - Minimum 3 days after currente create day",
             "format": "date-time",
             "type": "string"
           },
@@ -4089,7 +4089,7 @@
             "type": "string"
           },
           "start_date": {
-            "description": "Recurrence Start Date",
+            "description": "Recurrence Start Date - Minimum 3 days after currente create day",
             "format": "date-time",
             "type": "string"
           },
@@ -6893,7 +6893,7 @@
                 "type": "string"
               },
               "start_date": {
-                "description": "Recurrence Start Date",
+                "description": "Recurrence Start Date - Minimum 3 days after currente create day",
                 "format": "date-time",
                 "type": "string"
               },

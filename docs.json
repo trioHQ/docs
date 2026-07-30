@@ -96,7 +96,7 @@
               "guides/webhook",
               "guides/simulating-deposit-success",
               "guides/simulating-deposit-failures",
-              "guides/pix-biometrics-web" 
+              "guides/pix-biometrics-web"
             ]
           },
           {
@@ -379,6 +379,10 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "FAQ",
+        "groups": []
       }
     ]
   },
