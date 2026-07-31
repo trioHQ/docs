@@ -3907,12 +3907,12 @@
             "nullable": true,
             "properties": {
               "fixed": {
-                "description": "Fixed Amount in cents, used for fixed amount recurrences",
+                "description": "Recurrence's amount to charge on every payment in cents",
                 "nullable": true,
                 "type": "integer"
               },
               "minimum": {
-                "description": "Minimum Amount in cents, used for variable amount recurrences",
+                "description": "Minimum Amount in cents on a recurrence's payment",
                 "nullable": true,
                 "type": "integer"
               }
