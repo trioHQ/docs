@@ -35,6 +35,225 @@
         "title": "Counterparty bank account data params",
         "type": "object"
       },
+      "Counterparty_split_recipient_ref_type": {
+        "description": "Counterparty split recipient reference type",
+        "enum": [
+          "bank_account",
+          "pix_key"
+        ],
+        "title": "Counterparty split recipient ref type",
+        "type": "string"
+      },
+      "Counterparty_split_recipient_ref_bank_account_params": {
+        "description": "Bank account reference used by a counterparty split recipient",
+        "example": {
+          "branch": "0001",
+          "digit": "1",
+          "ispb": "12345678",
+          "number": "87654321",
+          "type": "checking"
+        },
+        "properties": {
+          "branch": {
+            "description": "Counterparty split recipient bank account branch",
+            "type": "string"
+          },
+          "digit": {
+            "description": "Counterparty split recipient bank account digit",
+            "type": "string"
+          },
+          "ispb": {
+            "description": "Counterparty split recipient bank account ispb",
+            "type": "string"
+          },
+          "number": {
+            "description": "Counterparty split recipient bank account number",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/Counterparty_bank_account_type"
+          }
+        },
+        "required": [
+          "branch",
+          "digit",
+          "ispb",
+          "number",
+          "type"
+        ],
+        "title": "Counterparty split recipient ref bank account params",
+        "type": "object"
+      },
+      "Counterparty_split_recipient_ref_pix_key_params": {
+        "description": "Pix key reference used by a counterparty split recipient",
+        "example": {
+          "key": "05964110000197"
+        },
+        "properties": {
+          "key": {
+            "description": "Pix key value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "Counterparty split recipient ref pix key params",
+        "type": "object"
+      },
+      "Counterparty_split_recipient_data_params": {
+        "description": "Body params counterparty split recipient data",
+        "example": {
+          "ref_bank_account": {
+            "branch": "0001",
+            "digit": "1",
+            "ispb": "12345678",
+            "number": "87654321",
+            "type": "checking"
+          },
+          "ref_type": "bank_account"
+        },
+        "properties": {
+          "ref_bank_account": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_bank_account_params"
+              }
+            ],
+            "description": "Bank account information. Required when ref_type is bank_account"
+          },
+          "ref_pix_key": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_pix_key_params"
+              }
+            ],
+            "description": "Pix key information. Required when ref_type is pix_key"
+          },
+          "ref_type": {
+            "$ref": "#/components/schemas/Counterparty_split_recipient_ref_type"
+          }
+        },
+        "required": [
+          "ref_type"
+        ],
+        "title": "Counterparty split recipient data params",
+        "type": "object"
+      },
+      "Counterparty_split_recipient_response_params": {
+        "description": "Counterparty split recipient data",
+        "example": {
+          "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+          "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+          "inserted_at": "2026-08-05T10:00:00Z",
+          "ref_bank_account": {
+            "branch": "0001",
+            "digit": "1",
+            "ispb": "12345678",
+            "number": "87654321",
+            "type": "checking"
+          },
+          "ref_pix_key": null,
+          "ref_type": "bank_account",
+          "updated_at": "2026-08-05T10:00:00Z"
+        },
+        "properties": {
+          "counterparty_id": {
+            "$ref": "#/components/schemas/UUID"
+          },
+          "id": {
+            "$ref": "#/components/schemas/UUID"
+          },
+          "inserted_at": {
+            "description": "Inserted at",
+            "format": "date-time",
+            "type": "string"
+          },
+          "ref_bank_account": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_bank_account_params"
+              }
+            ],
+            "description": "Bank account information",
+            "nullable": true
+          },
+          "ref_pix_key": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_pix_key_params"
+              }
+            ],
+            "description": "Pix key information",
+            "nullable": true
+          },
+          "ref_type": {
+            "$ref": "#/components/schemas/Counterparty_split_recipient_ref_type"
+          },
+          "updated_at": {
+            "description": "Updated at",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "title": "Counterparty split recipient response params",
+        "type": "object"
+      },
+      "Counterparty_split_recipient_response": {
+        "description": "Body response of the counterparty split recipient",
+        "example": {
+          "data": {
+            "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+            "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+            "inserted_at": "2026-08-05T10:00:00Z",
+            "ref_bank_account": {
+              "branch": "0001",
+              "digit": "1",
+              "ispb": "12345678",
+              "number": "87654321",
+              "type": "checking"
+            },
+            "ref_pix_key": null,
+            "ref_type": "bank_account",
+            "updated_at": "2026-08-05T10:00:00Z"
+          }
+        },
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Counterparty_split_recipient_response_params"
+          }
+        },
+        "title": "Counterparty split recipient response",
+        "type": "object"
+      },
+      "Counterparty_split_recipient_list_response": {
+        "description": "Body response of the listing of counterparty split recipients",
+        "example": {
+          "data": [
+            {
+              "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+              "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+              "inserted_at": "2026-08-05T10:00:00Z",
+              "ref_bank_account": null,
+              "ref_pix_key": {
+                "key": "05964110000197"
+              },
+              "ref_type": "pix_key",
+              "updated_at": "2026-08-05T10:00:00Z"
+            }
+          ]
+        },
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Counterparty_split_recipient_response_params"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Counterparty split recipient list response",
+        "type": "object"
+      },
       "Generate_V2_Tax_create_params": {
         "description": "Body params to generate a tax V2",
         "example": {
@@ -301,6 +520,94 @@
         "title": "RecurrenceType",
         "type": "string"
       },
+      "SplitPaymentFixedCreateParams": {
+        "description": "Fixed split payment information used to transfer part of the received transaction after settlement. The total fixed split amount cannot exceed the paid amount. Any remaining value stays with the original receiver.",
+        "example": {
+          "amount": 100,
+          "amount_type": "fixed",
+          "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
+        },
+        "properties": {
+          "amount": {
+            "description": "Fixed split amount in cents",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "amount_type": {
+            "description": "Defines amount as a fixed amount in cents",
+            "enum": [
+              "fixed"
+            ],
+            "type": "string"
+          },
+          "counterparty_split_recipient_id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UUID"
+              }
+            ],
+            "description": "Counterparty split recipient reference"
+          }
+        },
+        "required": [
+          "amount_type",
+          "amount",
+          "counterparty_split_recipient_id"
+        ],
+        "title": "SplitPaymentFixedCreateParams",
+        "type": "object"
+      },
+      "SplitPaymentPercentageCreateParams": {
+        "description": "Percentage split payment information used to transfer part of the received transaction after settlement. The total percentage split amount cannot exceed 100. Any remaining value stays with the original receiver.",
+        "example": {
+          "amount": 10,
+          "amount_type": "percentage",
+          "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
+        },
+        "properties": {
+          "amount": {
+            "description": "Percentage of the received transaction to split",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "amount_type": {
+            "description": "Defines amount as a percentage of the received transaction",
+            "enum": [
+              "percentage"
+            ],
+            "type": "string"
+          },
+          "counterparty_split_recipient_id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UUID"
+              }
+            ],
+            "description": "Counterparty split recipient reference"
+          }
+        },
+        "required": [
+          "amount_type",
+          "amount",
+          "counterparty_split_recipient_id"
+        ],
+        "title": "SplitPaymentPercentageCreateParams",
+        "type": "object"
+      },
+      "SplitPaymentCreateParams": {
+        "description": "Split payment allocation used to transfer values after the transaction is received and settled. Use fixed for amounts in cents or percentage for a percentage of the received transaction.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SplitPaymentFixedCreateParams"
+          },
+          {
+            "$ref": "#/components/schemas/SplitPaymentPercentageCreateParams"
+          }
+        ],
+        "title": "SplitPaymentCreateParams",
+        "type": "object"
+      },
       "Boleto_create_params": {
         "description": "Body params to create a boleto",
         "example": {
@@ -353,6 +660,13 @@
           "expiration_date": "2025-12-10",
           "external_id": "external id 123",
           "invoice_type": "invoice",
+          "splits": [
+            {
+              "amount": 100,
+              "amount_type": "fixed",
+              "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
+            }
+          ],
           "virtual_account_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49",
           "wallet_type": "book_entry_electronic_bloquete"
         },
@@ -467,6 +781,14 @@
               "type": "string"
             },
             "maxLength": 3,
+            "nullable": true,
+            "type": "array"
+          },
+          "splits": {
+            "description": "Split payment allocations to apply after the boleto transaction is received and settled. Use fixed for amounts in cents or percentage for a percentage of the received amount. Percentage allocations cannot total more than 100. Fixed allocations cannot total more than the paid amount. Any remaining value stays with the original receiver.",
+            "items": {
+              "$ref": "#/components/schemas/SplitPaymentCreateParams"
+            },
             "nullable": true,
             "type": "array"
           },
@@ -2524,6 +2846,13 @@
             "allow_change_the_amount_on_payment": true,
             "show_qrcode_image": true
           },
+          "splits": [
+            {
+              "amount": 100,
+              "amount_type": "fixed",
+              "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
+            }
+          ],
           "virtual_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
         },
         "properties": {
@@ -2591,6 +2920,14 @@
             "description": "Platform ID of the dynamic QRCode",
             "nullable": true,
             "type": "string"
+          },
+          "splits": {
+            "description": "Split payment allocations to apply after the Pix QRCode transaction is received and settled. Use fixed for amounts in cents or percentage for a percentage of the received amount. Percentage allocations cannot total more than 100. Fixed allocations cannot total more than the paid amount. Any remaining value stays with the original receiver.",
+            "items": {
+              "$ref": "#/components/schemas/SplitPaymentCreateParams"
+            },
+            "nullable": true,
+            "type": "array"
           },
           "virtual_account_id": {
             "description": "Virtual Account ID",
@@ -10161,6 +10498,123 @@
         ]
       }
     },
+    "/banking/counterparties/{counterparty_id}/split_recipients": {
+      "get": {
+        "callbacks": {},
+        "description": "Lists counterparty split recipients by counterparty ID",
+        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.index",
+        "parameters": [
+          {
+            "description": "Counterparty ID",
+            "in": "path",
+            "name": "counterparty_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_split_recipient_list_response"
+                }
+              }
+            },
+            "description": "CounterpartySplitRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "List counterparty split recipients",
+        "tags": [
+          "counterparties"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "description": "Creates a counterparty split recipient",
+        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.create",
+        "parameters": [
+          {
+            "description": "Counterparty ID",
+            "in": "path",
+            "name": "counterparty_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_data_params"
+              }
+            }
+          },
+          "description": "The create counterparty split recipient attributes",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
+                }
+              }
+            },
+            "description": "CounterpartySplitRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Create counterparty split recipient",
+        "tags": [
+          "counterparties"
+        ]
+      }
+    },
     "/banking/cashout/transfer": {
       "get": {
         "callbacks": {},
@@ -14585,6 +15039,141 @@
         "summary": "Show counterparty bank account",
         "tags": [
           "counterparty_bank_accounts"
+        ]
+      }
+    },
+    "/banking/counterparties/{counterparty_id}/split_recipients/{counterparty_split_recipient_id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Show a counterparty split recipient",
+        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.show",
+        "parameters": [
+          {
+            "description": "Counterparty ID",
+            "in": "path",
+            "name": "counterparty_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "description": "Counterparty split recipient ID",
+            "in": "path",
+            "name": "counterparty_split_recipient_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
+                }
+              }
+            },
+            "description": "CounterpartySplitRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Show counterparty split recipient",
+        "tags": [
+          "counterparties"
+        ]
+      },
+      "put": {
+        "callbacks": {},
+        "description": "Update a counterparty split recipient",
+        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.update",
+        "parameters": [
+          {
+            "description": "Counterparty ID",
+            "in": "path",
+            "name": "counterparty_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "description": "Counterparty split recipient ID",
+            "in": "path",
+            "name": "counterparty_split_recipient_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Counterparty_split_recipient_data_params"
+              }
+            }
+          },
+          "description": "The update counterparty split recipient attributes",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
+                }
+              }
+            },
+            "description": "CounterpartySplitRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Update counterparty split recipient",
+        "tags": [
+          "counterparties"
         ]
       }
     },
