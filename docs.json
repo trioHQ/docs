@@ -131,7 +131,10 @@
                   "api-reference/banking-api/counterparties/update-counterparty",
                   "api-reference/banking-api/counterparties/list-counterparty-bank-accounts",
                   "api-reference/banking-api/counterparties/get-counterparty-bank-account",
-                  "api-reference/banking-api/counterparties/create-counterparty-bank-account"
+                  "api-reference/banking-api/counterparties/create-counterparty-bank-account",
+                  "api-reference/banking-api/counterparties/create-counterparty-split-recipient",
+                  "api-reference/banking-api/counterparties/get-counterparty-split-recipient",
+                  "api-reference/banking-api/counterparties/list-counterparty-split-recipients"
                 ]
               },
               {
