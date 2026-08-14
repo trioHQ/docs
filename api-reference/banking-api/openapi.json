@@ -660,13 +660,7 @@
           "expiration_date": "2025-12-10",
           "external_id": "external id 123",
           "invoice_type": "invoice",
-          "splits": [
-            {
-              "amount": 100,
-              "amount_type": "fixed",
-              "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
-            }
-          ],
+         
           "virtual_account_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49",
           "wallet_type": "book_entry_electronic_bloquete"
         },
@@ -784,14 +778,7 @@
             "nullable": true,
             "type": "array"
           },
-          "splits": {
-            "description": "Split payment allocations to apply after the boleto transaction is received and settled. Use fixed for amounts in cents or percentage for a percentage of the received amount. Percentage allocations cannot total more than 100. Fixed allocations cannot total more than the paid amount. Any remaining value stays with the original receiver.",
-            "items": {
-              "$ref": "#/components/schemas/SplitPaymentCreateParams"
-            },
-            "nullable": true,
-            "type": "array"
-          },
+         
           "virtual_account_id": {
             "$ref": "#/components/schemas/UUID"
           },
@@ -2846,13 +2833,6 @@
             "allow_change_the_amount_on_payment": true,
             "show_qrcode_image": true
           },
-          "splits": [
-            {
-              "amount": 100,
-              "amount_type": "fixed",
-              "counterparty_split_recipient_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49"
-            }
-          ],
           "virtual_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
         },
         "properties": {
@@ -2921,14 +2901,7 @@
             "nullable": true,
             "type": "string"
           },
-          "splits": {
-            "description": "Split payment allocations to apply after the Pix QRCode transaction is received and settled. Use fixed for amounts in cents or percentage for a percentage of the received amount. Percentage allocations cannot total more than 100. Fixed allocations cannot total more than the paid amount. Any remaining value stays with the original receiver.",
-            "items": {
-              "$ref": "#/components/schemas/SplitPaymentCreateParams"
-            },
-            "nullable": true,
-            "type": "array"
-          },
+         
           "virtual_account_id": {
             "description": "Virtual Account ID",
             "type": "string"
