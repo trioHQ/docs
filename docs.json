@@ -39,21 +39,6 @@
             ]
           },
           {
-            "group": "Trio SDK",
-            "pages": [
-              "trio-sdk/introduction",
-              "trio-sdk/using-the-sdk",
-              "trio-sdk/local-example",
-              {
-                "group": "Flows",
-                "pages": [
-                  "trio-sdk/flows/payin",
-                  "trio-sdk/flows/payout"
-                ]
-              }
-            ]
-          },
-          {
             "group": "Webhooks",
             "pages": [
               "webhooks/introduction",
@@ -82,21 +67,63 @@
         "tab": "Guides",
         "pages": [
           {
-            "group": "Practical Guide",
+            "group": "Getting Started",
             "pages": [
               "guides/sandbox_account",
               "guides/creating-your-first-api-credential",
-              "guides/creating-your-first-webhook",
+              "guides/creating-your-first-webhook"
+            ]
+          },
+          {
+            "group": "Trio SDK",
+            "pages": [
+              "trio-sdk/introduction",
+              "trio-sdk/using-the-sdk",
+              "trio-sdk/local-example",
+              {
+                "group": "Flows",
+                "pages": [
+                  "trio-sdk/flows/payin",
+                  "trio-sdk/flows/payout"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Pix",
+            "pages": [
               "guides/qr-codes",
+              "guides/document-lifecycle",
               "guides/using-pix-key",
-              "guides/using-pix-automatic",
-              "guides/cash-in",
-              "guides/cash-out",
-              "guides/boleto-types",
-              "guides/webhook",
-              "guides/simulating-deposit-success",
-              "guides/simulating-deposit-failures",
               "guides/pix-biometrics-web"
+            ]
+          },
+          {
+            "group": "Receivables",
+            "pages": [
+              "guides/cash-in",
+              "guides/using-pix-automatic",
+              "guides/simulating-deposit-success",
+              "guides/simulating-deposit-failures"
+            ]
+          },
+          {
+            "group": "Payments",
+            "pages": [
+              "guides/cash-out"
+            ]
+          },
+          {
+            "group": "Boleto",
+            "pages": [
+              "guides/boleto-types",
+              "guides/create-boleto"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "guides/webhook"
             ]
           },
           {
