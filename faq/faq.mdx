@@ -1,0 +1,264 @@
+---
+title: "FAQ — Sandbox and Production Integration"
+description: "Frequently asked questions about Sandbox setup, credentials, webhooks, PIX testing, API limits, compliance rules, and Production onboarding."
+---
+
+# FAQ — Sandbox and Production Integration
+
+This FAQ covers the most common questions about the Trio integration, including **Sandbox setup, API credentials, Virtual Accounts, webhooks, PIX testing, rate limits, compliance rules, and Production onboarding**.
+
+> **Tip:** Before starting the integration, we recommend reading the [Trio Guides](https://docs.trio.com.br/guides) and our [Integration Best Practices](https://docs.trio.com.br/operations/best_practices_for_integration).
+
+---
+
+## Sandbox
+
+### How do I get the Sandbox `client_id` and `client_secret`?
+
+Sandbox API credentials are created by your team directly through the **Sandbox Internet Banking**.
+
+Trio does not generate or provide these credentials manually. Your team needs to:
+
+1. Create an organization in the Sandbox.
+2. Access the Sandbox Internet Banking.
+3. Create the API credentials.
+4. Use the generated credentials for API authentication.
+
+For more information, see the [Sandbox Account Guide](https://docs.trio.com.br/guides/sandbox_account).
+
+---
+
+### Where can I find the Sandbox Virtual Account ID?
+
+The **Virtual Account ID** is available in the Sandbox Internet Banking.
+
+After creating your organization:
+
+1. Go to **Accounts**.
+2. Select the bank account you want to use.
+3. Open the account details.
+4. Find the account identifier, which is the `virtual_account_id`.
+
+This ID is required for operations such as PIX Cash-in testing.
+
+---
+
+## Webhooks
+
+### How do I create and configure a Sandbox webhook?
+
+The complete process for creating a webhook is available in our guide:
+
+[Creating Your First Webhook](https://docs.trio.com.br/guides/creating-your-first-webhook)
+
+The same concepts apply to both Sandbox and Production, but each environment must be configured separately.
+
+---
+
+### Where can I get the webhook secret?
+
+The webhook secret is generated when you create the webhook through the Internet Banking.
+
+The secret is used to validate the authenticity of webhook requests received by your system.
+
+For details about webhook authentication and signatures, see:
+
+[Webhook Authentication](https://docs.trio.com.br/webhooks/authentication)
+
+---
+
+### Does my webhook endpoint require IP allowlisting?
+
+Yes.
+
+When creating your API credentials, you must register your server's IP address.
+
+If your infrastructure also requires Trio's IP addresses to be added to your allowlist (whitelist), use the following:
+
+| Environment | Trio IP |
+| --- | --- |
+| Production | `Shared after contract` |
+| Sandbox | `34.194.173.207` |
+---
+
+### What is the webhook retry policy?
+
+Trio has a retry mechanism for failed webhook deliveries.
+
+If a webhook delivery fails, our system will retry the delivery up to **5 times**.
+
+The retry interval increases after each failure:
+
+| Retry | Delay |
+| --- | ---: |
+| 1st retry | 16 seconds |
+| 2nd retry | 32 seconds |
+| 3rd retry | 104 seconds |
+| 4th retry | 208 seconds |
+| Additional retries | According to the retry policy |
+
+Your webhook endpoint should be designed to safely handle **duplicate events**.
+
+We recommend implementing **idempotency** in your webhook processing to prevent the same event from being processed more than once.
+
+---
+
+## PIX Cash-in Testing
+
+### How can I simulate a successful PIX payment in Sandbox?
+
+You can simulate a successful PIX deposit using the procedure described in our guide:
+
+[Simulating Deposit Success](https://docs.trio.com.br/guides/simulating-deposit-success)
+
+---
+
+### How can I simulate a failed PIX payment in Sandbox?
+
+You can simulate failed PIX deposits using the following guide:
+
+[Simulating Deposit Failures](https://docs.trio.com.br/guides/simulating-deposit-failures)
+
+---
+
+### Where can I understand the PIX transaction status flow?
+
+Understanding the document lifecycle is important when implementing PIX Cash-in and other transaction flows.
+
+We recommend reading:
+
+[Document Lifecycle](https://docs.trio.com.br/guides/document-lifecycle)
+
+It is also important to follow our recommended integration practices:
+
+[Integration Best Practices — Final Summary](https://docs.trio.com.br/operations/best_practices_for_integration#final-summary)
+
+---
+
+## API Rate Limits
+
+### What are the API rate limits?
+
+The API rate limits are:
+
+| Environment | Rate Limit |
+| --- | ---: |
+| Production | `60 requests/second` |
+| Sandbox | `5 requests/second` |
+
+These limits apply to **each individual account and each endpoint** and are enforced on a per-second basis.
+
+---
+
+### What should I do when I reach the API rate limit?
+
+When a rate limit is reached, we recommend implementing a **retry and backoff strategy**.
+
+Avoid continuously retrying requests without waiting between attempts.
+
+A backoff strategy helps reduce unnecessary requests and prevents repeated rate-limit errors.
+
+---
+
+## PIX Cash-in Compliance
+
+### Which PIX Cash-in compliance rules can be configured?
+
+The following rules can be configured directly through the Internet Banking:
+
+- Block unidentified deposits.
+- Block deposits from duplicate QR Codes.
+- Block deposits with an amount different from the amount issued in the dynamic QR Code.
+- Block deposits from legal entities.
+- Block deposits with a CPF/CNPJ different from the dynamic QR Code.
+- Block deposits from unauthorized participants.
+- Block deposits from a bank account belonging to a different counterparty than the dynamic QR Code.
+- Automatically return deposits from minors.
+- Automatically return deposits from deceased individuals.
+- Automatically return deposits from individuals with an irregular and/or invalid CPF/CNPJ.
+- Block Cash-out transactions to legal entities (CNPJ).
+
+These settings can be reviewed and configured according to the requirements of your Virtual Account.
+
+---
+
+## Production
+
+### How do I get Production credentials and Virtual Account IDs?
+
+Production access is provided after the contract has been signed with the **Trio Commercial Team**.
+
+After receiving access to the Production Internet Banking, your team can:
+
+- Create the Production API credentials.
+- Create and manage Virtual Accounts.
+- Obtain the corresponding Virtual Account IDs.
+- Configure Production webhooks.
+
+Production credentials and Sandbox credentials are managed separately.
+
+---
+
+### Are Production and Sandbox webhook secrets different?
+
+Yes.
+
+**Sandbox and Production are completely separate environments.**
+
+You must configure your webhooks separately in each environment, and each environment has its own webhook configuration and secret.
+
+A Sandbox webhook secret should not be used in Production.
+
+---
+
+### Is there a Production certification or go-live checklist?
+
+After the contract is signed and the compliance validation is completed by the Trio team, your engineering team should validate the complete integration flow before going live.
+
+At minimum, we recommend validating:
+
+- PIX Cash-in.
+- Cash-out.
+- Webhook delivery.
+- Webhook signature validation.
+- Transaction status updates.
+- Document lifecycle handling.
+- Error handling.
+- Retry and idempotency behavior.
+
+For the recommended integration approach, see:
+
+[Integration Best Practices](https://docs.trio.com.br/operations/best_practices_for_integration)
+
+---
+
+## Additional Resources
+
+For more detailed information, check the following resources:
+
+### Guides
+
+[Trio Guides](https://docs.trio.com.br/guides)
+
+Step-by-step guides covering common integration scenarios.
+
+### Integration Best Practices
+
+[Integration Best Practices](https://docs.trio.com.br/operations/best_practices_for_integration)
+
+Recommended practices for building and maintaining a reliable integration.
+
+### API Documentation
+
+[Trio API Documentation](https://docs.trio.com.br/)
+
+Complete documentation including:
+
+- Getting Started
+- Guides
+- API Reference
+- Webhooks
+- Authentication
+- Transaction lifecycle
+
+> **Recommended reading:** We strongly recommend reviewing the documentation before starting the Production integration. Most common integration questions and configuration details are covered in the guides and API reference.

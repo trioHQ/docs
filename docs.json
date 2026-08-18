@@ -409,7 +409,18 @@
             ]
           }
         ]
-      }
+      },
+     {
+  "tab": "FAQ",
+  "groups": [
+    {
+      "group": "Frequently Asked Questions",
+      "pages": [
+        "faq/faq"
+      ]
+    }
+  ]
+}
     ]
   },
   "api": {
