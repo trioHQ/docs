@@ -277,7 +277,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID of the tax for reference",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "virtual_account_id": {
@@ -428,7 +428,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID for reference",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "virtual_account_id": {
@@ -762,7 +762,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "maxLength": 40,
             "nullable": true,
             "type": "string"
@@ -852,7 +852,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "format": "uuid",
             "type": "string"
           },
@@ -1117,7 +1117,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "id": {
@@ -1930,7 +1930,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "platform_id": {
@@ -2353,7 +2353,7 @@
             "$ref": "#/components/schemas/Journey"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "format": "uuid",
             "type": "string"
           },
@@ -2795,7 +2795,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID for reference",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "virtual_account_id": {
@@ -2875,7 +2875,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID of the dynamic QRCode",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "options": {
@@ -4329,7 +4329,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "Recurrence External ID",
+            "description": "Recurrence External ID - transaction identifier used for reconciliation and webhook tracking",
             "nullable": true,
             "type": "string"
           },
@@ -4502,7 +4502,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "from_virtual_account_id": {
@@ -4666,7 +4666,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "id": {
@@ -5306,7 +5306,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID for reference",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "virtual_account_id": {
@@ -6742,7 +6742,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "from_virtual_account_id": {
@@ -7313,7 +7313,7 @@
                 "$ref": "#/components/schemas/Journey"
               },
               "external_id": {
-                "description": "External ID",
+                "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
                 "format": "uuid",
                 "type": "string"
               },
@@ -7553,7 +7553,7 @@
             "$ref": "#/components/schemas/Journey"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "format": "uuid",
             "type": "string"
           },
@@ -8499,7 +8499,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID of the dynamic QRCode",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "hash": {
@@ -8973,7 +8973,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "pix_ref_bank_account": {
@@ -9433,7 +9433,7 @@
             "type": "string"
           },
           "external_id": {
-            "description": "External ID for reference",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "type": "string"
           },
           "virtual_account_id": {
@@ -10631,7 +10631,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -13377,7 +13377,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -13487,7 +13487,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -14185,7 +14185,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -15184,7 +15184,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -16450,7 +16450,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -17276,7 +17276,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
@@ -18341,7 +18341,7 @@
             }
           },
           {
-            "description": "External ID",
+            "description": "External ID - transaction identifier used for reconciliation and webhook tracking",
             "in": "query",
             "name": "external_id",
             "required": false,
