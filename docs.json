@@ -75,17 +75,6 @@
             ]
           },
           {
-            "group": "Partners",
-            "pages": [
-              {
-                "group": "Shoppub (PT-BR)",
-                "pages": [
-                  "guides/partners/shoppub/criacao-de-credenciais"
-                ]
-              }
-            ]
-          },
-          {
             "group": "Trio SDK",
             "pages": [
               "trio-sdk/introduction",
@@ -417,6 +406,17 @@
                   }
                 ]
               }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Partners",
+        "groups": [
+          {
+            "group": "Shoppub (PT-BR)",
+            "pages": [
+              "guides/partners/shoppub/criacao-de-credenciais"
             ]
           }
         ]
