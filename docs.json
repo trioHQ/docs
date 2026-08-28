@@ -75,6 +75,17 @@
             ]
           },
           {
+            "group": "Partners",
+            "pages": [
+              {
+                "group": "Shoppub",
+                "pages": [
+                  "guides/partners/shoppub/criacao-de-credenciais"
+                ]
+              }
+            ]
+          },
+          {
             "group": "Trio SDK",
             "pages": [
               "trio-sdk/introduction",
@@ -410,17 +421,17 @@
           }
         ]
       },
-     {
-  "tab": "FAQ",
-  "groups": [
-    {
-      "group": "Frequently Asked Questions",
-      "pages": [
-        "faq"
-      ]
-    }
-  ]
-}
+      {
+        "tab": "FAQ",
+        "groups": [
+          {
+            "group": "Frequently Asked Questions",
+            "pages": [
+              "faq"
+            ]
+          }
+        ]
+      }
     ]
   },
   "api": {
