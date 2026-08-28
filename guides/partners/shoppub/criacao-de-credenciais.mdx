@@ -18,9 +18,13 @@ No menu exibido, selecione **“API Keys”**.
 
 ## 3. Crie uma nova credencial
 
-Clique em **“Create Key”**.
+Clique em **“Criar chave de API”**.
 
 ![Imagem (23)](/images/image-\(23\).png)
+
+Você vai ver essa tela abaixo, e nos proximos passos vamos explicar cada uma.
+
+![Imagem (24)](/images/image-\(24\).png)
 
 ## 4. Informe o nome da credencial
 
@@ -28,11 +32,7 @@ Informe um nome ou identificador para a credencial.
 
 Informe **“Shoppub”** no nome da credencial, para identificar que ela será utilizada pela Shoppub.
 
-**Exemplo:**
-
-`Shoppub`
-
-![Imagem (24)](/images/image-\(24\).png)
+![Image](/images/image-12.png "Image")
 
 ## 5. Defina as permissões
 
@@ -42,6 +42,8 @@ Selecione as permissões que serão atribuídas à credencial:
 - **Somente Leitura**: permite apenas a leitura de informações.
 
 Para a integração com a Shoppub, utilize as permissões de **Leitura e Escrita**, previamente acordadas para a operação.
+
+![Image](/images/image-13.png "Image")
 
 ## 6. Configure os endereços IP permitidos
 
@@ -55,17 +57,17 @@ Para a integração com a **Shoppub**, informe os seguintes endereços IP:
 3.231.100.126
 ```
 
-Adicione os três endereços IP à lista de **Allowed IP Addresses**.
+Adicione os três endereços IP à lista de **Restrições de Acesso**.
+
+![Image](/images/image-14.png "Image")
 
 > **Importante:** a credencial somente poderá ser utilizada a partir dos endereços IP configurados. Certifique-se de que os três IPs acima estejam cadastrados corretamente.
 
-Exemplo de configuração:
-
-![Imagem (25)](/images/image-\(25\).png)
-
 ## 7. Salve a credencial
 
-Após preencher as informações, clique em **“Save Key”**.
+Após preencher as informações, clique em **“Salvar Chave"**.
+
+![Image](/images/image-16.png "Image")
 
 ## 8. Confirme sua identidade
 
@@ -77,9 +79,9 @@ Informe sua senha e o código **OTP** solicitado.
 
 O **Secret Key** será exibido após a confirmação.
 
-Armazene o Secret Key em um local seguro.
+Copie e armazene a **Secret Key** em um local seguro. Essa chave será exibida **apenas uma vez**, portanto, certifique-se de copiá-la e salvá-la em outro local, como um bloco de notas, antes de enviá-la à Shoppub.
 
-Em seguida, clique em **“Confirm”** e depois em **“Go to Key Details”**.
+Em seguida, clique em **“Confirmo”** e depois em **“Ir para detalhes da chave”**.
 
 ![Imagem (27)](/images/image-\(27\).png)
 
@@ -101,19 +103,22 @@ Para localizar essa informação:
 
 1. No menu do Trio App, acesse **Contas**;
 2. Selecione **Contas bancárias**;
+
+![Image](/images/image-17.png "Image")
+
 3. Localize a conta bancária que será utilizada pela API;
 4. A conta poderá ser do tipo **Transacional** ou **Operacional**;
 5. Clique na conta bancária para acessar seus detalhes;
+
+![Image](/images/image-18.png "Image")
+
 6. Na tela de detalhes da conta, localize o campo **“Identificador”**;
+
+![Image](/images/image-19.png "Image")
+
 7. Copie o valor apresentado nesse campo.
 
 O valor do campo **“Identificador”** corresponde ao **ID da conta bancária virtual** que deverá ser informado à Shoppub.
-
-### Exemplo
-
-Na tela de detalhes da conta bancária, localize o campo **“Identificador”** e copie o seu valor.
-
-Esse identificador será utilizado pela Shoppub para definir qual conta bancária virtual será utilizada nas operações realizadas por meio da API.
 
 > **Importante:** certifique-se de copiar o identificador da conta bancária que realmente será utilizada pela integração da Shoppub. A conta pode ser **Transacional** ou **Operacional**, conforme a configuração definida para a integração.
 
@@ -130,7 +135,3 @@ Essas são as **três informações necessárias para que a Shoppub possa config
 > **Atenção:** o Client ID e, principalmente, o Secret Key são informações sensíveis. Compartilhe essas informações somente por um canal seguro e autorizado. Nunca publique o Secret Key em repositórios de código, chamados públicos, chats ou outros locais de acesso não autorizado.
 
 Após compartilhar as três informações com a Shoppub, a equipe poderá configurar a integração utilizando as credenciais de API e a conta bancária virtual indicada.
-
-Para entender como utilizar o **Client ID** e o **Secret Key** na autenticação da API, consulte a documentação de autenticação:
-
-[Documentação de autenticação](https://docs.trio.com.br/developers/authentication)
