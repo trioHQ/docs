@@ -129,6 +129,7 @@
           {
             "group": "Operations",
             "pages": [
+          
               "operations/best_practices_for_integration",
               "operations/how_to_ensure_the_closed_loop"
             ]
@@ -427,7 +428,8 @@
           {
             "group": "Frequently Asked Questions",
             "pages": [
-              "faq"
+              "faq/frequently_asked_questions",
+              "faq/boleto-en-us"
             ]
           }
         ]

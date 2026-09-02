@@ -1,0 +1,372 @@
+---
+title: "FAQ — Boleto"
+description: "This FAQ covers the main points integrators need to understand about how **boletos work at Trio**, including hybrid boleto with Pix, payer data, status cycle, webhooks, due date, expiration, refunds, and installment book (carnê) issuance."
+---
+
+
+> This content complements the [Boleto Creation Guide](https://docs.trio.com.br/guides/create-boleto) and the [API Reference](http://localhost:3000/api-reference/banking-api/receivables/boletos/post).
+
+---
+
+## BolePix
+
+### Does Trio's boleto have a Pix QR Code?
+
+Yes. Every boleto created by Trio also has an **embedded Pix QR Code**, allowing the payer to choose between traditional boleto payment or payment via Pix.
+
+---
+
+### Is the Pix copy-and-paste code returned when the boleto is created?
+
+Not directly. When creating a boleto via `POST /banking/cashin/boletos`, the Pix QR Code hash is not returned in the creation response.
+
+To get the Pix data, use the `id` returned in `data.id` and make a follow-up request:
+
+```http
+GET /banking/cashin/pix/qrcodes/{id}
+```
+
+For more details, see the [dynamic QR Code query reference](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/get).
+
+---
+
+### How do I identify if a boleto was paid via Pix?
+
+When the boleto is paid through the embedded Pix QR Code, the payment is sent via the `collecting_document` webhook with:
+
+```text
+type: pix_boleto
+```
+
+This lets you distinguish a payment made via Pix from a traditional boleto payment.
+
+> **Best practice:** use the `type` field received in the webhook to identify the payment origin, and reconcile using the transaction identifiers.
+
+---
+
+## Payer data
+
+### Is the address provided in `counterparty` validated by Trio?
+
+Address data is required to fill in the fields required by the boleto schema, but Trio **does not validate whether the provided address actually belongs to the payer or corresponds to a real, existing address**.
+
+The address fields include:
+
+- `address`
+- `district`
+- `city`
+- `state`
+- `postal_code`
+
+> **Best practice:** even though the address isn't validated, we recommend sending real, accurate data whenever available.
+
+---
+
+## Boleto status
+
+### What are the main statuses of a boleto?
+
+The boleto cycle follows Trio's document flow:
+
+```text
+Created → Confirmed → Settled
+```
+
+In addition to these states, a boleto can move to `expired` when it reaches its final payment deadline.
+
+| Status | Meaning |
+| --- | --- |
+| `created` | Boleto created |
+| `confirmed` | Boleto registered and confirmed |
+| `settled` | Boleto paid/settled |
+| `expired` | Boleto expired and can no longer be paid |
+
+---
+
+### Which status indicates the boleto was paid?
+
+The `settled` status indicates the boleto has been **paid and settled**.
+
+Don't treat `created` or `confirmed` alone as payment confirmation.
+
+---
+
+### What happens when the boleto reaches `expiration_date`?
+
+When `expiration_date` is reached, the boleto moves to the `expired` status.
+
+From that point on, the boleto no longer accepts payments.
+
+---
+
+## Webhooks
+
+### Which webhook reports a boleto payment?
+
+Payment is communicated through the `collecting_document` webhook.
+
+When the boleto is paid via the Pix QR Code, the `type` received is:
+
+```text
+pix_boleto
+```
+
+---
+
+### Does the `external_id` provided at boleto creation appear in the webhook?
+
+Yes. The `external_id` provided when creating the boleto is returned in the webhooks related to the document.
+
+> **Best practice:** use `external_id` as a reference to your own system to make it easier to reconcile the transaction in Trio with the order or charge in your platform.
+
+---
+
+### Is there a specific webhook for when the boleto becomes due?
+
+No. Trio does not send a specific event just to report that the boleto has reached its `due_date`.
+
+The integrator should handle this according to their own business needs.
+
+When the boleto reaches `expiration_date`, its status will change to `expired`.
+
+---
+
+### Do I need to track boleto expiration in my system?
+
+If your application needs to perform some action when the boleto expires, yes.
+
+Since there's no dedicated expiration webhook, we recommend that your system keep track of the dates or query the document's status when needed.
+
+---
+
+## Due date and expiration
+
+### What's the difference between `due_date` and `expiration_date`?
+
+The two fields represent different moments:
+
+- **`due_date`**: the boleto's due date.
+- **`expiration_date`**: the final date by which the boleto can still be paid.
+
+For example:
+
+```text
+due_date:        10/09/2026
+expiration_date: 30/09/2026
+```
+
+In this case, the boleto is due on **09/10**, but can still be paid until **09/30**, as long as it's still valid.
+
+---
+
+### Can I pay a boleto after its `due_date`?
+
+Yes. The boleto can continue to accept payments after the due date, as long as it hasn't reached `expiration_date` yet.
+
+After `due_date`, any configured charges for the boleto may apply, such as **interest and late fees**.
+
+---
+
+### What happens after `expiration_date`?
+
+After `expiration_date`, the boleto becomes expired and moves to:
+
+```text
+expired
+```
+
+From that point on, the boleto can no longer be paid.
+
+---
+
+## Changing the due date
+
+### Can I change a boleto's due date?
+
+Yes. The due date can be updated via:
+
+```http
+PUT /banking/cashin/boletos/{id}
+```
+
+The update response returns the updated data, including the new `due_detail`.
+
+---
+
+### Does the barcode change when I update the due date?
+
+No. Changing the due date updates the due date data (`due_detail`), but the **barcode does not change**.
+
+The Pix QR Code also stays the same.
+
+---
+
+### Can I change the due date of an overdue boleto?
+
+Yes. A boleto that has passed its `due_date` but hasn't expired yet can have its due date updated.
+
+---
+
+### Can I change a boleto that has already expired?
+
+No. Boletos with `expired` status cannot have their due date updated.
+
+> **Best practice:** if your operation allows renegotiation, make the update before the boleto reaches its `expiration_date`.
+
+---
+
+## Refunds and returns
+
+### Can I use the refund endpoint for a boleto?
+
+It depends on how the boleto was paid.
+
+The endpoint:
+
+```http
+POST /banking/cashin/documents/{id}/refund
+```
+
+is intended for transactions originated via **Pix**.
+
+So, if the boleto was paid using the **Pix QR Code**, `/refund` can be used.
+
+---
+
+### How does refund work when the boleto is paid via Pix?
+
+The flow is:
+
+```text
+Boleto
+   ↓
+Pix QR Code
+   ↓
+Pix Payment
+   ↓
+Pix Transaction
+   ↓
+/refund
+```
+
+In this scenario, the transaction originates from Pix, and the refund endpoint is available.
+
+---
+
+## Boleto URL
+
+### Does the boleto URL require authentication?
+
+No. The URL returned by the API is **public and does not require authentication** to access the document.
+
+This allows you to use the link directly in:
+
+- emails;
+- checkout;
+- applications;
+- order tracking pages.
+
+Example:
+
+```text
+https://receipts.sandbox.trio.com.br/0195aa08-7f58-51b9-79c4-cc88e7a150b1/boleto/01a05e1b-dced-0fa7-f252-0c3530c5f0e9
+```
+
+> **Best practice:** store the `boleto_url` along with the boleto data to make it easier to access the document later.
+
+---
+
+## Costs
+
+### Is there a charge for a boleto that was issued but not paid?
+
+Pricing and billing conditions should be confirmed directly with **Trio's sales team**.
+
+This is especially important for operations with high issuance volume or installment books (carnês), where several installments may be generated in advance.
+
+---
+
+## Installment books (carnês) and batch issuance
+
+### Can I issue multiple boletos for the same purchase?
+
+Yes. There's no additional limit on the number of boletos issued. The main restriction to keep in mind is the **rate limit on the creation route**.
+
+This allows you to, for example, create multiple installments of a carnê for the same purchase.
+
+---
+
+### What's the rate limit for creating boletos?
+
+The boleto creation route has a standard rate limit of:
+
+```text
+60 requests per second
+```
+
+For batch issuance, organize your requests to respect this limit.
+
+---
+
+### Does each boleto in a carnê need a different `external_id`?
+
+Yes. Each new boleto must have a unique `external_id`.
+
+For example:
+
+```text
+pedido-123-parcela-01
+pedido-123-parcela-02
+pedido-123-parcela-03
+```
+
+This makes it easier to identify each installment and avoids conflicts during reconciliation.
+
+> **Best practice:** include some reference to the charge and the installment in the `external_id`. This makes it simpler to relate the boleto to the order within your system.
+
+---
+
+## Integration best practices
+
+### What information should I store after creating a boleto?
+
+We recommend storing, at minimum:
+
+- the boleto/qrcode `id` at Trio;
+- `external_id`;
+- `due_date`;
+- `expiration_date`;
+- `boleto_url`;
+
+This information helps with **reconciliation, support, tracking, and updating the charge**.
+
+---
+
+### What should I consider when implementing boleto?
+
+In summary:
+
+1. **Consider both payment methods:** typeable line/barcode and Pix.
+2. **Treat `settled` as a paid boleto.**
+3. **Treat `expired` as a boleto that can no longer be paid.**
+4. **Don't confuse `due_date` with `expiration_date`.**
+5. **Track due date and expiration in your system when you need to trigger specific actions.**
+6. **Use a unique `external_id` for each boleto.**
+7. **Respect the rate limit of 60 requests per second.**
+8. **Implement reconciliation using the identifiers received in webhooks.**
+9. **Store the `boleto_url` to make it easier to access the document.**
+10. **Identify payments with `type = pix_boleto` when the boleto is paid via Pix.**
+
+---
+
+## More information
+
+For detailed implementation information, see:
+
+- [Boleto Creation Guide](https://docs.trio.com.br/guides/create-boleto)
+- [API Reference](https://docs.trio.com.br/api_reference)
+- [Trio Guides](https://docs.trio.com.br/guides)
+
+---
+
+*Esta página também está disponível em português: [FAQ — Boleto](./boleto-pt-br)*

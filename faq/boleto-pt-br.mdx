@@ -1,0 +1,368 @@
+---
+title: "FAQ — Boleto"
+description: "Este FAQ reúne os principais pontos que os integradores precisam entender sobre o funcionamento dos **boletos na Trio**, incluindo boleto híbrido com Pix, dados do pagador, ciclo de status, webhooks, vencimento, expiração, estorno e emissão de carnês."
+---
+
+
+> Este conteúdo complementa o [Guia de criação de Boleto](https://docs.trio.com.br/guides/create-boleto) e a [API Reference](http://localhost:3000/api-reference/banking-api/receivables/boletos/post).
+
+---
+
+## BolePix
+
+### O boleto da Trio possui um QR Code Pix?
+
+Sim. Todo boleto criado pela Trio também possui um **QR Code Pix embutido**, permitindo que o pagador escolha entre o pagamento tradicional do boleto ou o pagamento via Pix.
+
+---
+
+### O copia e cola do Pix é retornado na criação do boleto?
+
+Não diretamente. Ao criar um boleto através de `POST /banking/cashin/boletos`, o hash do QR Code Pix não é retornado na resposta de criação.
+
+Para obter os dados do Pix, utilize o `id` retornado em `data.id` e faça uma consulta posterior:
+
+```http
+GET /banking/cashin/pix/qrcodes/{id}
+```
+
+Para mais detalhes, consulte a [referência de consulta do QR Code dinâmico](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/get).
+
+---
+
+### Como identificar se um boleto foi pago via Pix?
+
+Quando o boleto é pago através do QR Code Pix embutido, o pagamento é enviado pelo webhook `collecting_document` com:
+
+```text
+type: pix_boleto
+```
+
+Isso permite diferenciar um pagamento realizado via Pix de um pagamento tradicional do boleto.
+
+> **Boa prática:** utilize o `type` recebido no webhook para identificar a origem do pagamento e faça a reconciliação utilizando os identificadores da transação.
+
+---
+
+## Dados do pagador
+
+### O endereço informado no `counterparty` é validado pela Trio?
+
+Os dados de endereço são necessários para preencher as informações exigidas pelo schema do boleto, mas a Trio **não valida se o endereço informado realmente pertence ao pagador ou se os dados correspondem a um endereço existente**.
+
+Os campos de endereço incluem:
+
+- `address`
+- `district`
+- `city`
+- `state`
+- `postal_code`
+
+> **Boa prática:** mesmo que o endereço não seja validado, recomendamos enviar dados reais e corretos sempre que disponíveis.
+
+---
+
+## Status do boleto
+
+### Quais são os principais status de um boleto?
+
+O ciclo do boleto segue o fluxo de documentos da Trio:
+
+```text
+Created → Confirmed → Settled
+```
+
+Além desses estados, um boleto pode passar para `expired` quando atingir sua data limite de pagamento.
+
+| Status | Significado |
+| --- | --- |
+| `created` | Boleto criado |
+| `confirmed` | Boleto registrado e confirmado |
+| `settled` | Boleto pago/liquidado |
+| `expired` | Boleto expirado e sem possibilidade de pagamento |
+
+---
+
+### Qual status indica que o boleto foi pago?
+
+O status `settled` indica que o boleto foi **pago e liquidado**.
+
+Não considere apenas `created` ou `confirmed` como confirmação de pagamento.
+
+---
+
+### O que acontece quando o boleto chega à `expiration_date`?
+
+Quando a `expiration_date` é atingida, o boleto passa para o status `expired`.
+
+A partir desse momento, o boleto não aceita mais pagamentos.
+
+---
+
+## Webhooks
+
+### Qual webhook informa o pagamento de um boleto?
+
+O pagamento é comunicado através do webhook `collecting_document`.
+
+Quando o boleto é pago pelo QR Code Pix, o `type` recebido é:
+
+```text
+pix_boleto
+```
+
+---
+
+### O `external_id` informado na criação do boleto aparece no webhook?
+
+Sim. O `external_id` informado na criação do boleto é retornado nos webhooks relacionados ao documento.
+
+> **Boa prática:** utilize o `external_id` como uma referência do seu próprio sistema para facilitar a conciliação entre a transação na Trio e o pedido ou cobrança da sua plataforma.
+
+---
+
+### Existe um webhook específico quando o boleto vence?
+
+Não. A Trio não envia um evento específico apenas para informar que o boleto atingiu o `due_date`.
+
+O integrador deve controlar essa situação de acordo com a necessidade do próprio negócio.
+
+Quando o boleto atingir a `expiration_date`, seu status será alterado para `expired`.
+
+---
+
+### Preciso controlar a expiração do boleto no meu sistema?
+
+Se sua aplicação precisa executar alguma ação quando o boleto expirar, sim.
+
+Como não existe um webhook específico de expiração, recomendamos que o sistema mantenha o controle das datas ou consulte o status do documento quando necessário.
+
+---
+
+## Vencimento e expiração
+
+### Qual é a diferença entre `due_date` e `expiration_date`?
+
+Os dois campos representam momentos diferentes:
+
+- **`due_date`**: data de vencimento do boleto.
+- **`expiration_date`**: data limite até a qual o boleto pode ser pago.
+
+Por exemplo:
+
+```text
+due_date:        10/09/2026
+expiration_date: 30/09/2026
+```
+
+Nesse caso, o boleto vence em **10/09**, mas pode continuar sendo pago até **30/09**, desde que ainda esteja válido.
+
+---
+
+### Posso pagar um boleto depois do `due_date`?
+
+Sim. O boleto pode continuar aceitando pagamentos após o vencimento, desde que ainda não tenha atingido a `expiration_date`.
+
+Após o `due_date`, podem ser aplicados os encargos configurados para o boleto, como **juros e multa**.
+
+---
+
+### O que acontece depois da `expiration_date`?
+
+Depois da `expiration_date`, o boleto fica expirado e passa para:
+
+```text
+expired
+```
+
+A partir desse momento, não é possível realizar o pagamento do boleto.
+
+---
+
+## Alteração do vencimento
+
+### Posso alterar o vencimento de um boleto?
+
+Sim. O vencimento pode ser atualizado através de:
+
+```http
+PUT /banking/cashin/boletos/{id}
+```
+
+A resposta da atualização retorna os dados atualizados, incluindo o novo `due_detail`.
+
+---
+
+### Ao alterar o vencimento, o código de barras muda?
+
+Não. A alteração do vencimento atualiza os dados de vencimento (`due_detail`), mas o **barcode não muda**.
+
+O QR Code Pix também permanece o mesmo.
+
+---
+
+### Posso alterar o vencimento de um boleto vencido?
+
+Sim. Um boleto que já passou do `due_date`, mas ainda não está expirado, pode ter o vencimento atualizado.
+
+---
+
+### Posso alterar um boleto que já está expirado?
+
+Não. Boletos com status `expired` não podem ter o vencimento atualizado.
+
+> **Boa prática:** se a sua operação permite renegociação, faça a atualização antes que o boleto chegue à `expiration_date`.
+
+---
+
+## Estorno e devolução
+
+### Posso utilizar o endpoint de refund para um boleto?
+
+Depende de como o boleto foi pago.
+
+O endpoint:
+
+```http
+POST /banking/cashin/documents/{id}/refund
+```
+
+é destinado a transações originadas pelo **Pix**.
+
+Portanto, se o boleto foi pago utilizando o **QR Code Pix**, o `/refund` pode ser utilizado.
+
+---
+
+### Como funciona o refund quando o boleto é pago via Pix?
+
+O fluxo é:
+
+```text
+Boleto
+   ↓
+QR Code Pix
+   ↓
+Pagamento Pix
+   ↓
+Transação Pix
+   ↓
+/refund
+```
+
+Nesse cenário, a transação é originada pelo Pix e o endpoint de refund está disponível.
+
+---
+
+## URL do boleto
+
+### A Url do boleto precisa de autenticação?
+
+Não. A Url retornada pela API é **pública e não exige autenticação** para acessar o documento.
+
+Isso permite utilizar o link diretamente em:
+
+- e-mails;
+- checkout;
+- aplicativos;
+- páginas de acompanhamento do pedido.
+
+Exemplo:
+
+```text
+https://receipts.sandbox.trio.com.br/0195aa08-7f58-51b9-79c4-cc88e7a150b1/boleto/01a05e1b-dced-0fa7-f252-0c3530c5f0e9
+```
+
+> **Boa prática:** armazene a `boleto_url` junto com os dados do boleto para facilitar o acesso ao documento posteriormente.
+
+---
+
+## Custos
+
+### Existe cobrança por boleto emitido e não pago?
+
+As condições de preço e cobrança devem ser confirmadas diretamente com o **time comercial da Trio**.
+
+Isso é especialmente importante para operações que trabalham com grande volume de emissão ou carnês, nos quais várias parcelas podem ser geradas antecipadamente.
+
+---
+
+## Carnês e emissão em lote
+
+### Posso emitir vários boletos para uma mesma compra?
+
+Sim. Não existe um limite adicional de quantidade de boletos emitidos. A principal restrição a considerar é o **rate limit da rota de criação**.
+
+Isso permite criar, por exemplo, várias parcelas de um carnê para uma mesma compra.
+
+---
+
+### Qual é o rate limit para criação de boletos?
+
+A rota de criação de boleto possui o rate limit padrão de:
+
+```text
+60 requests por segundo
+```
+
+Para emissões em lote, organize as requisições para respeitar esse limite.
+
+---
+
+### Cada boleto do carnê precisa ter um `external_id` diferente?
+
+Sim. Cada novo boleto deve possuir um `external_id` único.
+
+Por exemplo:
+
+```text
+pedido-123-parcela-01
+pedido-123-parcela-02
+pedido-123-parcela-03
+```
+
+Isso facilita a identificação de cada parcela e evita conflitos na reconciliação.
+
+> **Boa prática:** inclua no `external_id` alguma referência da cobrança e da parcela. Dessa forma, fica mais simples relacionar o boleto ao pedido dentro do seu sistema.
+
+---
+
+## Boas práticas de integração
+
+### Quais informações devo armazenar depois de criar um boleto?
+
+Recomendamos armazenar, no mínimo:
+
+- `id` do boleto/qrcode na Trio;
+- `external_id`;
+- `due_date`;
+- `expiration_date`;
+- `boleto_url`;
+
+Essas informações ajudam em **conciliação, suporte, rastreamento e atualização da cobrança**.
+
+---
+
+### O que devo considerar na implementação do boleto?
+
+De forma resumida:
+
+1. **Considere os dois meios de pagamento:** linha digitável/código de barras e Pix.
+2. **Trate `settled` como boleto pago.**
+3. **Considere `expired` como boleto que não pode mais ser pago.**
+4. **Não confunda `due_date` com `expiration_date`.**
+5. **Controle vencimento e expiração no seu sistema quando precisar executar ações específicas.**
+6. **Use `external_id` único para cada boleto.**
+7. **Respeite o rate limit de 60 requests por segundo.**
+8. **Implemente a reconciliação utilizando os identificadores recebidos nos webhooks.**
+9. **Armazene a `boleto_url` para facilitar o acesso ao documento.**
+10. **Identifique pagamentos com `type = pix_boleto` quando o boleto for pago via Pix.**
+
+---
+
+## Mais informações
+
+Para informações detalhadas sobre a implementação, consulte:
+
+- [Guia de criação de Boleto](https://docs.trio.com.br/guides/create-boleto)
+- [API Reference](https://docs.trio.com.br/api_reference)
+- [Trio Guides](https://docs.trio.com.br/guides)
