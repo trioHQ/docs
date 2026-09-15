@@ -11,3 +11,36 @@ curl https://api.sandbox.trio.com.br/banking/entities \
   -H "Content-Type: application/json" \ 
   -u {client_id}:{client_secret}
 ```
+
+## Acting on another organization
+
+If your organization has been granted access to another organization, any of your
+API keys can operate on it by sending the `Trio-Target-Org-Id` header. This is the
+same credential you already use — the header only changes which organization the
+request acts on.
+
+<Info>
+  Access is granted at the **organization** level (not per key) and is configured
+  by the Trio team through a channel. It **cannot** be self-provisioned. Access is
+  typically granted automatically to the organizations you create through the
+  [Onboarding](/api-reference/banking-api/onboarding/create) endpoint, when your
+  channel has API key access enabled.
+</Info>
+
+- **Header omitted** — the request acts on your own organization, exactly as before.
+- **Header present** — the request acts on the target organization. The target ID
+  is validated against your granted access on every request; if you have no access,
+  the request returns `403`.
+
+```text
+curl https://api.sandbox.trio.com.br/banking/entities \ 
+  -H "Content-Type: application/json" \ 
+  -H "Trio-Target-Org-Id: {target_org_id}" \ 
+  -u {client_id}:{client_secret}
+```
+
+<Note>
+  If an access is configured as read-only, only `GET`/`HEAD` requests are allowed
+  on the target organization. Organizations that require mTLS must be reached over
+  your verified channel.
+</Note>

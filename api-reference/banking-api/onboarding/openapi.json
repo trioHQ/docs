@@ -1,0 +1,383 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Trio Onboarding API",
+    "version": "0.1.0"
+  },
+  "servers": [
+    { "url": "https://api.sandbox.trio.com.br", "variables": {} },
+    { "url": "https://api.qa.trio.com.br", "variables": {} },
+    { "url": "https://api.trio.com.br", "variables": {} }
+  ],
+  "security": [
+    { "basic": [] }
+  ],
+  "tags": [
+    { "name": "onboarding" }
+  ],
+  "paths": {
+    "/onboarding": {
+      "post": {
+        "tags": ["onboarding"],
+        "summary": "Create onboarding",
+        "description": "Creates an org and an entity, and sends them to compliance approval. The request is authenticated with your organization's API key. Your organization must have an onboarding channel enabled by the Trio team, otherwise the request returns `403`.\n\nWhen the channel is configured with API key access, your organization is automatically granted access to the newly created organization. You can then act on it from any of your API keys by sending the `Trio-Target-Org-Id` header on subsequent requests (see Authentication).",
+        "operationId": "TrioFoundationWeb.Onboarding.OnboardController.create",
+        "requestBody": {
+          "description": "The onboarding attributes",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Onboard_parameters" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Compliance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Onboard_response" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — the organization is not enabled for onboarding via API",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ForbiddenError" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basic": { "type": "http", "scheme": "basic" }
+    },
+    "schemas": {
+      "Money": {
+        "title": "Money",
+        "type": "object",
+        "description": "A monetary amount expressed in the currency's minor units.",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Amount of the money, in minor units (e.g. cents for BRL)."
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "enum": ["BRL"]
+          }
+        },
+        "required": ["amount", "currency"]
+      },
+      "Onboard_business_infos_parameters": {
+        "title": "Onboarding business information parameters",
+        "type": "object",
+        "description": "Business information parameters for creating the onboarding.",
+        "properties": {
+          "average_ticket_amount": { "$ref": "#/components/schemas/Money" },
+          "annual_revenue_amount": { "$ref": "#/components/schemas/Money" }
+        },
+        "required": ["average_ticket_amount", "annual_revenue_amount"]
+      },
+      "Onboard_representative_parameters": {
+        "title": "Onboarding representative parameters",
+        "type": "object",
+        "description": "Legal representative parameters for creating the onboarding.",
+        "properties": {
+          "tax_number": { "type": "string", "description": "Legal representative tax number" },
+          "email": { "type": "string", "description": "Legal representative email" },
+          "phone": { "type": "string", "description": "Legal representative phone number in E.164 format" },
+          "name": { "type": "string", "description": "Legal representative name" }
+        },
+        "required": ["tax_number", "email", "phone", "name"]
+      },
+      "Onboard_consent_parameters": {
+        "title": "Onboarding consent parameters",
+        "type": "object",
+        "description": "Consent parameters for creating the onboarding.",
+        "properties": {
+          "consent_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date of the consent"
+          },
+          "ip_address": { "type": "string", "description": "Consent IP address (IPv4 or IPv6)" },
+          "tax_number": {
+            "type": "string",
+            "description": "Consent tax number of a legal representative"
+          }
+        },
+        "required": ["tax_number", "ip_address", "consent_at"]
+      },
+      "Onboard_parameters": {
+        "title": "Onboarding parameters",
+        "type": "object",
+        "description": "Parameters for onboarding an org and entity.",
+        "properties": {
+          "tax_number": { "type": "string", "description": "Tax number of the entity" },
+          "name": { "type": "string", "description": "Name of the entity" },
+          "external_id": { "type": "string", "description": "External ID of the entity" },
+          "business_infos": { "$ref": "#/components/schemas/Onboard_business_infos_parameters" },
+          "representatives": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Onboard_representative_parameters" }
+          },
+          "consent": { "$ref": "#/components/schemas/Onboard_consent_parameters" }
+        },
+        "required": ["tax_number", "name", "business_infos", "representatives", "consent"],
+        "example": {
+          "tax_number": "37.335.118/0001-80",
+          "name": "Entity Test",
+          "external_id": "12345ET",
+          "business_infos": {
+            "average_ticket_amount": { "amount": 10000000, "currency": "BRL" },
+            "annual_revenue_amount": { "amount": 500000, "currency": "BRL" }
+          },
+          "representatives": [
+            {
+              "tax_number": "111.444.777-35",
+              "email": "john@gcorp.com",
+              "phone": "+5541999990000",
+              "name": "John"
+            }
+          ],
+          "consent": {
+            "tax_number": "111.444.777-35",
+            "ip_address": "8.8.8.8",
+            "consent_at": "2026-08-25T07:00:00.000Z"
+          }
+        }
+      },
+      "Entity_address_data": {
+        "title": "Entity address data",
+        "type": "object",
+        "description": "An entity address for onboarding.",
+        "properties": {
+          "address": { "type": "string", "nullable": true, "description": "Address" },
+          "address_additional_details": { "type": "string", "nullable": true, "description": "Address additional details" },
+          "address_number": { "type": "string", "nullable": true, "description": "Address number" },
+          "birth_state": { "type": "string", "nullable": true, "description": "UF" },
+          "city": { "type": "string", "nullable": true, "description": "City" },
+          "constitution_date": { "type": "string", "nullable": true, "description": "Date of creation" },
+          "district": { "type": "string", "nullable": true, "description": "District" },
+          "zip_code": { "type": "string", "nullable": true, "description": "Zip code/post code" }
+        }
+      },
+      "Entity_business_infos_data": {
+        "title": "Entity business infos data",
+        "type": "object",
+        "description": "An entity's business information for onboarding.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Entity info ID" },
+          "annual_revenue_amount": { "$ref": "#/components/schemas/Money" },
+          "average_ticket_amount": { "$ref": "#/components/schemas/Money" },
+          "company_activity": { "type": "string", "nullable": true, "description": "Company activity" },
+          "company_secondary_activity": {
+            "type": "array",
+            "nullable": true,
+            "description": "List of secondary company activities",
+            "items": { "type": "string", "description": "Secondary company activity" }
+          },
+          "legal_name": { "type": "string", "nullable": true, "description": "Legal name" },
+          "legal_nature": { "type": "string", "nullable": true, "description": "Legal nature" },
+          "name": { "type": "string", "nullable": true, "description": "Name" }
+        }
+      },
+      "Entity_contact_data": {
+        "title": "Entity contact data",
+        "type": "object",
+        "description": "An entity's contact information for onboarding.",
+        "properties": {
+          "email": { "type": "string", "description": "Entity email" },
+          "phone_number": { "type": "string", "description": "Entity phone number in E.164 format" }
+        }
+      },
+      "Entity_consent_data": {
+        "title": "Entity consent data",
+        "type": "object",
+        "description": "An entity's consent for onboarding.",
+        "properties": {
+          "consent_at": { "type": "string", "format": "date-time", "description": "Consent at" },
+          "entity_representative_id": { "type": "string", "format": "uuid", "description": "Entity representative ID" },
+          "id": { "type": "string", "format": "uuid", "description": "Consent ID" },
+          "ip_address": { "type": "string", "description": "IPv4 or IPv6 address" },
+          "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
+          "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
+        }
+      },
+      "Entity_representative_data": {
+        "title": "Entity representative data",
+        "type": "object",
+        "description": "An entity representative for onboarding.",
+        "properties": {
+          "counterparty_id": { "type": "string", "format": "uuid", "description": "Entity representative counterparty ID" },
+          "email": { "type": "string", "description": "Entity representative email" },
+          "id": { "type": "string", "format": "uuid", "description": "Entity representative ID" },
+          "liveness_link": { "type": "string", "nullable": true, "description": "Entity representative liveness link" },
+          "name_linked": { "type": "string", "description": "Entity representative name" },
+          "status": {
+            "type": "string",
+            "description": "Entity representative status",
+            "enum": ["in_validation", "in_review", "rejected", "approved"]
+          },
+          "tax_number_linked": { "type": "string", "description": "Entity representative tax number" },
+          "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
+          "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
+        }
+      },
+      "Entity_data": {
+        "title": "Entity response",
+        "type": "object",
+        "description": "An entity for onboarding.",
+        "properties": {
+          "entity_id": { "type": "string", "format": "uuid", "description": "Entity ID" },
+          "company_id": { "type": "string", "format": "uuid", "description": "Company ID" },
+          "org_id": { "type": "string", "format": "uuid", "description": "Org ID" },
+          "counterparty_id": { "type": "string", "format": "uuid", "description": "Counterparty ID" },
+          "external_id": { "type": "string", "description": "External ID" },
+          "tax_number": { "type": "string", "description": "Tax number" },
+          "status": {
+            "type": "string",
+            "description": "Entity onboard status",
+            "enum": ["in_validation", "in_review", "rejected", "approved"]
+          },
+          "address": { "$ref": "#/components/schemas/Entity_address_data" },
+          "business_infos": { "$ref": "#/components/schemas/Entity_business_infos_data" },
+          "contact": { "$ref": "#/components/schemas/Entity_contact_data" },
+          "consent": { "$ref": "#/components/schemas/Entity_consent_data" },
+          "representatives": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Entity_representative_data" }
+          },
+          "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
+          "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
+        }
+      },
+      "Onboard_response": {
+        "title": "Onboarding response",
+        "type": "object",
+        "description": "The result of onboarding an org and an entity for compliance.",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Entity_data" }
+        },
+        "example": {
+          "data": {
+            "entity_id": "01a06ee8-4973-caa8-eda0-dc64b5aa648e",
+            "company_id": "01a06ee8-44d4-d879-95ca-28d9c0eb78fc",
+            "org_id": "1162d769-b68b-47bd-a844-d6f9d2cb2636",
+            "counterparty_id": "382f53d3-aeae-059b-bd3e-ca79ff706b8f",
+            "external_id": "123ENTITY",
+            "tax_number": "61775921000110",
+            "status": "in_validation",
+            "address": {
+              "address": null,
+              "address_additional_details": null,
+              "address_number": null,
+              "birth_state": null,
+              "city": null,
+              "constitution_date": null,
+              "district": null,
+              "zip_code": null
+            },
+            "business_infos": {
+              "id": "01a06ee8-4975-608f-570d-05ff13d49dd0",
+              "annual_revenue_amount": { "amount": 5000000, "currency": "BRL" },
+              "average_ticket_amount": { "amount": 500000, "currency": "BRL" },
+              "company_activity": null,
+              "company_secondary_activity": [],
+              "legal_name": null,
+              "legal_nature": null,
+              "name": "Entity Name"
+            },
+            "contact": {
+              "email": null,
+              "phone_number": null
+            },
+            "consent": {
+              "consent_at": "2026-08-25T07:00:00.000000Z",
+              "entity_representative_id": "bf35e7b3-2858-4ede-999e-e17e6e434071",
+              "id": "9d4ddbc2-7eb0-4ca4-ba75-36a10599306f",
+              "inserted_at": "2026-09-05T00:11:52.055275Z",
+              "ip_address": "8.8.8.8",
+              "updated_at": "2026-09-05T00:11:52.055275Z"
+            },
+            "representatives": [
+              {
+                "counterparty_id": "00012832-71f4-ec93-62e8-9cb657b86eef",
+                "email": "representative.name@entity.com",
+                "id": "bf35e7b3-2858-4ede-999e-e17e6e434071",
+                "inserted_at": "2026-09-05T00:11:52.054493Z",
+                "liveness_link": null,
+                "name_linked": "Representative Name",
+                "status": "in_validation",
+                "tax_number_linked": "12345678912",
+                "updated_at": "2026-09-05T00:11:52.054493Z"
+              }
+            ],
+            "inserted_at": "2026-09-05T00:11:52.015299Z",
+            "updated_at": "2026-09-05T00:11:52.015299Z"
+          }
+        }
+      },
+      "Error": {
+        "title": "Error",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "error_code": { "type": "string", "description": "Error code" },
+              "error_message": { "type": "string", "description": "Error message" }
+            }
+          }
+        },
+        "example": {
+          "error": {
+            "error_code": "UNAUTHORIZED",
+            "error_message": "Invalid credentials"
+          }
+        }
+      },
+      "ForbiddenError": {
+        "title": "Forbidden",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "error_code": { "type": "string", "description": "Error code" },
+              "message": { "type": "string", "description": "Error message" }
+            }
+          }
+        },
+        "example": {
+          "error": {
+            "error_code": "Forbidden",
+            "message": "A organização não está habilitada para onboarding via API."
+          }
+        }
+      }
+    }
+  }
+}

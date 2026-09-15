@@ -56,7 +56,8 @@
                   "webhooks/events/recurrences-collection",
                   "webhooks/events/recurrence-collections-attempt",
                   "webhooks/events/pix-biometrics-enrollment",
-                  "webhooks/events/initiation-document"
+                  "webhooks/events/initiation-document",
+                  "webhooks/events/entity"
                 ]
               }
             ]
@@ -143,10 +144,15 @@
             "group": "Banking API",
             "pages": [
               {
+                "group": "Onboarding",
+                "pages": [
+                  "api-reference/banking-api/onboarding/create"
+                ]
+              },
+              {
                 "group": "Entities",
                 "pages": [
                   "api-reference/banking-api/entities/list",
-                  "api-reference/banking-api/entities/create",
                   "api-reference/banking-api/entities/get"
                 ]
               },

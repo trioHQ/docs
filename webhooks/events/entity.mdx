@@ -1,0 +1,122 @@
+Events that belong to the category `entity`. These are sent whenever the compliance status of an entity created through [onboarding](/api-reference/banking-api/onboarding/create) changes.
+
+|  |
+| --- |
+| The entity has moved to **in\_review** — under compliance analysis. When applicable, each representative includes a `liveness_link` for the required biometric/liveness check. |
+| The entity has been **approved** by compliance and is ready to operate. |
+| The entity has been **rejected** by compliance. The `reason` field describes why. |
+
+### Examples
+
+#### entity.in\_review
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "in_review",
+    "reason": null,
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T07:05:00.000Z",
+    "contact": {
+      "phone_number": "+5541999990000",
+      "email": "contact@gcorp.com"
+    },
+    "business_infos": {
+      "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "name": "Entity Test",
+      "legal_name": "Entity Test LTDA",
+      "legal_nature": null,
+      "annual_revenue_amount": { "amount": 500000, "currency": "BRL" },
+      "average_ticket_amount": { "amount": 10000000, "currency": "BRL" },
+      "company_activity": null,
+      "company_secondary_activity": null
+    },
+    "consent": {
+      "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "entity_representative_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "ip_address": "8.8.8.8",
+      "consent_at": "2026-08-25T07:00:00.000Z",
+      "inserted_at": "2026-08-25T07:00:00.000Z",
+      "updated_at": "2026-08-25T07:00:00.000Z"
+    },
+    "representatives": [
+      {
+        "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+        "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+        "status": "in_review",
+        "tax_number_linked": "11144477735",
+        "name_linked": "John",
+        "email": "john@gcorp.com",
+        "liveness_link": "https://liveness.link/example?123",
+        "inserted_at": "2026-08-25T07:00:00.000Z",
+        "updated_at": "2026-08-25T07:00:00.000Z"
+      }
+    ]
+  },
+  "timestamp": "2026-08-25T07:05:00.000Z",
+  "type": "in_review",
+  "category": "entity",
+  "inserted_at": "2026-08-25T07:05:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### entity.approved
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "approved",
+    "reason": null,
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T09:30:00.000Z"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "approved",
+  "category": "entity",
+  "inserted_at": "2026-08-25T09:30:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+#### entity.rejected
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "rejected",
+    "reason": "Documentation could not be validated.",
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T09:30:00.000Z"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "rejected",
+  "category": "entity",
+  "inserted_at": "2026-08-25T09:30:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
