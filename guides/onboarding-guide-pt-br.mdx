@@ -1,0 +1,527 @@
+---
+title: "Onboarding de clientes"
+description: "Entenda como funciona o onboarding de clientes, a criação da organização, a análise de compliance e o acompanhamento por webhooks."
+---
+
+# Onboarding de clientes
+
+Este guia explica o fluxo de onboarding para uma integração em que uma organização atua como **orquestradora** das organizações dos seus clientes.
+
+O processo permite que a organização orquestradora envie os dados necessários para abertura da conta do cliente, acompanhe a análise de Compliance por meio de webhooks e, após a aprovação, realize operações em nome da organização do cliente.
+
+> **Importante:** este guia explica o fluxo e os conceitos envolvidos. Para consultar todos os campos, tipos e respostas disponíveis, veja a [referência da API de criação de onboarding](https://docs.trio.com.br/api-reference/banking-api/onboarding/create).
+
+## 1. Como funciona o modelo de organização
+
+Nesse modelo, existem duas partes principais:
+
+- **Organização orquestradora:** organização que possui as credenciais de API e controla o fluxo dos seus clientes.
+- **Organização do cliente:** organização criada durante o onboarding e que será utilizada para as movimentações do cliente.
+
+O fluxo pode ser resumido assim:
+
+```text
+Organização orquestradora
+        |
+        | POST /onboarding
+        v
+Criação do cliente
+        |
+        +--> Organização
+        |
+        +--> Entidade
+        |
+        +--> Dados do representante
+        |
+        v
+Análise de Compliance
+        |
+        +--> in_review
+        |
+        +--> approved
+        |
+        └--> rejected
+        |
+        v
+Organização aprovada
+        |
+        v
+Operações via API usando
+Trio-Target-Org-Id
+```
+
+A organização orquestradora continua utilizando suas próprias credenciais. Para executar uma operação na organização de um cliente, basta informar o identificador da organização de destino no header `Trio-Target-Org-Id`.
+
+Consulte também [Acting on another organization](https://docs.trio.com.br/developers/authentication#acting-on-another-organization).
+
+## 2. Criando o onboarding
+
+O onboarding é criado através do endpoint:
+
+```http
+POST /onboarding
+```
+
+No Sandbox:
+
+```text
+https://api.sandbox.trio.com.br/onboarding
+```
+
+A autenticação utiliza **Basic Authentication**, com o `client_id` e `client_secret` da organização orquestradora.
+
+```http
+Authorization: Basic <encoded-value>
+Content-Type: application/json
+```
+
+### Dados necessários
+
+Para iniciar o onboarding, envie os dados da empresa, do representante e do consentimento.
+
+| Campo | Descrição |
+| --- | --- |
+| `tax_number` | CNPJ da empresa que será cadastrada |
+| `name` | Nome da entidade |
+| `external_id` | Identificador externo utilizado pelo seu sistema |
+| `business_infos` | Informações comerciais da empresa |
+| `representatives` | Dados do representante da empresa |
+| `consent` | Dados do consentimento para abertura da conta |
+
+Dentro de `business_infos`, são informados dados como:
+
+- faturamento anual;
+- ticket médio.
+
+O representante deve possuir:
+
+- nome;
+- CPF;
+- telefone;
+- e-mail.
+
+O consentimento deve possuir:
+
+- CPF do responsável pelo consentimento;
+- endereço IP;
+- data e hora da autorização.
+
+## 3. Exemplo de criação
+
+```bash
+curl --request POST \
+  --url https://api.sandbox.trio.com.br/onboarding \
+  --header 'Authorization: Basic <encoded-value>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "tax_number": "37.335.118/0001-80",
+    "name": "Entity Test",
+    "external_id": "12345ET",
+    "business_infos": {
+      "average_ticket_amount": {
+        "amount": 10000000,
+        "currency": "BRL"
+      },
+      "annual_revenue_amount": {
+        "amount": 500000,
+        "currency": "BRL"
+      }
+    },
+    "representatives": [
+      {
+        "tax_number": "111.444.777-35",
+        "email": "john@gcorp.com",
+        "phone": "+5541999990000",
+        "name": "John"
+      }
+    ],
+    "consent": {
+      "tax_number": "111.444.777-35",
+      "ip_address": "8.8.8.8",
+      "consent_at": "2026-08-25T07:00:00.000Z"
+    }
+  }'
+```
+
+Os valores monetários são enviados em centavos. Por exemplo:
+
+```json
+{
+  "amount": 500000,
+  "currency": "BRL"
+}
+```
+
+representa R$ 5.000,00.
+
+## 4. O que acontece depois da criação
+
+A criação do onboarding é síncrona.
+
+Após o processamento da requisição, a API retorna os principais identificadores da estrutura criada, incluindo:
+
+- `entity_id`;
+- `org_id`;
+- `company_id`;
+- `external_id`;
+- `tax_number`;
+- `status`.
+
+Exemplo:
+
+```json
+{
+  "data": {
+    "entity_id": "01a06ee8-4973-caa8-eda0-dc64b5aa648e",
+    "company_id": "01a06ee8-44d4-d879-95ca-28d9c0eb78fc",
+    "org_id": "1162d769-b68b-47bd-a844-d6f9d2cb2636",
+    "counterparty_id": "382f53d3-aeae-059b-bd3e-ca79ff706b8f",
+    "external_id": "123ENTITY",
+    "tax_number": "61775921000110",
+    "status": "in_validation",
+    "address": {
+      "address": null,
+      "address_additional_details": null,
+      "address_number": null,
+      "birth_state": null,
+      "city": null,
+      "constitution_date": null,
+      "district": null,
+      "zip_code": null
+    },
+    "business_infos": {
+      "id": "01a06ee8-4975-608f-570d-05ff13d49dd0",
+      "annual_revenue_amount": {
+        "amount": 5000000,
+        "currency": "BRL"
+      },
+      "average_ticket_amount": {
+        "amount": 500000,
+        "currency": "BRL"
+      },
+      "company_activity": null,
+      "company_secondary_activity": [],
+      "legal_name": null,
+      "legal_nature": null,
+      "name": "Entity Name"
+    },
+    "contact": {
+      "email": null,
+      "phone_number": null
+    },
+    "consent": {
+      "consent_at": "2026-08-25T07:00:00.000000Z",
+      "entity_representative_id": "bf35e7b3-2858-4ede-999e-e17e6e434071",
+      "id": "9d4ddbc2-7eb0-4ca4-ba75-36a10599306f",
+      "inserted_at": "2026-09-05T00:11:52.055275Z",
+      "ip_address": "8.8.8.8",
+      "updated_at": "2026-09-05T00:11:52.055275Z"
+    },
+    "representatives": [
+      {
+        "counterparty_id": "00012832-71f4-ec93-62e8-9cb657b86eef",
+        "email": "representative.name@entity.com",
+        "id": "bf35e7b3-2858-4ede-999e-e17e6e434071",
+        "inserted_at": "2026-09-05T00:11:52.054493Z",
+        "liveness_link": null,
+        "name_linked": "Representative Name",
+        "status": "in_validation",
+        "tax_number_linked": "12345678912",
+        "updated_at": "2026-09-05T00:11:52.054493Z"
+      }
+    ],
+    "inserted_at": "2026-09-05T00:11:52.015299Z",
+    "updated_at": "2026-09-05T00:11:52.015299Z"
+  }
+}
+```
+
+> **Boa prática:** salve o `org_id`, `entity_id` e o `external_id` no seu sistema. O `org_id` será utilizado posteriormente para executar operações na organização do cliente.
+
+## 5. Etapa de liveness
+
+Depois da criação, o onboarding segue para o processo de validação.
+
+O representante precisa realizar o reconhecimento facial (**liveness**) necessário para a abertura da conta.
+
+O `liveness_link` é disponibilizado para o representante no fluxo de onboarding e também pode ser recebido no webhook `entity.in_review`, quando aplicável.
+
+Exemplo:
+
+```json
+{
+  "representatives": [
+    {
+      "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "status": "in_review",
+      "tax_number_linked": "11144477735",
+      "name_linked": "John",
+      "email": "john@gcorp.com",
+      "liveness_link": "https://liveness.link/example?123"
+    }
+  ]
+}
+```
+
+O cliente deve utilizar esse link para concluir a etapa de reconhecimento facial.
+
+## 6. Análise de Compliance
+
+Depois que o liveness for concluído, as informações do cliente seguem para análise de Compliance.
+
+A organização orquestradora **não precisa ficar consultando a API continuamente** para saber se a análise terminou.
+
+O acompanhamento deve ser feito pelos webhooks de entidade.
+
+Os eventos da categoria `entity` são enviados quando o status de Compliance de uma entidade criada pelo onboarding é alterado.
+
+Consulte a [referência de eventos de Entity](https://docs.trio.com.br/webhooks/events/entity).
+
+## 7. Webhooks do onboarding
+
+Os principais eventos relacionados ao onboarding são:
+
+| Evento | Status | Descrição |
+| --- | --- | --- |
+| `entity.in_review` | `in_review` | Entidade está em análise de Compliance |
+| `entity.approved` | `approved` | Entidade aprovada e pronta para operar |
+| `entity.rejected` | `rejected` | Entidade rejeitada pela análise de Compliance |
+
+### `entity.in_review`
+
+Indica que a entidade entrou em análise.
+
+Quando aplicável, o evento também contém o `liveness_link` do representante.
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "in_review",
+    "external_id": "12345ET",
+    "tax_number": "37335118000180",
+    "representatives": [
+      {
+        "status": "in_review",
+        "liveness_link": "https://liveness.link/example?123"
+      }
+    ]
+  },
+  "timestamp": "2026-08-25T07:05:00.000Z",
+  "type": "in_review",
+  "category": "entity"
+}
+```
+
+### `entity.approved`
+
+Indica que a entidade foi aprovada pelo Compliance e está pronta para operar.
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "approved",
+    "external_id": "12345ET",
+    "tax_number": "37335118000180"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "approved",
+  "category": "entity"
+}
+```
+
+A partir desse evento, sua aplicação pode considerar a organização do cliente apta para as operações previstas no produto.
+
+### `entity.rejected`
+
+Indica que a entidade foi rejeitada pelo Compliance.
+
+Nesse caso, o evento contém o campo `reason`, que descreve o motivo da rejeição.
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "rejected",
+    "reason": "Documentation could not be validated.",
+    "external_id": "12345ET",
+    "tax_number": "37335118000180"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "rejected",
+  "category": "entity"
+}
+```
+
+## 8. Usando a organização do cliente
+
+Depois que o onboarding for aprovado, a organização orquestradora pode realizar chamadas em nome da organização do cliente.
+
+Para isso, utilize a mesma credencial da organização orquestradora e informe o `org_id` do cliente no header:
+
+```http
+Trio-Target-Org-Id: {target_org_id}
+```
+
+Exemplo:
+
+```bash
+curl https://api.sandbox.trio.com.br/banking/entities \
+  -H "Content-Type: application/json" \
+  -H "Trio-Target-Org-Id: 1162d769-b68b-47bd-a844-d6f9d2cb2636" \
+  -u {client_id}:{client_secret}
+```
+
+Nesse cenário:
+
+```text
+Credencial utilizada
+        |
+        v
+Organização orquestradora
+        |
+        | Trio-Target-Org-Id
+        v
+Organização do cliente
+        |
+        v
+Operação solicitada
+```
+
+O acesso é validado pela Trio a cada requisição. Se a organização orquestradora não possuir acesso à organização informada, a API retorna `403`.
+
+> **Importante:** o acesso à organização é configurado no nível da organização e precisa estar habilitado para a integração.
+
+## 9. Fluxo completo
+
+O fluxo completo pode ser entendido da seguinte forma:
+
+```text
+1. Cliente solicita abertura da conta
+              |
+              v
+2. Orquestradora coleta os dados
+              |
+              v
+3. POST /onboarding
+              |
+              v
+4. Trio cria a organização e entidade
+              |
+              v
+5. API retorna os identificadores
+   - org_id
+   - entity_id
+   - company_id
+              |
+              v
+6. Webhook: entity.in_review
+              |
+              v
+7. Representante realiza o liveness
+              |
+              v
+8. Compliance analisa os dados
+              |
+        +-----+-----+
+        |           |
+        v           v
+   approved      rejected
+        |           |
+        v           v
+9. Organização    Fluxo de
+   pronta          tratamento
+        |
+        v
+10. API com
+    Trio-Target-Org-Id
+        |
+        v
+11. Operações na
+    organização do cliente
+```
+
+## 10. Recomendações para a integração
+
+### Salve os identificadores
+
+Após o `POST /onboarding`, armazene no seu sistema pelo menos:
+
+- `external_id`;
+- `org_id`;
+- `entity_id`;
+- `company_id`;
+- `tax_number`;
+- status atual.
+
+Isso facilita a reconciliação entre o seu sistema e a Trio.
+
+### Use o `external_id` como referência do seu sistema
+
+O `external_id` deve ser uma referência que permita identificar facilmente o cliente dentro da sua aplicação.
+
+Exemplo:
+
+```text
+customer_12345
+```
+
+ou:
+
+```text
+company_98765
+```
+
+
+### Só habilite as operações após a aprovação
+
+Mantenha o cliente em estado de onboarding enquanto o Compliance estiver analisando a entidade.
+
+Após receber:
+
+```text
+entity.approved
+```
+
+o cliente pode seguir para as operações previstas na integração.
+
+### Trate a rejeição
+
+Quando receber:
+
+```text
+entity.rejected
+```
+
+armazene o `reason` retornado pelo webhook para permitir o tratamento adequado do cliente.
+
+
+## Referências
+
+- [Create onboarding](https://docs.trio.com.br/api-reference/banking-api/onboarding/create)
+- [Entity webhooks](https://docs.trio.com.br/webhooks/events/entity)
+- [Authentication](https://docs.trio.com.br/developers/authentication)
+- [Acting on another organization](https://docs.trio.com.br/developers/authentication#acting-on-another-organization)
+
+---
+
+## Obtendo a conta bancária após a aprovação
+
+Após a aprovação da entidade (`entity.approved`), a conta bancária do cliente costuma ficar disponível em alguns minutos. Ela não é criada no mesmo instante do evento de aprovação, então não assuma que o identificador da conta já estará disponível imediatamente.
+
+Para obtê-la, chame o endpoint de [listagem de contas virtuais](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/list-virtual-accounts), informando o `org_id` do cliente no header:
+
+```http
+Trio-Target-Org-Id: {org_id}
+```
+
+Use essa chamada para listar as contas virtuais criadas para a organização do cliente e coletar o identificador da conta necessário para realizar transações em nome dele.
+
+Este guia também está disponível em inglês: [/guides/onboarding-guide](/guides/onboarding-guide).
