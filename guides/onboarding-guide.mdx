@@ -3,11 +3,10 @@ title: "Customer Onboarding"
 description: "Understand how customer onboarding works, organization creation, compliance analysis, and tracking via webhooks."
 ---
 
-# Customer Onboarding
 
-This guide explains the onboarding flow for an integration in which an organization acts as an **orchestrator** for its customers' organizations.
+This guide explains the onboarding flow for an integration in which an organization acts as an **distributor** for its customers' organizations.
 
-The process allows the orchestrator organization to submit the data required to open the customer's account, track the Compliance analysis through webhooks and, once approved, perform operations on behalf of the customer's organization.
+The process allows the distributor organization to submit the data required to open the customer's account, track the Compliance analysis through webhooks and, once approved, perform operations on behalf of the customer's organization.
 
 > **Important:** this guide explains the flow and the concepts involved. To check all available fields, types, and responses, see the [onboarding creation API reference](https://docs.trio.com.br/api-reference/banking-api/onboarding/create).
 
@@ -15,13 +14,13 @@ The process allows the orchestrator organization to submit the data required to 
 
 In this model, there are two main parties:
 
-- **Orchestrator organization:** the organization that holds the API credentials and controls the flow for its customers.
+- **Distributor organization:** the organization that holds the API credentials and controls the flow for its customers.
 - **Customer organization:** the organization created during onboarding, which will be used for the customer's transactions.
 
 The flow can be summarized as follows:
 
 ```text
-Orchestrator organization
+Distributor organization
         |
         | POST /onboarding
         v
@@ -50,7 +49,7 @@ Operations via API using
 Trio-Target-Org-Id
 ```
 
-The orchestrator organization continues to use its own credentials. To perform an operation on a customer's organization, simply provide the target organization's identifier in the `Trio-Target-Org-Id` header.
+The distributor organization continues to use its own credentials. To perform an operation on a customer's organization, simply provide the target organization's identifier in the `Trio-Target-Org-Id` header.
 
 Also see [Acting on another organization](https://docs.trio.com.br/developers/authentication#acting-on-another-organization).
 
@@ -68,7 +67,7 @@ In Sandbox:
 https://api.sandbox.trio.com.br/onboarding
 ```
 
-Authentication uses **Basic Authentication**, with the orchestrator organization's `client_id` and `client_secret`.
+Authentication uses **Basic Authentication**, with the distributor organization's `client_id` and `client_secret`.
 
 ```http
 Authorization: Basic <encoded-value>
@@ -244,8 +243,6 @@ After creation, onboarding moves on to the validation process.
 
 The representative needs to complete the facial recognition (**liveness**) check required to open the account.
 
-The `liveness_link` is made available to the representative during the onboarding flow and can also be received in the `entity.in_review` webhook, when applicable.
-
 Example:
 
 ```json
@@ -269,7 +266,7 @@ The customer must use this link to complete the facial recognition step.
 
 Once liveness is completed, the customer's information moves on to Compliance analysis.
 
-The orchestrator organization **does not need to keep polling the API** to find out whether the analysis has finished.
+The distributor organization **does not need to keep polling the API** to find out whether the analysis has finished.
 
 Tracking should be done through entity webhooks.
 
@@ -362,9 +359,9 @@ In this case, the event contains a `reason` field describing the reason for the 
 
 ## 8. Using the customer's organization
 
-Once onboarding has been approved, the orchestrator organization can make calls on behalf of the customer's organization.
+Once onboarding has been approved, the distributor organization can make calls on behalf of the customer's organization.
 
-To do this, use the same credentials as the orchestrator organization and provide the customer's `org_id` in the header:
+To do this, use the same credentials as the distributor organization and provide the customer's `org_id` in the header:
 
 ```http
 Trio-Target-Org-Id: {target_org_id}
@@ -385,7 +382,7 @@ In this scenario:
 Credentials used
         |
         v
-Orchestrator organization
+Distributor organization
         |
         | Trio-Target-Org-Id
         v
@@ -395,7 +392,7 @@ Customer organization
 Requested operation
 ```
 
-Access is validated by Trio on every request. If the orchestrator organization does not have access to the specified organization, the API returns `403`.
+Access is validated by Trio on every request. If the distributor organization does not have access to the specified organization, the API returns `403`.
 
 > **Important:** access to the organization is configured at the organization level and must be enabled for the integration.
 
@@ -407,7 +404,7 @@ The complete flow can be understood as follows:
 1. Customer requests account opening
               |
               v
-2. Orchestrator collects the data
+2. Distributor collects the data
               |
               v
 3. POST /onboarding

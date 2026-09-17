@@ -3,11 +3,9 @@ title: "Onboarding de clientes"
 description: "Entenda como funciona o onboarding de clientes, a criação da organização, a análise de compliance e o acompanhamento por webhooks."
 ---
 
-# Onboarding de clientes
+Este guia explica o fluxo de onboarding para uma integração em que uma organização atua como **distribuidora** das organizações dos seus clientes.
 
-Este guia explica o fluxo de onboarding para uma integração em que uma organização atua como **orquestradora** das organizações dos seus clientes.
-
-O processo permite que a organização orquestradora envie os dados necessários para abertura da conta do cliente, acompanhe a análise de Compliance por meio de webhooks e, após a aprovação, realize operações em nome da organização do cliente.
+O processo permite que a organização distribuidora envie os dados necessários para abertura da conta do cliente, acompanhe a análise de Compliance por meio de webhooks e, após a aprovação, realize operações em nome da organização do cliente.
 
 > **Importante:** este guia explica o fluxo e os conceitos envolvidos. Para consultar todos os campos, tipos e respostas disponíveis, veja a [referência da API de criação de onboarding](https://docs.trio.com.br/api-reference/banking-api/onboarding/create).
 
@@ -15,13 +13,13 @@ O processo permite que a organização orquestradora envie os dados necessários
 
 Nesse modelo, existem duas partes principais:
 
-- **Organização orquestradora:** organização que possui as credenciais de API e controla o fluxo dos seus clientes.
+- **Organização distribuidora:** organização que possui as credenciais de API e controla o fluxo dos seus clientes.
 - **Organização do cliente:** organização criada durante o onboarding e que será utilizada para as movimentações do cliente.
 
 O fluxo pode ser resumido assim:
 
 ```text
-Organização orquestradora
+Organização distribuidora
         |
         | POST /onboarding
         v
@@ -50,7 +48,7 @@ Operações via API usando
 Trio-Target-Org-Id
 ```
 
-A organização orquestradora continua utilizando suas próprias credenciais. Para executar uma operação na organização de um cliente, basta informar o identificador da organização de destino no header `Trio-Target-Org-Id`.
+A organização distribuidora continua utilizando suas próprias credenciais. Para executar uma operação na organização de um cliente, basta informar o identificador da organização de destino no header `Trio-Target-Org-Id`.
 
 Consulte também [Acting on another organization](https://docs.trio.com.br/developers/authentication#acting-on-another-organization).
 
@@ -68,7 +66,7 @@ No Sandbox:
 https://api.sandbox.trio.com.br/onboarding
 ```
 
-A autenticação utiliza **Basic Authentication**, com o `client_id` e `client_secret` da organização orquestradora.
+A autenticação utiliza **Basic Authentication**, com o `client_id` e `client_secret` da organização distribuidora.
 
 ```http
 Authorization: Basic <encoded-value>
@@ -244,8 +242,6 @@ Depois da criação, o onboarding segue para o processo de validação.
 
 O representante precisa realizar o reconhecimento facial (**liveness**) necessário para a abertura da conta.
 
-O `liveness_link` é disponibilizado para o representante no fluxo de onboarding e também pode ser recebido no webhook `entity.in_review`, quando aplicável.
-
 Exemplo:
 
 ```json
@@ -269,7 +265,7 @@ O cliente deve utilizar esse link para concluir a etapa de reconhecimento facial
 
 Depois que o liveness for concluído, as informações do cliente seguem para análise de Compliance.
 
-A organização orquestradora **não precisa ficar consultando a API continuamente** para saber se a análise terminou.
+A organização distribuidora **não precisa ficar consultando a API continuamente** para saber se a análise terminou.
 
 O acompanhamento deve ser feito pelos webhooks de entidade.
 
@@ -362,9 +358,9 @@ Nesse caso, o evento contém o campo `reason`, que descreve o motivo da rejeiç�
 
 ## 8. Usando a organização do cliente
 
-Depois que o onboarding for aprovado, a organização orquestradora pode realizar chamadas em nome da organização do cliente.
+Depois que o onboarding for aprovado, a organização distribuidora pode realizar chamadas em nome da organização do cliente.
 
-Para isso, utilize a mesma credencial da organização orquestradora e informe o `org_id` do cliente no header:
+Para isso, utilize a mesma credencial da organização distribuidora e informe o `org_id` do cliente no header:
 
 ```http
 Trio-Target-Org-Id: {target_org_id}
@@ -385,7 +381,7 @@ Nesse cenário:
 Credencial utilizada
         |
         v
-Organização orquestradora
+Organização distribuidora
         |
         | Trio-Target-Org-Id
         v
@@ -395,7 +391,7 @@ Organização do cliente
 Operação solicitada
 ```
 
-O acesso é validado pela Trio a cada requisição. Se a organização orquestradora não possuir acesso à organização informada, a API retorna `403`.
+O acesso é validado pela Trio a cada requisição. Se a organização distribuidora não possuir acesso à organização informada, a API retorna `403`.
 
 > **Importante:** o acesso à organização é configurado no nível da organização e precisa estar habilitado para a integração.
 
@@ -407,7 +403,7 @@ O fluxo completo pode ser entendido da seguinte forma:
 1. Cliente solicita abertura da conta
               |
               v
-2. Orquestradora coleta os dados
+2. Distribuidora coleta os dados
               |
               v
 3. POST /onboarding
