@@ -1,0 +1,236 @@
+# Trio
+
+> Trio is a banking-as-a-service platform for companies in Brazil, authorized by the Central Bank of Brazil (No. 619, ISPB 49931906). Its REST API lets you open bank and virtual accounts, receive money through Pix and boleto, pay Pix transfers, boletos, utility bills and taxes, issue corporate cards, and track every money movement through documents and webhooks. The Trio Checkout SDK embeds Pix pay-in and pay-out flows in your web or mobile app.
+
+Key facts an agent needs before reading further:
+
+- Base URLs: production `https://api.trio.com.br`, sandbox `https://api.sandbox.trio.com.br`. Sandbox is a full, isolated copy of the API for testing.
+- Authentication is HTTP Basic: `client_id` as username and `client_secret` as password. Credentials are created in the Trio App under API Keys and are specific to each environment.
+- To act on another organization you have access to, send the `Trio-Target-Org-Id` header with the same credentials.
+- Monetary amounts are integers in cents in BRL: `100000` means R$ 1.000,00.
+- Dates and times are UTC in ISO 8601, for example `2023-03-21T14:30:00Z`.
+- List endpoints use cursor pagination. Responses carry `metadata.after`, `metadata.before` and `metadata.has_next`; pass one cursor back as a query parameter. The default page size is 50.
+- Every money movement is a "document": collecting (cash-in), payment (cash-out) or transfer. Documents are the source of truth for reconciliation.
+- Send a unique `external_id` on cash-in and cash-out requests. It is used for idempotency, reconciliation and webhook matching, and cannot be reused.
+- Errors use HTTP status codes and a JSON body with `error.error_code` and `error.error_message`.
+- Rate limits: 60 requests per second in production and 5 in sandbox, per account and per endpoint. A `429` response means back off and retry.
+- Every response carries an `X-Request-Id` header. Quote it when contacting support.
+- Most operations are asynchronous. Webhooks deliver the final state as HTTP POST with a JSON body; Trio waits 3 seconds for a 2xx and retries 5 times with exponential backoff.
+- Pages are available as Markdown by appending `.md` to any documentation URL. The full documentation in one file is at https://docs.trio.com.br/llms-full.txt.
+
+## Getting started
+
+- [Welcome](https://docs.trio.com.br/index.md): What Trio is and how the documentation is organized
+- [Quickstart](https://docs.trio.com.br/quickstart.md): Recommended first steps, starting with a sandbox account
+- [Plan your integration](https://docs.trio.com.br/getting_started/plan-your-integration.md): Questions to answer before building, and which products fit each use case
+- [Sandbox account](https://docs.trio.com.br/guides/sandbox_account.md): Create and configure a sandbox account
+- [First API credential](https://docs.trio.com.br/guides/creating-your-first-api-credential.md): Generate a `client_id` and `client_secret` in the Trio App
+- [First webhook](https://docs.trio.com.br/guides/creating-your-first-webhook.md): Register a webhook endpoint and receive the first event
+- [Support](https://docs.trio.com.br/getting_started/support.md): Support channels, availability, and what to include when reporting an issue
+
+## API conventions
+
+- [Concepts](https://docs.trio.com.br/developers/concepts.md): Company, entity, bank account, virtual account, counterparty and document
+- [Environments](https://docs.trio.com.br/developers/environments.md): Production and sandbox base URLs
+- [Authentication](https://docs.trio.com.br/developers/authentication.md): HTTP Basic auth and the `Trio-Target-Org-Id` header for acting on another organization
+- [Error table](https://docs.trio.com.br/developers/error-table.md): HTTP status codes, error body format, and every `error_code` with its meaning
+- [Pagination](https://docs.trio.com.br/developers/pagination.md): Cursor-based pagination with `after`, `before` and `has_next`
+- [Request identification](https://docs.trio.com.br/developers/request-identification.md): The `X-Request-Id` header and how to use it with support
+- [Date and time](https://docs.trio.com.br/developers/date-and-time.md): UTC and ISO 8601 formatting rules
+- [Rate limit](https://docs.trio.com.br/developers/rate-limit.md): Limits per environment, the `429` response, and back-off strategy
+
+## Webhooks
+
+- [Introduction](https://docs.trio.com.br/webhooks/introduction.md): Why Trio uses webhooks, delivery timeout, and retry schedule
+- [Authentication](https://docs.trio.com.br/webhooks/authentication.md): How to verify that a webhook came from Trio
+- [Content and structure](https://docs.trio.com.br/webhooks/content-and-structure.md): Envelope format shared by every event
+- [Webhook structure guide](https://docs.trio.com.br/guides/webhook.md): Practical walkthrough of a webhook payload
+- [Collecting document events](https://docs.trio.com.br/webhooks/events/collecting-document.md): Cash-in settled and refused
+- [Collecting document refund events](https://docs.trio.com.br/webhooks/events/collecting-document-refund.md): Refund of a cash-in created and settled
+- [Payment document events](https://docs.trio.com.br/webhooks/events/payment-document.md): Cash-out created, settled and failed
+- [Payment document refund events](https://docs.trio.com.br/webhooks/events/payment-document-refund.md): Refund received for a cash-out
+- [Transfer document events](https://docs.trio.com.br/webhooks/events/transfer-document.md): Internal transfer between virtual accounts settled
+- [Recurrence events](https://docs.trio.com.br/webhooks/events/recurrence.md): Pix Automático recurrence created, approved, rejected and cancelled
+- [Recurrence collection events](https://docs.trio.com.br/webhooks/events/recurrences-collection.md): Lifecycle of each collection inside a recurrence
+- [Recurrence collection attempt events](https://docs.trio.com.br/webhooks/events/recurrence-collections-attempt.md): Each scheduled or retried collection attempt
+- [Pix biometrics enrollment events](https://docs.trio.com.br/webhooks/events/pix-biometrics-enrollment.md): Enrollment status changes for Pix by biometrics
+- [Initiation document events](https://docs.trio.com.br/webhooks/events/initiation-document.md): Lifecycle of a payment initiated through Pix biometrics
+- [Entity events](https://docs.trio.com.br/webhooks/events/entity.md): Compliance status of an entity created through onboarding
+
+## Guides
+
+- [Customer onboarding](https://docs.trio.com.br/guides/onboarding-guide.md): Create organizations and entities through the API, compliance analysis, and tracking by webhook
+- [Cash in](https://docs.trio.com.br/guides/cash-in.md): Receive money with Pix QR codes, identifiers returned, and how to reconcile
+- [Cash out](https://docs.trio.com.br/guides/cash-out.md): Pay out with Pix, identifiers returned, and how to reconcile
+- [QR code types](https://docs.trio.com.br/guides/qr-codes.md): Static versus dynamic Pix QR codes and when to use each
+- [Document lifecycle](https://docs.trio.com.br/guides/document-lifecycle.md): Status transitions of collecting and payment documents
+- [Pix key validation](https://docs.trio.com.br/guides/using-pix-key.md): Regular expressions and formats for every Pix key type
+- [Pix Automático](https://docs.trio.com.br/guides/using-pix-automatic.md): Recurring Pix collections: recurrences, collections and attempts
+- [Pix biometrics for web](https://docs.trio.com.br/guides/pix-biometrics-web.md): Device, enrollment and FIDO payment flow for Pix by biometrics
+- [Simulating deposit success](https://docs.trio.com.br/guides/simulating-deposit-success.md): Trigger a settled cash-in in sandbox
+- [Simulating deposit failures](https://docs.trio.com.br/guides/simulating-deposit-failures.md): Trigger refused and failed cash-in scenarios in sandbox
+- [Boleto types](https://docs.trio.com.br/guides/boleto-types.md): Invoice type and wallet type options when issuing boletos
+- [Create boleto](https://docs.trio.com.br/guides/create-boleto.md): Step-by-step boleto issuance, including BolePix
+- [Best practices for integration](https://docs.trio.com.br/operations/best_practices_for_integration.md): How cash-in and cash-out identifiers behave, `external_id`, idempotency window, retries
+- [How to ensure the closed loop](https://docs.trio.com.br/operations/how_to_ensure_the_closed_loop.md): Reconcile every transaction using documents, webhooks and queries
+
+## Trio SDK (Trio Checkout)
+
+- [Introduction](https://docs.trio.com.br/trio-sdk/introduction.md): What Trio Checkout is and which flows it covers
+- [Using the SDK](https://docs.trio.com.br/trio-sdk/using-the-sdk.md): Embed the script, create a checkout session, open it and handle callbacks
+- [Local example](https://docs.trio.com.br/trio-sdk/local-example.md): Runnable Node.js backend and HTML frontend example
+- [Pay-in flow](https://docs.trio.com.br/trio-sdk/flows/payin.md): Session parameters for receiving money, including white label options
+- [Pay-out flow](https://docs.trio.com.br/trio-sdk/flows/payout.md): Session parameters for paying out to a Pix key
+
+## API reference: accounts and counterparties
+
+- [Create onboarding](https://docs.trio.com.br/api-reference/banking-api/onboarding/create.md): Create an organization and entity and submit them to compliance
+- [List entities](https://docs.trio.com.br/api-reference/banking-api/entities/list.md): All entities of the current organization
+- [Get entity](https://docs.trio.com.br/api-reference/banking-api/entities/get.md): Entity by ID
+- [List bank accounts](https://docs.trio.com.br/api-reference/banking-api/bank-accounts/list-bank-accounts.md)
+- [Get bank account](https://docs.trio.com.br/api-reference/banking-api/bank-accounts/get-bank-account.md)
+- [Get bank account balances](https://docs.trio.com.br/api-reference/banking-api/bank-accounts/get-bank-account-balances.md)
+- [List bank account transactions](https://docs.trio.com.br/api-reference/banking-api/bank-accounts/list-bank-account-transactions.md)
+- [List virtual accounts](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/list-virtual-accounts.md)
+- [Get virtual account](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/get-virtual-account.md)
+- [Update virtual account](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/update-virtual-account.md)
+- [Get virtual account balances](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/get-virtual-account-balances.md)
+- [List virtual account transactions](https://docs.trio.com.br/api-reference/banking-api/virtual-accounts/list-virtual-account-transactions.md)
+- [Transfer between virtual accounts](https://docs.trio.com.br/api-reference/banking-api/transfers/transfer.md)
+- [List counterparties](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparties.md)
+- [Get counterparty](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty.md)
+- [Create counterparty](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty.md)
+- [Update counterparty](https://docs.trio.com.br/api-reference/banking-api/counterparties/update-counterparty.md)
+- [List counterparty bank accounts](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparty-bank-accounts.md)
+- [Get counterparty bank account](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty-bank-account.md)
+- [Create counterparty bank account](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty-bank-account.md)
+- [List counterparty split recipients](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparty-split-recipients.md)
+- [Get counterparty split recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty-split-recipient.md)
+- [Create counterparty split recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty-split-recipient.md)
+- [List institutions](https://docs.trio.com.br/api-reference/banking-api/institutions/list.md): Financial institutions accepted in bank account data
+
+## API reference: receivables (cash-in)
+
+- [Create static QR code](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-static/post.md): Reusable Pix QR code with optional fixed amount
+- [Get static QR code](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-static/get.md)
+- [Get static QR code image](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-static/get-image.md)
+- [Get static QR code hash](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-static/get-hash.md): Copy-and-paste Pix code
+- [Create dynamic QR code](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/post.md): Single-use Pix QR code tied to a payer and amount
+- [Get dynamic QR code](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/get.md)
+- [Get dynamic QR code image](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/get-image.md)
+- [Get dynamic QR code hash](https://docs.trio.com.br/api-reference/banking-api/receivables/qrcode-dynamic/get-hash.md): Copy-and-paste Pix code
+- [Refund Pix](https://docs.trio.com.br/api-reference/banking-api/receivables/refunds/post.md): Refund a collecting document fully or partially
+- [Create boleto](https://docs.trio.com.br/api-reference/banking-api/receivables/boletos/post.md)
+- [List boletos](https://docs.trio.com.br/api-reference/banking-api/receivables/boletos/list.md)
+- [Get boleto](https://docs.trio.com.br/api-reference/banking-api/receivables/boletos/get.md)
+- [Update boleto](https://docs.trio.com.br/api-reference/banking-api/receivables/boletos/update.md)
+- [Cancel boleto](https://docs.trio.com.br/api-reference/banking-api/receivables/boletos/cancel.md)
+- [List recurrences](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/list-recurrences.md): Pix Automático recurrences
+- [Generate recurrence](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/generate-recurrence.md)
+- [Get recurrence](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/get-recurrence.md): Recurrence with its stages
+- [Cancel recurrence](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/cancel-recurrence.md)
+- [Get recurrence request](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/get-recurrence-request.md)
+- [List recurrence collections](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/list-recurrence-collections.md)
+- [Get collection](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/get-collection.md)
+- [Update collection](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/update-collection.md)
+- [Cancel collection](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/cancel-collection.md)
+- [Schedule collection](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/schedule-collection.md)
+- [Create next collection](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/create-next-collection.md)
+- [List collection attempts](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/list-collection-attempts.md)
+- [Get collection attempt](https://docs.trio.com.br/api-reference/banking-api/receivables/recurrences/get-collection-attempt.md)
+- [Find or create biometrics device](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/find-or-create-device.md): Device associated with a counterparty
+- [List biometrics participants](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/list-participants.md): Banks that support Pix by biometrics
+- [List enrollments](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/list-enrollments.md)
+- [Create enrollment](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/create-enrollment.md)
+- [Get enrollment registration options](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/get-registration-options.md): FIDO registration challenge
+- [Register enrollment credential](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/register-credential.md): Submit the FIDO credential
+- [Create biometrics payment](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/create-payment.md): Payment initiation for an enrollment
+- [Get biometrics payment](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/get-payment.md)
+- [Get payment authorization options](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/get-authorization-options.md): FIDO authorization challenge
+- [Authorize biometrics payment](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/authorize-payment.md): Submit the FIDO assertion
+
+## API reference: payments (cash-out)
+
+- [Check Pix key](https://docs.trio.com.br/api-reference/banking-api/payments/transfer-pix/check-key.md): Validate a Pix key and get the account holder before paying
+- [Generate Pix payment v1](https://docs.trio.com.br/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-v1.md): Pay using the result of Check Pix key
+- [Generate Pix payment v2](https://docs.trio.com.br/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-v2.md): Pay a Pix key directly in one call
+- [Check Pix BR Code](https://docs.trio.com.br/api-reference/banking-api/payments/brcode/check-brcode.md): Decode and validate a Pix copy-and-paste code
+- [Generate Pix payment from BR Code](https://docs.trio.com.br/api-reference/banking-api/payments/brcode/generate-pix-payment-brcode.md)
+- [Check boleto](https://docs.trio.com.br/api-reference/banking-api/payments/boleto/check-boleto.md): Validate a boleto barcode or digitable line
+- [Pay boleto](https://docs.trio.com.br/api-reference/banking-api/payments/boleto/pay-boleto.md)
+- [Pay boleto v2](https://docs.trio.com.br/api-reference/banking-api/payments/boleto/pay-boleto-v2.md)
+- [Check utility](https://docs.trio.com.br/api-reference/banking-api/payments/utility/check-utility.md): Validate a utility bill barcode
+- [Pay utility v1](https://docs.trio.com.br/api-reference/banking-api/payments/utility/pay-utility-v1.md)
+- [Pay utility v2](https://docs.trio.com.br/api-reference/banking-api/payments/utility/pay-utility-v2.md)
+- [Check tax](https://docs.trio.com.br/api-reference/banking-api/payments/tax/check-tax.md): Validate an ISS or DAS tax barcode
+- [Pay tax v1](https://docs.trio.com.br/api-reference/banking-api/payments/tax/pay-tax-v1.md)
+- [Pay tax v2](https://docs.trio.com.br/api-reference/banking-api/payments/tax/pay-tax-v2.md)
+- [Check DARF](https://docs.trio.com.br/api-reference/banking-api/payments/darf/check-darf.md): Validate a manually filled DARF
+- [Pay DARF v1](https://docs.trio.com.br/api-reference/banking-api/payments/darf/pay-darf-v1.md)
+- [Pay DARF v2](https://docs.trio.com.br/api-reference/banking-api/payments/darf/pay-darf-v2.md)
+
+## API reference: documents and reconciliation
+
+- [List receivables](https://docs.trio.com.br/api-reference/banking-api/documents/receivables/list-receivables.md): Collecting documents, paginated
+- [Get receivable](https://docs.trio.com.br/api-reference/banking-api/documents/receivables/get-receivable.md)
+- [Search receivables](https://docs.trio.com.br/api-reference/banking-api/documents/receivables/search-receivables.md): Filter by `external_id`, end-to-end ID and other fields
+- [List receivable refunds](https://docs.trio.com.br/api-reference/banking-api/documents/receivables-refunds/list-receivable-refunds.md)
+- [Get receivable refund](https://docs.trio.com.br/api-reference/banking-api/documents/receivables-refunds/get-receivable-refund.md)
+- [Search receivable refunds](https://docs.trio.com.br/api-reference/banking-api/documents/receivables-refunds/search-receivable-refunds.md)
+- [List payments](https://docs.trio.com.br/api-reference/banking-api/documents/payments/list-payments.md): Payment documents, paginated
+- [Get payment](https://docs.trio.com.br/api-reference/banking-api/documents/payments/get-payment.md)
+- [Search payments](https://docs.trio.com.br/api-reference/banking-api/documents/payments/search-payments.md): Filter by `external_id`, end-to-end ID and other fields
+- [List payment refunds](https://docs.trio.com.br/api-reference/banking-api/documents/payments-refunds/list-payment-refunds.md)
+- [Get payment refund](https://docs.trio.com.br/api-reference/banking-api/documents/payments-refunds/get-payment-refund.md)
+- [Search payment refunds](https://docs.trio.com.br/api-reference/banking-api/documents/payments-refunds/search-payment-refunds.md)
+- [List transfers](https://docs.trio.com.br/api-reference/banking-api/documents/transfers/list-transfers.md): Internal transfer documents
+- [Get transfer](https://docs.trio.com.br/api-reference/banking-api/documents/transfers/get-transfer.md)
+- [Get bank account metrics](https://docs.trio.com.br/api-reference/banking-api/documents/metrics/get-bank-account-metrics.md): Settled and failed totals for a period
+
+## API reference: cards
+
+- [Create card](https://docs.trio.com.br/api-reference/banking-api/cards/create-card.md)
+- [List cards](https://docs.trio.com.br/api-reference/banking-api/cards/list-cards.md)
+- [Get card](https://docs.trio.com.br/api-reference/banking-api/cards/get-card.md)
+- [Update card](https://docs.trio.com.br/api-reference/banking-api/cards/update-card.md): Change the display name
+- [Block card](https://docs.trio.com.br/api-reference/banking-api/cards/block-card.md)
+- [Unblock card](https://docs.trio.com.br/api-reference/banking-api/cards/unblock-card.md)
+- [Cancel card](https://docs.trio.com.br/api-reference/banking-api/cards/cancel-card.md)
+- [Get card details](https://docs.trio.com.br/api-reference/banking-api/cards/get-card-details.md): Sensitive data: holder name, number, expiration and CVV
+- [Top up card balance](https://docs.trio.com.br/api-reference/banking-api/cards/top-up-card-balance.md)
+- [Transfer card balance](https://docs.trio.com.br/api-reference/banking-api/cards/transfer-card-balance.md): Move balance to another card
+- [List card invoices](https://docs.trio.com.br/api-reference/banking-api/cards/list-card-invoices.md)
+- [Get card current invoice](https://docs.trio.com.br/api-reference/banking-api/cards/get-card-current-invoice.md)
+- [List card invoice lines](https://docs.trio.com.br/api-reference/banking-api/cards/list-card-invoice-lines.md)
+- [Generate card invoice statement CSV URL](https://docs.trio.com.br/api-reference/banking-api/cards/generate-card-invoice-statement-csv-url.md)
+- [List card purchase documents](https://docs.trio.com.br/api-reference/banking-api/cards/list-card-purchase-documents.md)
+- [Get card purchase document by ID](https://docs.trio.com.br/api-reference/banking-api/cards/show-card-purchase-document-by-id.md)
+- [Get card purchase document by end-to-end ID](https://docs.trio.com.br/api-reference/banking-api/cards/show-card-purchase-document-by-end-to-end-id.md)
+
+## API reference: webhooks management
+
+- [List webhooks](https://docs.trio.com.br/api-reference/banking-api/developers/webhooks/list-webhooks.md)
+- [Get webhook](https://docs.trio.com.br/api-reference/banking-api/developers/webhooks/get-webhook.md)
+- [Create webhook](https://docs.trio.com.br/api-reference/banking-api/developers/webhooks/create-webhook.md): Register a URL and the events it receives
+- [Update webhook](https://docs.trio.com.br/api-reference/banking-api/developers/webhooks/update-webhook.md)
+- [Delete webhook](https://docs.trio.com.br/api-reference/banking-api/developers/webhooks/delete-webhook.md)
+
+## OpenAPI specifications
+
+- [Banking API](https://docs.trio.com.br/api-reference/banking-api/openapi.json): Accounts, counterparties, receivables, payments, documents, cards and webhooks
+- [Onboarding API](https://docs.trio.com.br/api-reference/banking-api/onboarding/openapi.json): Organization and entity onboarding
+- [Pix biometrics API](https://docs.trio.com.br/api-reference/banking-api/receivables/biometrics/openapi.json): Devices, enrollments and biometric payments
+- [Initiation API](https://docs.trio.com.br/api-reference/initiation-api/openapi.json): Payment initiation used by Trio Checkout
+
+## FAQ
+
+- [General FAQ](https://docs.trio.com.br/faq/frequently_asked_questions.md): Sandbox versus production, credentials, webhooks, Pix, compliance and integration
+- [Boleto FAQ](https://docs.trio.com.br/faq/boleto-en-us.md): BolePix, payer data, status cycle, due date, expiration, refunds and installment books
+
+## Optional
+
+- [Full documentation in one file](https://docs.trio.com.br/llms-full.txt): Every page above concatenated as Markdown
+- [Shoppub partner guide (PT-BR)](https://docs.trio.com.br/guides/partners/shoppub/criacao-de-credenciais.md): Creating API credentials for the Shoppub integration
+- [Trio App Sandbox](https://app.sandbox.trio.com.br): Web console for the sandbox environment
+- [Support portal](https://suporte.trio.com.br): Help center and user manual
+- [Trio website](https://www.trio.com.br)
