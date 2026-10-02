@@ -21,7 +21,6 @@ Key facts an agent needs before reading further:
 ## Getting started
 
 - [Welcome](https://docs.trio.com.br/index.md): What Trio is and how the documentation is organized
-- [Quickstart](https://docs.trio.com.br/quickstart.md): Recommended first steps, starting with a sandbox account
 - [Plan your integration](https://docs.trio.com.br/getting_started/plan-your-integration.md): Questions to answer before building, and which products fit each use case
 - [Sandbox account](https://docs.trio.com.br/guides/sandbox_account.md): Create and configure a sandbox account
 - [First API credential](https://docs.trio.com.br/guides/creating-your-first-api-credential.md): Generate a `client_id` and `client_secret` in the Trio App
