@@ -45,22 +45,22 @@ Open `http://localhost:3000` to preview the documentation.
 
 ```
 .
-├── index.mdx             # Welcome page
-├── quickstart.mdx        # First steps for new integrators
-├── getting_started/      # Planning your integration, support channels
-├── developers/           # Concepts, environments, authentication, errors, pagination, rate limits
-├── webhooks/             # Webhook authentication, structure, and event reference
-├── guides/               # Step-by-step integration guides (Pix, Boleto, cash-in, cash-out, onboarding)
-├── trio-sdk/             # Trio Checkout SDK guides, flows, and a local example
-├── operations/           # Best practices and reconciliation (closed loop)
-├── api-reference/        # API reference generated from the OpenAPI specifications
-│   ├── banking-api/      #   openapi.json + endpoint pages
-│   └── initiation-api/   #   openapi.json
-├── faq/                  # Frequently asked questions (EN and PT-BR)
-├── snippets/             # Reusable MDX snippets
-├── images/               # Screenshots and diagrams used across the docs
+├── v1/                   # V1 documentation (published, default version)
+│   ├── index.mdx         #   Welcome page
+│   ├── getting_started/  #   Planning your integration, support channels
+│   ├── developers/       #   Concepts, environments, authentication, errors, pagination, rate limits
+│   ├── webhooks/         #   Webhook authentication, structure, and event reference
+│   ├── guides/           #   Step-by-step integration guides (Pix, Boleto, cash-in, cash-out, onboarding)
+│   ├── trio-sdk/         #   Trio Checkout SDK guides, flows, and a local example
+│   ├── operations/       #   Best practices and reconciliation (closed loop)
+│   ├── api-reference/    #   API reference generated from the OpenAPI specifications
+│   └── faq/              #   Frequently asked questions (EN and PT-BR)
+├── v2/                   # V2 documentation, same layout as v1
+├── snippets/             # Reusable MDX snippets, shared by every version
+├── images/               # Screenshots and diagrams, shared by every version
 ├── logo/                 # Brand logos for light and dark themes
-└── docs.json             # Mintlify configuration: navigation, theme, navbar, footer
+├── llms.txt              # Curated index for AI agents
+└── docs.json             # Mintlify configuration: navigation, versions, redirects, theme
 ```
 
 Navigation is defined in `docs.json`. Every page must be listed there to appear in the sidebar.
@@ -71,7 +71,7 @@ Navigation is defined in `docs.json`. Every page must be listed there to appear 
 
 1. Create a branch from `main`.
 2. Add or edit `.mdx` files. New pages need a `title` in the frontmatter.
-3. Register new pages in the `navigation` section of `docs.json`.
+3. Register new pages under the right version in the `navigation` section of `docs.json`.
 4. Run `mint dev` and check the result in the browser.
 
 ### Working with the API reference
@@ -103,17 +103,19 @@ The site is versioned with Mintlify [versions](https://mintlify.com/docs/organiz
 
 | Version | Content location | Status |
 | --- | --- | --- |
-| `v1` | Repository root (`guides/`, `developers/`, `api-reference/`, ...) | Published, default |
-| `v2` | `v2/` | Hidden while being written |
+| `v1` | `v1/` | Published, default |
+| `v2` | `v2/` | Selectable, being written |
 
-`v2/` mirrors the `v1` folder layout, so a page's V2 counterpart lives at the same relative path under `v2/`. Stub pages carry an MDX comment pointing at the `v1` page to start from.
+`v2/` mirrors the `v1/` folder layout, so a page's V2 counterpart lives at the same relative path. Stub pages carry an MDX comment pointing at the `v1` page to start from.
+
+Page URLs carry the version prefix, for example `/v1/guides/cash-in` and `/v2/guides/pix/overview`. The `redirects` section of `docs.json` forwards the pre-versioning URLs such as `/guides/cash-in` to their `/v1/` equivalents, so links published before the split keep working.
 
 ### Writing V2 content
 
 1. Edit the stub under `v2/`, or add a new `.mdx` file next to it.
 2. Register new pages in the `v2` version inside `docs.json`.
 3. Link between V2 pages with root-relative paths that include the prefix, for example `/v2/developers/authentication`.
-4. Preview with `mint dev`. Hidden versions are still rendered locally and are selectable from the version dropdown.
+4. Preview with `mint dev` and pick the version from the dropdown in the navbar.
 
 ### V2 API reference
 
@@ -153,10 +155,9 @@ npx @mintlify/scraping@latest openapi-file v2/api-reference/openapi.json -o v2/a
 
 ### Publishing V2
 
-1. Remove `"hidden": true` from the `v2` version in `docs.json`. The version becomes selectable and indexed.
-2. To make it the default, move `"default": true` from `v1` to `v2`.
-3. Add V2 pages to `llms.txt`, or delete the file to fall back to the generated index.
-4. If `v1` pages are later moved under a `v1/` folder, add `redirects` in `docs.json` so existing links keep working.
+1. To make V2 the default, move `"default": true` from `v1` to `v2` in `docs.json`.
+2. Add V2 pages to `llms.txt`, or delete the file to fall back to the generated index.
+3. To take a version offline without deleting it, set `"hidden": true` on it. Hidden versions are still rendered by `mint dev`.
 
 ## 🚢 Deployment
 

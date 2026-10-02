@@ -1,0 +1,33 @@
+---
+title: 'API reference'
+description: 'Reference documentation for Trio APIs'
+---
+
+<Note>
+  API reference pages are generated from the OpenAPI specifications in this
+  section.
+</Note>
+
+## Welcome
+
+There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). This API reference uses Trio OpenAPI specifications.
+
+<Card
+  title="Banking API"
+  icon="building-columns"
+  href="/v1/api-reference/banking-api/openapi.json"
+>
+  View the OpenAPI specification file
+</Card>
+
+## Authentication
+
+API reference requests use HTTP Basic authentication and are picked up from the specification file.
+
+```json
+"security": [
+  {
+    "basic": []
+  }
+]
+```
