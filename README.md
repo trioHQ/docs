@@ -74,6 +74,14 @@ Navigation is defined in `docs.json`. Every page must be listed there to appear 
 3. Register new pages under the right version in the `navigation` section of `docs.json`.
 4. Run `mint dev` and check the result in the browser.
 
+### Running with Docker
+
+```bash
+docker compose up
+```
+
+The repository is mounted read-only into the container and the preview is served on `http://localhost:3000`.
+
 ### Working with the API reference
 
 Endpoint pages under `api-reference/` are generated from the OpenAPI files in the same folder. Update the specification first, then regenerate or adjust the affected pages:
