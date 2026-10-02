@@ -1,6 +1,6 @@
 # Trio
 
-> Trio is a banking-as-a-service platform for companies in Brazil, authorized by the Central Bank of Brazil (No. 619, ISPB 49931906). Its REST API lets you open bank and virtual accounts, receive money through Pix and boleto, pay Pix transfers, boletos, utility bills and taxes, issue corporate cards, and track every money movement through documents and webhooks. The Trio Checkout SDK embeds Pix pay-in and pay-out flows in your web or mobile app.
+> Trio is a complete financial platform for companies in Brazil, authorized by the Central Bank of Brazil (No. 619, ISPB 49931906). Its REST API lets you open bank and virtual accounts, receive money through Pix and boleto, pay Pix transfers, boletos, utility bills and taxes, issue corporate cards, and track every money movement through documents and webhooks. The Trio Checkout SDK embeds Pix pay-in and pay-out flows in your web or mobile app.
 
 Key facts an agent needs before reading further:
 
