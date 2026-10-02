@@ -97,6 +97,67 @@ mint update         # Upgrade the CLI to the latest version
 - **Page missing from the sidebar** — the page path is probably not listed in `docs.json`.
 - **Unexpected rendering** — check for unclosed MDX components or invalid frontmatter.
 
+## 🔀 Versions
+
+The site is versioned with Mintlify [versions](https://mintlify.com/docs/organize/navigation#versions). Each version has its own navigation tree in `docs.json` and its own pages. Readers switch versions from a dropdown in the navbar.
+
+| Version | Content location | Status |
+| --- | --- | --- |
+| `v1` | Repository root (`guides/`, `developers/`, `api-reference/`, ...) | Published, default |
+| `v2` | `v2/` | Hidden while being written |
+
+`v2/` mirrors the `v1` folder layout, so a page's V2 counterpart lives at the same relative path under `v2/`. Stub pages carry an MDX comment pointing at the `v1` page to start from.
+
+### Writing V2 content
+
+1. Edit the stub under `v2/`, or add a new `.mdx` file next to it.
+2. Register new pages in the `v2` version inside `docs.json`.
+3. Link between V2 pages with root-relative paths that include the prefix, for example `/v2/developers/authentication`.
+4. Preview with `mint dev`. Hidden versions are still rendered locally and are selectable from the version dropdown.
+
+### V2 API reference
+
+Add the V2 specification as `v2/api-reference/openapi.json`. Mintlify scans every file named `openapi*.json` and refuses one with no endpoints, so the file does not exist yet. A minimal header for the spec:
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Banking API", "version": "2.0.0" },
+  "servers": [
+    { "url": "https://api.sandbox.trio.com.br", "description": "Sandbox" },
+    { "url": "https://api.trio.com.br", "description": "Production" }
+  ],
+  "security": [{ "basic": [] }],
+  "components": { "securitySchemes": { "basic": { "type": "http", "scheme": "basic" } } },
+  "paths": {}
+}
+```
+
+Then switch the `Banking API` group of the `v2` version in `docs.json` from the stub page to the `openapi` field. Mintlify generates every endpoint page and the sidebar groups from the spec's tags, and no endpoint pages need to be listed:
+
+```json
+{
+  "group": "Banking API",
+  "openapi": {
+    "source": "v2/api-reference/openapi.json",
+    "directory": "v2/api-reference"
+  }
+}
+```
+
+Hide an endpoint from the generated reference by adding `x-hidden: true` to its operation. If you prefer hand-curated endpoint pages, as `v1` does, generate them into `v2/api-reference/` and list them under the `v2` version instead:
+
+```bash
+npx @mintlify/scraping@latest openapi-file v2/api-reference/openapi.json -o v2/api-reference
+```
+
+### Publishing V2
+
+1. Remove `"hidden": true` from the `v2` version in `docs.json`. The version becomes selectable and indexed.
+2. To make it the default, move `"default": true` from `v1` to `v2`.
+3. Add V2 pages to `llms.txt`, or delete the file to fall back to the generated index.
+4. If `v1` pages are later moved under a `v1/` folder, add `redirects` in `docs.json` so existing links keep working.
+
 ## 🚢 Deployment
 
 Deployment is handled by the Mintlify GitHub integration. Changes merged into `main` are published automatically to [docs.trio.com.br](https://docs.trio.com.br).
