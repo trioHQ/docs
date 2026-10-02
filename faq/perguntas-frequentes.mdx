@@ -1,0 +1,262 @@
+---
+title: "FAQ — Geral"
+description: "Perguntas frequentes sobre Sandbox, Produção, credenciais, webhooks, PIX, API, compliance e integração."
+---
+
+Este FAQ reúne as perguntas mais comuns sobre a integração com a Trio, incluindo **configuração do Sandbox, credenciais de API, Contas Virtuais, webhooks, testes de PIX, rate limits, regras de compliance e onboarding em Produção**.
+
+> **Dica:** Antes de iniciar a integração, recomendamos a leitura dos [Guias da Trio](https://docs.trio.com.br/guides) e das nossas [Boas Práticas de Integração](https://docs.trio.com.br/operations/best_practices_for_integration).
+
+---
+
+## Sandbox
+
+### Como obtenho o `client_id` e o `client_secret` do Sandbox?
+
+As credenciais de API do Sandbox são criadas pelo seu time diretamente através do **Internet Banking do Sandbox**.
+
+A Trio não gera nem fornece essas credenciais manualmente. Seu time precisa:
+
+1. Criar uma organização no Sandbox.
+2. Acessar o Internet Banking do Sandbox.
+3. Criar as credenciais de API.
+4. Utilizar as credenciais geradas para autenticação na API.
+
+Para mais informações, consulte o [Guia de Conta Sandbox](https://docs.trio.com.br/guides/sandbox_account).
+
+---
+
+### Onde encontro o ID da Conta Virtual no Sandbox?
+
+O **ID da Conta Virtual** está disponível no Internet Banking do Sandbox.
+
+Após criar sua organização:
+
+1. Acesse **Contas**.
+2. Selecione a conta bancária que deseja utilizar.
+3. Abra os detalhes da conta.
+4. Localize o identificador da conta, que é o `virtual_account_id`.
+
+Esse ID é necessário para operações como testes de PIX Cash-in.
+
+---
+
+## Webhooks
+
+### Como crio e configuro um webhook no Sandbox?
+
+O processo completo de criação de um webhook está disponível em nosso guia:
+
+[Criando Seu Primeiro Webhook](https://docs.trio.com.br/guides/creating-your-first-webhook)
+
+Os mesmos conceitos se aplicam tanto ao Sandbox quanto à Produção, mas cada ambiente deve ser configurado separadamente.
+
+---
+
+### Onde consigo o segredo (secret) do webhook?
+
+O secret do webhook é gerado quando você cria o webhook através do Internet Banking.
+
+O secret é utilizado para validar a autenticidade das requisições de webhook recebidas pelo seu sistema.
+
+Para detalhes sobre autenticação e assinaturas de webhook, consulte:
+
+[Autenticação de Webhook](https://docs.trio.com.br/webhooks/authentication)
+
+---
+
+### Meu endpoint de webhook precisa de allowlist de IP?
+
+Sim.
+
+Ao criar suas credenciais de API, você deve registrar o endereço IP do seu servidor.
+
+Caso sua infraestrutura também exija que os endereços IP da Trio sejam adicionados à sua allowlist (whitelist), utilize o seguinte:
+
+| Ambiente | IP da Trio |
+| --- | --- |
+| Produção | `Compartilhado após contrato` |
+| Sandbox | `34.194.173.207` |
+---
+
+### Qual é a política de retry do webhook?
+
+A Trio possui um mecanismo de retry para entregas de webhook que falham.
+
+Se uma entrega de webhook falhar, nosso sistema tentará reenviá-la até **5 vezes**.
+
+O intervalo entre as tentativas aumenta a cada falha:
+
+| Tentativa | Intervalo |
+| --- | ---: |
+| 1ª tentativa | 16 segundos |
+| 2ª tentativa | 32 segundos |
+| 3ª tentativa | 104 segundos |
+| 4ª tentativa | 208 segundos |
+| Tentativas adicionais | De acordo com a política de retry |
+
+Seu endpoint de webhook deve ser projetado para lidar com segurança com **eventos duplicados**.
+
+Recomendamos implementar **idempotência** no processamento dos seus webhooks para evitar que o mesmo evento seja processado mais de uma vez.
+
+---
+
+## Testes de PIX Cash-in
+
+### Como simulo um pagamento PIX bem-sucedido no Sandbox?
+
+Você pode simular um depósito PIX bem-sucedido utilizando o procedimento descrito em nosso guia:
+
+[Simulando Sucesso de Depósito](https://docs.trio.com.br/guides/simulating-deposit-success)
+
+---
+
+### Como simulo um pagamento PIX com falha no Sandbox?
+
+Você pode simular falhas em depósitos PIX utilizando o seguinte guia:
+
+[Simulando Falhas de Depósito](https://docs.trio.com.br/guides/simulating-deposit-failures)
+
+---
+
+### Onde entendo o fluxo de status de uma transação PIX?
+
+Entender o ciclo de vida do documento é importante ao implementar PIX Cash-in e outros fluxos de transação.
+
+Recomendamos a leitura de:
+
+[Ciclo de Vida do Documento](https://docs.trio.com.br/guides/document-lifecycle)
+
+Também é importante seguir nossas práticas recomendadas de integração:
+
+[Boas Práticas de Integração — Resumo Final](https://docs.trio.com.br/operations/best_practices_for_integration#final-summary)
+
+---
+
+## Rate Limits da API
+
+### Quais são os rate limits da API?
+
+Os rate limits da API são:
+
+| Ambiente | Rate Limit |
+| --- | ---: |
+| Produção | `60 requisições/segundo` |
+| Sandbox | `5 requisições/segundo` |
+
+Esses limites se aplicam a **cada conta individualmente e a cada endpoint**, sendo aplicados por segundo.
+
+---
+
+### O que devo fazer ao atingir o rate limit da API?
+
+Ao atingir o rate limit, recomendamos implementar uma estratégia de **retry com backoff**.
+
+Evite tentar reenviar requisições continuamente sem aguardar entre as tentativas.
+
+Uma estratégia de backoff ajuda a reduzir requisições desnecessárias e evita erros repetidos de rate limit.
+
+---
+
+## Compliance de PIX Cash-in
+
+### Quais regras de compliance de PIX Cash-in podem ser configuradas?
+
+As seguintes regras podem ser configuradas diretamente através do Internet Banking:
+
+- Bloquear depósitos não identificados.
+- Bloquear depósitos originados de QR Codes duplicados.
+- Bloquear depósitos com valor diferente do valor emitido no QR Code dinâmico.
+- Bloquear depósitos de pessoas jurídicas.
+- Bloquear depósitos com CPF/CNPJ diferente do QR Code dinâmico.
+- Bloquear depósitos de participantes não autorizados.
+- Bloquear depósitos originados de uma conta bancária pertencente a um contraparte diferente do QR Code dinâmico.
+- Devolver automaticamente depósitos de menores de idade.
+- Devolver automaticamente depósitos de pessoas falecidas.
+- Devolver automaticamente depósitos de pessoas com CPF/CNPJ irregular e/ou inválido.
+- Bloquear transações de Cash-out para pessoas jurídicas (CNPJ).
+
+Essas configurações podem ser revisadas e ajustadas de acordo com as necessidades da sua Conta Virtual.
+
+---
+
+## Produção
+
+### Como obtenho as credenciais e os IDs de Conta Virtual de Produção?
+
+O acesso à Produção é fornecido após a assinatura do contrato com o **Time Comercial da Trio**.
+
+Após receber o acesso ao Internet Banking de Produção, seu time pode:
+
+- Criar as credenciais de API de Produção.
+- Criar e gerenciar Contas Virtuais.
+- Obter os respectivos IDs das Contas Virtuais.
+- Configurar os webhooks de Produção.
+
+As credenciais de Produção e de Sandbox são gerenciadas separadamente.
+
+---
+
+### Os secrets de webhook de Produção e Sandbox são diferentes?
+
+Sim.
+
+**Sandbox e Produção são ambientes completamente separados.**
+
+Você deve configurar seus webhooks separadamente em cada ambiente, e cada ambiente possui sua própria configuração de webhook e seu próprio secret.
+
+Um secret de webhook do Sandbox não deve ser utilizado em Produção.
+
+---
+
+### Existe uma certificação de Produção ou checklist de go-live?
+
+Após a assinatura do contrato e a conclusão da validação de compliance pelo time da Trio, seu time de engenharia deve validar o fluxo completo de integração antes de entrar em produção.
+
+No mínimo, recomendamos validar:
+
+- PIX Cash-in.
+- Cash-out.
+- Entrega de webhooks.
+- Validação da assinatura do webhook.
+- Atualizações de status de transação.
+- Tratamento do ciclo de vida do documento.
+- Tratamento de erros.
+- Comportamento de retry e idempotência.
+
+Para a abordagem de integração recomendada, consulte:
+
+[Boas Práticas de Integração](https://docs.trio.com.br/operations/best_practices_for_integration)
+
+---
+
+## Recursos Adicionais
+
+Para informações mais detalhadas, consulte os seguintes recursos:
+
+### Guias
+
+[Guias da Trio](https://docs.trio.com.br/guides)
+
+Guias passo a passo cobrindo cenários comuns de integração.
+
+### Boas Práticas de Integração
+
+[Boas Práticas de Integração](https://docs.trio.com.br/operations/best_practices_for_integration)
+
+Práticas recomendadas para construir e manter uma integração confiável.
+
+### Documentação da API
+
+[Documentação da API da Trio](https://docs.trio.com.br/)
+
+Documentação completa incluindo:
+
+- Getting Started
+- Guias
+- Referência da API
+- Webhooks
+- Autenticação
+- Ciclo de vida da transação
+
+> **Leitura recomendada:** Recomendamos fortemente revisar a documentação antes de iniciar a integração em Produção. A maioria das dúvidas comuns de integração e detalhes de configuração são cobertos nos guias e na referência da API.
