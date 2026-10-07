@@ -103,6 +103,11 @@ The representative must have:
 - phone number;
 - email.
 
+Each representative can also include two optional compliance flags. Both default to `false` when omitted:
+
+- `is_pep`: whether the representative is a politically exposed person (PEP);
+- `is_us_person`: whether the representative is a US person for tax purposes.
+
 The consent must have:
 
 - the tax ID (CPF) of the person responsible for the consent;
@@ -135,7 +140,9 @@ curl --request POST \
         "tax_number": "111.444.777-35",
         "email": "john@gcorp.com",
         "phone": "+5541999990000",
-        "name": "John"
+        "name": "John",
+        "is_pep": false,
+        "is_us_person": false
       }
     ],
     "consent": {
@@ -230,9 +237,11 @@ Example:
         "name_linked": "Representative Name",
         "status": "in_validation",
         "tax_number_linked": "12345678912",
+        "required_documents": ["identification"],
         "updated_at": "2026-09-05T00:11:52.054493Z"
       }
     ],
+    "required_documents": ["company_contract", "financial_statement"],
     "inserted_at": "2026-09-05T00:11:52.015299Z",
     "updated_at": "2026-09-05T00:11:52.015299Z"
   }
@@ -241,7 +250,90 @@ Example:
 
 > **Best practice:** save the `org_id`, `entity_id`, and `external_id` in your system. The `org_id` will be used later to perform operations on the customer's organization.
 
-## 5. Liveness step
+### Required documents
+
+The response includes a `required_documents` field in **two places**, based on the documents configured for your distribution channel:
+
+- at the **entity** level (`data.required_documents`): the documents the company must provide, such as `company_contract`, `power_of_attorney`, and `financial_statement`;
+- inside **each representative** (`data.representatives[].required_documents`): the documents that representative must provide, typically `identification`.
+
+Both fields are `null` when no document is required. Use them to know exactly which documents to upload in the next step.
+
+## 5. Uploading entity and representative documents
+
+Depending on the distribution channel configuration, Compliance may require supporting documents to be uploaded for the entity and/or its representatives. Documents are sent **after** the onboarding is created, using the identifiers returned by `POST /onboarding`.
+
+Each document is uploaded individually through:
+
+```http
+POST /onboarding/documents
+```
+
+The request uses `multipart/form-data` and the same **Basic Authentication** as the onboarding creation. Only **PDF** files are accepted.
+
+### Fields
+
+| Field | Description |
+| --- | --- |
+| `reference_type` | `entity` or `entity_representative` |
+| `reference_id` | The `entity_id` (for `entity`) or the representative `id` (for `entity_representative`) |
+| `document_type` | Document classification (see below) |
+| `file` | The PDF file |
+
+Document types by reference:
+
+- **Entity** (`reference_type: entity`): `company_contract`, `power_of_attorney`, `financial_statement`;
+- **Representative** (`reference_type: entity_representative`): `identification`.
+
+The `entity_id` and the representative `id` are both returned in the `POST /onboarding` response.
+
+### Upload example
+
+Uploading a financial statement for the entity:
+
+```bash
+curl --request POST \
+  --url https://api.sandbox.trio.com.br/onboarding/documents \
+  --header 'Authorization: Basic <encoded-value>' \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'reference_type=entity' \
+  --form 'reference_id=01a06ee8-4973-caa8-eda0-dc64b5aa648e' \
+  --form 'document_type=financial_statement' \
+  --form 'file=@./financial_statement.pdf'
+```
+
+Uploading an identification document for a representative:
+
+```bash
+curl --request POST \
+  --url https://api.sandbox.trio.com.br/onboarding/documents \
+  --header 'Authorization: Basic <encoded-value>' \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'reference_type=entity_representative' \
+  --form 'reference_id=bf35e7b3-2858-4ede-999e-e17e6e434071' \
+  --form 'document_type=identification' \
+  --form 'file=@./identification.pdf'
+```
+
+### Response
+
+```json
+{
+  "message": "Document uploaded successfully",
+  "data": {
+    "id": "d9f3b1a2-8c4d-4e5f-a6b7-1c2d3e4f5a6b",
+    "reference_type": "entity",
+    "reference_id": "01a06ee8-4973-caa8-eda0-dc64b5aa648e",
+    "document_type": "financial_statement",
+    "inserted_at": "2026-09-24T11:25:00.000000Z",
+    "updated_at": "2026-09-24T11:25:00.000000Z"
+  }
+}
+```
+
+> **Tip:** upload one document per request. Repeat the call for each required document of the entity and of each representative. See the [upload document API reference](https://docs.trio.com.br/api-reference/banking-api/onboarding/create-document).
+
+## 6. Liveness step
 
 After creation, onboarding moves on to the validation process.
 
@@ -266,7 +358,7 @@ Example:
 
 The customer must use this link to complete the facial recognition step.
 
-## 6. Compliance analysis
+## 7. Compliance analysis
 
 Once liveness is completed, the customer's information moves on to Compliance analysis.
 
@@ -278,7 +370,7 @@ Events in the `entity` category are sent whenever the Compliance status of an en
 
 See the [Entity events reference](https://docs.trio.com.br/webhooks/events/entity).
 
-## 7. Onboarding webhooks
+## 8. Onboarding webhooks
 
 The main events related to onboarding are:
 
@@ -361,7 +453,7 @@ In this case, the event contains a `reason` field describing the reason for the 
 }
 ```
 
-## 8. Using the customer's organization
+## 9. Using the customer's organization
 
 Once onboarding has been approved, the distributor organization can make calls on behalf of the customer's organization.
 
@@ -400,7 +492,7 @@ Access is validated by Trio on every request. If the distributor organization do
 
 > **Important:** access to the organization is configured at the organization level and must be enabled for the integration.
 
-## 9. Complete flow
+## 10. Complete flow
 
 The complete flow can be understood as follows:
 
@@ -449,7 +541,7 @@ The complete flow can be understood as follows:
     customer's organization
 ```
 
-## 10. Integration recommendations
+## 11. Integration recommendations
 
 ### Save the identifiers
 

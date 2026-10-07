@@ -98,6 +98,11 @@ O representante deve possuir:
 - telefone;
 - e-mail.
 
+Cada representante também pode incluir dois campos opcionais de compliance. Ambos assumem `false` quando omitidos:
+
+- `is_pep`: indica se o representante é uma pessoa politicamente exposta (PEP);
+- `is_us_person`: indica se o representante é uma US person para fins fiscais.
+
 O consentimento deve possuir:
 
 - CPF do responsável pelo consentimento;
@@ -130,7 +135,9 @@ curl --request POST \
         "tax_number": "111.444.777-35",
         "email": "john@gcorp.com",
         "phone": "+5541999990000",
-        "name": "John"
+        "name": "John",
+        "is_pep": false,
+        "is_us_person": false
       }
     ],
     "consent": {
@@ -225,9 +232,11 @@ Exemplo:
         "name_linked": "Representative Name",
         "status": "in_validation",
         "tax_number_linked": "12345678912",
+        "required_documents": ["identification"],
         "updated_at": "2026-09-05T00:11:52.054493Z"
       }
     ],
+    "required_documents": ["company_contract", "financial_statement"],
     "inserted_at": "2026-09-05T00:11:52.015299Z",
     "updated_at": "2026-09-05T00:11:52.015299Z"
   }
@@ -236,7 +245,90 @@ Exemplo:
 
 > **Boa prática:** salve o `org_id`, `entity_id` e o `external_id` no seu sistema. O `org_id` será utilizado posteriormente para executar operações na organização do cliente.
 
-## 5. Etapa de liveness
+### Documentos exigidos
+
+A resposta inclui o campo `required_documents` em **dois lugares**, de acordo com os documentos configurados para o seu canal de distribuição:
+
+- no nível da **entidade** (`data.required_documents`): os documentos que a empresa deve enviar, como `company_contract`, `power_of_attorney` e `financial_statement`;
+- dentro de **cada representante** (`data.representatives[].required_documents`): os documentos que aquele representante deve enviar, normalmente `identification`.
+
+Ambos os campos retornam `null` quando nenhum documento é exigido. Utilize-os para saber exatamente quais documentos enviar na próxima etapa.
+
+## 5. Envio de documentos da entidade e dos representantes
+
+Dependendo da configuração do canal de distribuição, o Compliance pode exigir o envio de documentos de apoio para a entidade e/ou seus representantes. Os documentos são enviados **após** a criação do onboarding, utilizando os identificadores retornados por `POST /onboarding`.
+
+Cada documento é enviado individualmente através de:
+
+```http
+POST /onboarding/documents
+```
+
+A requisição utiliza `multipart/form-data` e a mesma **Basic Authentication** da criação do onboarding. Somente arquivos **PDF** são aceitos.
+
+### Campos
+
+| Campo | Descrição |
+| --- | --- |
+| `reference_type` | `entity` ou `entity_representative` |
+| `reference_id` | O `entity_id` (para `entity`) ou o `id` do representante (para `entity_representative`) |
+| `document_type` | Classificação do documento (veja abaixo) |
+| `file` | O arquivo PDF |
+
+Tipos de documento por referência:
+
+- **Entidade** (`reference_type: entity`): `company_contract`, `power_of_attorney`, `financial_statement`;
+- **Representante** (`reference_type: entity_representative`): `identification`.
+
+O `entity_id` e o `id` do representante são retornados na resposta de `POST /onboarding`.
+
+### Exemplo de envio
+
+Enviando um balanço financeiro da entidade:
+
+```bash
+curl --request POST \
+  --url https://api.sandbox.trio.com.br/onboarding/documents \
+  --header 'Authorization: Basic <encoded-value>' \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'reference_type=entity' \
+  --form 'reference_id=01a06ee8-4973-caa8-eda0-dc64b5aa648e' \
+  --form 'document_type=financial_statement' \
+  --form 'file=@./financial_statement.pdf'
+```
+
+Enviando um documento de identificação de um representante:
+
+```bash
+curl --request POST \
+  --url https://api.sandbox.trio.com.br/onboarding/documents \
+  --header 'Authorization: Basic <encoded-value>' \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'reference_type=entity_representative' \
+  --form 'reference_id=bf35e7b3-2858-4ede-999e-e17e6e434071' \
+  --form 'document_type=identification' \
+  --form 'file=@./identification.pdf'
+```
+
+### Resposta
+
+```json
+{
+  "message": "Document uploaded successfully",
+  "data": {
+    "id": "d9f3b1a2-8c4d-4e5f-a6b7-1c2d3e4f5a6b",
+    "reference_type": "entity",
+    "reference_id": "01a06ee8-4973-caa8-eda0-dc64b5aa648e",
+    "document_type": "financial_statement",
+    "inserted_at": "2026-09-24T11:25:00.000000Z",
+    "updated_at": "2026-09-24T11:25:00.000000Z"
+  }
+}
+```
+
+> **Dica:** envie um documento por requisição. Repita a chamada para cada documento exigido da entidade e de cada representante. Consulte a [referência da API de envio de documentos](https://docs.trio.com.br/api-reference/banking-api/onboarding/create-document).
+
+## 6. Etapa de liveness
 
 Depois da criação, o onboarding segue para o processo de validação.
 
@@ -261,7 +353,7 @@ Exemplo:
 
 O cliente deve utilizar esse link para concluir a etapa de reconhecimento facial.
 
-## 6. Análise de Compliance
+## 7. Análise de Compliance
 
 Depois que o liveness for concluído, as informações do cliente seguem para análise de Compliance.
 
@@ -273,7 +365,7 @@ Os eventos da categoria `entity` são enviados quando o status de Compliance de 
 
 Consulte a [referência de eventos de Entity](https://docs.trio.com.br/webhooks/events/entity).
 
-## 7. Webhooks do onboarding
+## 8. Webhooks do onboarding
 
 Os principais eventos relacionados ao onboarding são:
 
@@ -356,7 +448,7 @@ Nesse caso, o evento contém o campo `reason`, que descreve o motivo da rejeiç�
 }
 ```
 
-## 8. Usando a organização do cliente
+## 9. Usando a organização do cliente
 
 Depois que o onboarding for aprovado, a organização distribuidora pode realizar chamadas em nome da organização do cliente.
 
@@ -395,7 +487,7 @@ O acesso é validado pela Trio a cada requisição. Se a organização distribui
 
 > **Importante:** o acesso à organização é configurado no nível da organização e precisa estar habilitado para a integração.
 
-## 9. Fluxo completo
+## 10. Fluxo completo
 
 O fluxo completo pode ser entendido da seguinte forma:
 
@@ -444,7 +536,7 @@ O fluxo completo pode ser entendido da seguinte forma:
     organização do cliente
 ```
 
-## 10. Recomendações para a integração
+## 11. Recomendações para a integração
 
 ### Salve os identificadores
 

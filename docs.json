@@ -150,7 +150,8 @@
               {
                 "group": "Onboarding",
                 "pages": [
-                  "api-reference/banking-api/onboarding/create"
+                  "api-reference/banking-api/onboarding/create",
+                  "api-reference/banking-api/onboarding/create-document"
                 ]
               },
               {
