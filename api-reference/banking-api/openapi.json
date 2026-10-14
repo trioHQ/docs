@@ -35,225 +35,6 @@
         "title": "Counterparty bank account data params",
         "type": "object"
       },
-      "Counterparty_split_recipient_ref_type": {
-        "description": "Counterparty split recipient reference type",
-        "enum": [
-          "bank_account",
-          "pix_key"
-        ],
-        "title": "Counterparty split recipient ref type",
-        "type": "string"
-      },
-      "Counterparty_split_recipient_ref_bank_account_params": {
-        "description": "Bank account reference used by a counterparty split recipient",
-        "example": {
-          "branch": "0001",
-          "digit": "1",
-          "ispb": "12345678",
-          "number": "87654321",
-          "type": "checking"
-        },
-        "properties": {
-          "branch": {
-            "description": "Counterparty split recipient bank account branch",
-            "type": "string"
-          },
-          "digit": {
-            "description": "Counterparty split recipient bank account digit",
-            "type": "string"
-          },
-          "ispb": {
-            "description": "Counterparty split recipient bank account ispb",
-            "type": "string"
-          },
-          "number": {
-            "description": "Counterparty split recipient bank account number",
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/Counterparty_bank_account_type"
-          }
-        },
-        "required": [
-          "branch",
-          "digit",
-          "ispb",
-          "number",
-          "type"
-        ],
-        "title": "Counterparty split recipient ref bank account params",
-        "type": "object"
-      },
-      "Counterparty_split_recipient_ref_pix_key_params": {
-        "description": "Pix key reference used by a counterparty split recipient",
-        "example": {
-          "key": "05964110000197"
-        },
-        "properties": {
-          "key": {
-            "description": "Pix key value",
-            "type": "string"
-          }
-        },
-        "required": [
-          "key"
-        ],
-        "title": "Counterparty split recipient ref pix key params",
-        "type": "object"
-      },
-      "Counterparty_split_recipient_data_params": {
-        "description": "Body params counterparty split recipient data",
-        "example": {
-          "ref_bank_account": {
-            "branch": "0001",
-            "digit": "1",
-            "ispb": "12345678",
-            "number": "87654321",
-            "type": "checking"
-          },
-          "ref_type": "bank_account"
-        },
-        "properties": {
-          "ref_bank_account": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_bank_account_params"
-              }
-            ],
-            "description": "Bank account information. Required when ref_type is bank_account"
-          },
-          "ref_pix_key": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_pix_key_params"
-              }
-            ],
-            "description": "Pix key information. Required when ref_type is pix_key"
-          },
-          "ref_type": {
-            "$ref": "#/components/schemas/Counterparty_split_recipient_ref_type"
-          }
-        },
-        "required": [
-          "ref_type"
-        ],
-        "title": "Counterparty split recipient data params",
-        "type": "object"
-      },
-      "Counterparty_split_recipient_response_params": {
-        "description": "Counterparty split recipient data",
-        "example": {
-          "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-          "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-          "inserted_at": "2026-08-05T10:00:00Z",
-          "ref_bank_account": {
-            "branch": "0001",
-            "digit": "1",
-            "ispb": "12345678",
-            "number": "87654321",
-            "type": "checking"
-          },
-          "ref_pix_key": null,
-          "ref_type": "bank_account",
-          "updated_at": "2026-08-05T10:00:00Z"
-        },
-        "properties": {
-          "counterparty_id": {
-            "$ref": "#/components/schemas/UUID"
-          },
-          "id": {
-            "$ref": "#/components/schemas/UUID"
-          },
-          "inserted_at": {
-            "description": "Inserted at",
-            "format": "date-time",
-            "type": "string"
-          },
-          "ref_bank_account": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_bank_account_params"
-              }
-            ],
-            "description": "Bank account information",
-            "nullable": true
-          },
-          "ref_pix_key": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_ref_pix_key_params"
-              }
-            ],
-            "description": "Pix key information",
-            "nullable": true
-          },
-          "ref_type": {
-            "$ref": "#/components/schemas/Counterparty_split_recipient_ref_type"
-          },
-          "updated_at": {
-            "description": "Updated at",
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "title": "Counterparty split recipient response params",
-        "type": "object"
-      },
-      "Counterparty_split_recipient_response": {
-        "description": "Body response of the counterparty split recipient",
-        "example": {
-          "data": {
-            "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-            "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-            "inserted_at": "2026-08-05T10:00:00Z",
-            "ref_bank_account": {
-              "branch": "0001",
-              "digit": "1",
-              "ispb": "12345678",
-              "number": "87654321",
-              "type": "checking"
-            },
-            "ref_pix_key": null,
-            "ref_type": "bank_account",
-            "updated_at": "2026-08-05T10:00:00Z"
-          }
-        },
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Counterparty_split_recipient_response_params"
-          }
-        },
-        "title": "Counterparty split recipient response",
-        "type": "object"
-      },
-      "Counterparty_split_recipient_list_response": {
-        "description": "Body response of the listing of counterparty split recipients",
-        "example": {
-          "data": [
-            {
-              "counterparty_id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-              "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
-              "inserted_at": "2026-08-05T10:00:00Z",
-              "ref_bank_account": null,
-              "ref_pix_key": {
-                "key": "05964110000197"
-              },
-              "ref_type": "pix_key",
-              "updated_at": "2026-08-05T10:00:00Z"
-            }
-          ]
-        },
-        "properties": {
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Counterparty_split_recipient_response_params"
-            },
-            "type": "array"
-          }
-        },
-        "title": "Counterparty split recipient list response",
-        "type": "object"
-      },
       "Generate_V2_Tax_create_params": {
         "description": "Body params to generate a tax V2",
         "example": {
@@ -660,7 +441,25 @@
           "expiration_date": "2025-12-10",
           "external_id": "external id 123",
           "invoice_type": "invoice",
-         
+          "options": {
+            "fee": 0
+          },
+          "split": [
+            {
+              "type": "percentage",
+              "value": 70,
+              "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+            },
+            {
+              "type": "percentage",
+              "value": 30,
+              "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+            }
+          ],
+          "merchant": {
+            "name": "Merchant Name",
+            "tax_number": "12345678000199"
+          },
           "virtual_account_id": "0196f83d-cafa-f412-1f1d-129cdf2dda49",
           "wallet_type": "book_entry_electronic_bloquete"
         },
@@ -778,7 +577,68 @@
             "nullable": true,
             "type": "array"
           },
-         
+          "options": {
+            "description": "Optional boleto settings",
+            "nullable": true,
+            "properties": {
+              "fee": {
+                "description": "Fee",
+                "nullable": true,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "split": {
+            "description": "Cashin split configurations",
+            "items": {
+              "properties": {
+                "counterparty_recipient_id": {
+                  "description": "Counterparty recipient UUID",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Split type",
+                  "enum": [
+                    "percentage",
+                    "fixed"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Percentage (0-100) or fixed amount in cents",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "type",
+                "value",
+                "counterparty_recipient_id"
+              ],
+              "type": "object"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "merchant": {
+            "description": "Merchant that will use the receivable.",
+            "nullable": true,
+            "properties": {
+              "name": {
+                "description": "Merchant name",
+                "type": "string"
+              },
+              "tax_number": {
+                "description": "Merchant tax number",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "tax_number"
+            ],
+            "type": "object"
+          },
           "virtual_account_id": {
             "$ref": "#/components/schemas/UUID"
           },
@@ -2831,7 +2691,24 @@
           "external_id": "external_id",
           "options": {
             "allow_change_the_amount_on_payment": true,
-            "show_qrcode_image": true
+            "show_qrcode_image": true,
+            "fee": 0
+          },
+          "split": [
+            {
+              "type": "percentage",
+              "value": 70,
+              "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+            },
+            {
+              "type": "percentage",
+              "value": 30,
+              "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+            }
+          ],
+          "merchant": {
+            "name": "Merchant Name",
+            "tax_number": "12345678000199"
           },
           "virtual_account_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2"
         },
@@ -2888,6 +2765,11 @@
               "show_qrcode_image": {
                 "description": "Show qrcode image",
                 "type": "boolean"
+              },
+              "fee": {
+                "description": "Fee",
+                "nullable": true,
+                "type": "integer"
               }
             },
             "required": [
@@ -2896,12 +2778,61 @@
             ],
             "type": "object"
           },
+          "split": {
+            "description": "Cashin split configurations",
+            "items": {
+              "properties": {
+                "counterparty_recipient_id": {
+                  "description": "Counterparty recipient UUID",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Split type",
+                  "enum": [
+                    "percentage",
+                    "fixed"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Percentage (0-100) or fixed amount in cents",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "type",
+                "value",
+                "counterparty_recipient_id"
+              ],
+              "type": "object"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "merchant": {
+            "description": "Merchant that will use the receivable.",
+            "nullable": true,
+            "properties": {
+              "name": {
+                "description": "Merchant name",
+                "type": "string"
+              },
+              "tax_number": {
+                "description": "Merchant tax number",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "tax_number"
+            ],
+            "type": "object"
+          },
           "platform_id": {
             "description": "Platform ID of the dynamic QRCode",
             "nullable": true,
             "type": "string"
           },
-         
           "virtual_account_id": {
             "description": "Virtual Account ID",
             "type": "string"
@@ -6844,7 +6775,24 @@
           "description": "description",
           "external_id": "external_id",
           "options": {
-            "show_qrcode_image": false
+            "show_qrcode_image": false,
+            "fee": 0
+          },
+          "split": [
+            {
+              "type": "percentage",
+              "value": 70,
+              "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+            },
+            {
+              "type": "percentage",
+              "value": 30,
+              "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+            }
+          ],
+          "merchant": {
+            "name": "Merchant Name",
+            "tax_number": "12345678000199"
           },
           "virtual_account_id": "01919020-51ee-527b-5147-3feacb8ea333"
         },
@@ -6867,10 +6815,65 @@
               "show_qrcode_image": {
                 "description": "Show static QRCode image",
                 "type": "boolean"
+              },
+              "fee": {
+                "description": "Fee",
+                "nullable": true,
+                "type": "integer"
               }
             },
             "required": [
               "show_qrcode_image"
+            ],
+            "type": "object"
+          },
+          "split": {
+            "description": "Cashin split configurations",
+            "items": {
+              "properties": {
+                "counterparty_recipient_id": {
+                  "description": "Counterparty recipient UUID",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Split type",
+                  "enum": [
+                    "percentage",
+                    "fixed"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Percentage (0-100) or fixed amount in cents",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "type",
+                "value",
+                "counterparty_recipient_id"
+              ],
+              "type": "object"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "merchant": {
+            "description": "Merchant that will use the receivable.",
+            "nullable": true,
+            "properties": {
+              "name": {
+                "description": "Merchant name",
+                "type": "string"
+              },
+              "tax_number": {
+                "description": "Merchant tax number",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "tax_number"
             ],
             "type": "object"
           },
@@ -10102,6 +10105,251 @@
         },
         "title": "Collecting refund counterparty bank account",
         "type": "object"
+      },
+      "Counterparty_recipient_counterparty_data": {
+        "description": "Counterparty recipient counterparty data",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UUID"
+          },
+          "name": {
+            "description": "Name of the counterparty",
+            "type": "string"
+          },
+          "tax_number": {
+            "description": "Tax number of the counterparty",
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+          "name": "Random",
+          "tax_number": "34842155000197"
+        },
+        "title": "Counterparty recipient counterparty data"
+      },
+      "Counterparty_recipient_bank_account_data": {
+        "description": "Counterparty recipient bank account data",
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "ispb": {
+            "description": "Bank account ispb",
+            "type": "string"
+          },
+          "branch": {
+            "description": "Bank account branch",
+            "type": "string"
+          },
+          "number": {
+            "description": "Bank account number",
+            "type": "string"
+          },
+          "digit": {
+            "description": "Bank account digit",
+            "type": "string"
+          },
+          "type": {
+            "description": "Bank account type",
+            "enum": [
+              "checking",
+              "payment",
+              "salary",
+              "savings"
+            ],
+            "type": "string"
+          }
+        },
+        "example": {
+          "ispb": "12345678",
+          "branch": "0001",
+          "number": "87654321",
+          "digit": "1",
+          "type": "checking"
+        },
+        "title": "Counterparty recipient bank account data"
+      },
+      "Counterparty_recipient_create_params": {
+        "description": "Body params to create a counterparty recipient",
+        "type": "object",
+        "properties": {
+          "tax_number": {
+            "description": "Tax number of the counterparty",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the counterparty",
+            "type": "string"
+          },
+          "ref_type": {
+            "description": "How the recipient is referenced",
+            "enum": [
+              "pix_key",
+              "bank_account_detailed"
+            ],
+            "type": "string"
+          },
+          "pix_key": {
+            "description": "Pix key. Required when ref_type is pix_key",
+            "nullable": true,
+            "type": "string"
+          },
+          "ispb": {
+            "description": "Bank account ispb. Required when ref_type is bank_account_detailed",
+            "nullable": true,
+            "type": "string"
+          },
+          "branch": {
+            "description": "Bank account branch. Required when ref_type is bank_account_detailed",
+            "nullable": true,
+            "type": "string"
+          },
+          "number": {
+            "description": "Bank account number. Required when ref_type is bank_account_detailed",
+            "nullable": true,
+            "type": "string"
+          },
+          "digit": {
+            "description": "Bank account digit. Required when ref_type is bank_account_detailed",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "description": "Bank account type",
+            "enum": [
+              "checking",
+              "payment",
+              "salary",
+              "savings"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tax_number",
+          "name",
+          "ref_type"
+        ],
+        "example": {
+          "tax_number": "12345678910",
+          "name": "Random",
+          "ref_type": "pix_key",
+          "pix_key": "some-pix-key"
+        },
+        "title": "Create counterparty recipient params"
+      },
+      "Counterparty_recipient_data": {
+        "description": "Body response of the counterparty recipient",
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/UUID"
+          },
+          "ref_type": {
+            "description": "How the recipient is referenced",
+            "enum": [
+              "pix_key",
+              "bank_account_detailed"
+            ],
+            "type": "string"
+          },
+          "pix_key": {
+            "description": "Pix key",
+            "nullable": true,
+            "type": "string"
+          },
+          "counterparty": {
+            "$ref": "#/components/schemas/Counterparty_recipient_counterparty_data"
+          },
+          "bank_account": {
+            "$ref": "#/components/schemas/Counterparty_recipient_bank_account_data"
+          }
+        },
+        "example": {
+          "id": "1fb05245-a185-0ec1-2661-3390353a35e3",
+          "ref_type": "pix_key",
+          "pix_key": "some-pix-key",
+          "counterparty": {
+            "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+            "name": "Random",
+            "tax_number": "34842155000197"
+          },
+          "bank_account": null
+        },
+        "title": "Counterparty recipient data"
+      },
+      "Counterparty_recipient_response": {
+        "description": "Counterparty recipient response",
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Counterparty_recipient_data"
+          }
+        },
+        "example": {
+          "data": {
+            "id": "1fb05245-a185-0ec1-2661-3390353a35e3",
+            "ref_type": "pix_key",
+            "pix_key": "some-pix-key",
+            "counterparty": {
+              "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+              "name": "Random",
+              "tax_number": "34842155000197"
+            },
+            "bank_account": null
+          }
+        },
+        "title": "Counterparty recipient response"
+      },
+      "Counterparty_recipient_list_response": {
+        "description": "Counterparty recipient list response",
+        "type": "object",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Counterparty_recipient_data"
+            },
+            "type": "array"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "after": {
+                "nullable": true,
+                "type": "string"
+              },
+              "before": {
+                "nullable": true,
+                "type": "string"
+              },
+              "has_more": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "example": {
+          "data": [
+            {
+              "id": "1fb05245-a185-0ec1-2661-3390353a35e3",
+              "ref_type": "pix_key",
+              "pix_key": "some-pix-key",
+              "counterparty": {
+                "id": "018df099-093e-cfd1-4500-4c9392eb5d8a",
+                "name": "Random",
+                "tax_number": "34842155000197"
+              },
+              "bank_account": null
+            }
+          ],
+          "metadata": {
+            "after": null,
+            "before": null,
+            "has_more": false
+          }
+        },
+        "title": "Counterparty recipient list response"
       }
     },
     "securitySchemes": {
@@ -10468,123 +10716,6 @@
         "summary": "Create counterparty bank account",
         "tags": [
           "counterparty_bank_accounts"
-        ]
-      }
-    },
-    "/banking/counterparties/{counterparty_id}/split_recipients": {
-      "get": {
-        "callbacks": {},
-        "description": "Lists counterparty split recipients by counterparty ID",
-        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.index",
-        "parameters": [
-          {
-            "description": "Counterparty ID",
-            "in": "path",
-            "name": "counterparty_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Counterparty_split_recipient_list_response"
-                }
-              }
-            },
-            "description": "CounterpartySplitRecipient"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/500"
-                }
-              }
-            },
-            "description": "Internal server error"
-          }
-        },
-        "summary": "List counterparty split recipients",
-        "tags": [
-          "counterparties"
-        ]
-      },
-      "post": {
-        "callbacks": {},
-        "description": "Creates a counterparty split recipient",
-        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.create",
-        "parameters": [
-          {
-            "description": "Counterparty ID",
-            "in": "path",
-            "name": "counterparty_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_data_params"
-              }
-            }
-          },
-          "description": "The create counterparty split recipient attributes",
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
-                }
-              }
-            },
-            "description": "CounterpartySplitRecipient"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/500"
-                }
-              }
-            },
-            "description": "Internal server error"
-          }
-        },
-        "summary": "Create counterparty split recipient",
-        "tags": [
-          "counterparties"
         ]
       }
     },
@@ -15015,141 +15146,6 @@
         ]
       }
     },
-    "/banking/counterparties/{counterparty_id}/split_recipients/{counterparty_split_recipient_id}": {
-      "get": {
-        "callbacks": {},
-        "description": "Show a counterparty split recipient",
-        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.show",
-        "parameters": [
-          {
-            "description": "Counterparty ID",
-            "in": "path",
-            "name": "counterparty_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          },
-          {
-            "description": "Counterparty split recipient ID",
-            "in": "path",
-            "name": "counterparty_split_recipient_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
-                }
-              }
-            },
-            "description": "CounterpartySplitRecipient"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/500"
-                }
-              }
-            },
-            "description": "Internal server error"
-          }
-        },
-        "summary": "Show counterparty split recipient",
-        "tags": [
-          "counterparties"
-        ]
-      },
-      "put": {
-        "callbacks": {},
-        "description": "Update a counterparty split recipient",
-        "operationId": "TrioFoundationWeb.Banking.Counterparty.SplitRecipientController.update",
-        "parameters": [
-          {
-            "description": "Counterparty ID",
-            "in": "path",
-            "name": "counterparty_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          },
-          {
-            "description": "Counterparty split recipient ID",
-            "in": "path",
-            "name": "counterparty_split_recipient_id",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/UUID"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Counterparty_split_recipient_data_params"
-              }
-            }
-          },
-          "description": "The update counterparty split recipient attributes",
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Counterparty_split_recipient_response"
-                }
-              }
-            },
-            "description": "CounterpartySplitRecipient"
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/500"
-                }
-              }
-            },
-            "description": "Internal server error"
-          }
-        },
-        "summary": "Update counterparty split recipient",
-        "tags": [
-          "counterparties"
-        ]
-      }
-    },
     "/banking/cashin/boletos": {
       "get": {
         "callbacks": {},
@@ -18617,6 +18613,196 @@
         "summary": "Cancel Pix key",
         "tags": [
           "cashin"
+        ]
+      }
+    },
+    "/counterparty_recipients": {
+      "post": {
+        "callbacks": {},
+        "description": "Creates a counterparty recipient",
+        "operationId": "TrioFoundationWeb.V2.CounterpartyRecipientController.create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Counterparty_recipient_create_params"
+              }
+            }
+          },
+          "description": "The create counterparty recipient attributes",
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_recipient_response"
+                }
+              }
+            },
+            "description": "CounterpartyRecipient"
+          }
+        },
+        "summary": "Create counterparty recipient",
+        "tags": [
+          "v2 counterparty recipients"
+        ]
+      }
+    },
+    "/counterparty_recipients/{id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Show a counterparty recipient",
+        "operationId": "TrioFoundationWeb.V2.CounterpartyRecipientController.show",
+        "parameters": [
+          {
+            "description": "Counterparty recipient ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_recipient_response"
+                }
+              }
+            },
+            "description": "CounterpartyRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Show counterparty recipient",
+        "tags": [
+          "v2 counterparty recipients"
+        ]
+      }
+    },
+    "/counterparties/{counterparty_id}/recipients": {
+      "get": {
+        "callbacks": {},
+        "description": "Lists the recipients of a counterparty",
+        "operationId": "TrioFoundationWeb.V2.CounterpartyRecipientController.index",
+        "parameters": [
+          {
+            "description": "Counterparty ID",
+            "in": "path",
+            "name": "counterparty_id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          },
+          {
+            "description": "Parameter used for pagination. It is a base64 encoded param used to access the previous page of results.",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Parameter used for pagination. It is a base64 encoded param used to access the next page of results.",
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Limit",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Counterparty_recipient_list_response"
+                }
+              }
+            },
+            "description": "CounterpartyRecipient"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "List counterparty recipients",
+        "tags": [
+          "v2 counterparty recipients"
         ]
       }
     }

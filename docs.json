@@ -108,6 +108,8 @@
             "group": "Receivables",
             "pages": [
               "guides/cash-in",
+              "guides/fees",
+              "guides/split-payments",
               "guides/using-pix-automatic",
               "guides/simulating-deposit-success",
               "guides/simulating-deposit-failures"
@@ -171,9 +173,9 @@
                   "api-reference/banking-api/counterparties/list-counterparty-bank-accounts",
                   "api-reference/banking-api/counterparties/get-counterparty-bank-account",
                   "api-reference/banking-api/counterparties/create-counterparty-bank-account",
-                  "api-reference/banking-api/counterparties/create-counterparty-split-recipient",
-                  "api-reference/banking-api/counterparties/get-counterparty-split-recipient",
-                  "api-reference/banking-api/counterparties/list-counterparty-split-recipients"
+                  "api-reference/banking-api/counterparties/create-counterparty-recipient",
+                  "api-reference/banking-api/counterparties/get-counterparty-recipient",
+                  "api-reference/banking-api/counterparties/list-counterparty-recipients"
                 ]
               },
               {
