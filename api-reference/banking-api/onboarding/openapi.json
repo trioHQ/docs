@@ -66,6 +66,68 @@
           }
         }
       }
+    },
+    "/onboarding/documents": {
+      "post": {
+        "tags": ["onboarding"],
+        "summary": "Upload onboarding document",
+        "description": "Uploads a single PDF document for an entity or one of its representatives created through onboarding.\n\nThe request is authenticated with your organization's API key and must use `multipart/form-data`. Each call uploads exactly one document, identified by `reference_type` (`entity` or `entity_representative`) and the corresponding `reference_id`.\n\nTypical entity documents are `company_contract`, `power_of_attorney`, and `financial_statement`; representative documents are usually `identification`. Only PDF files are accepted.",
+        "operationId": "TrioFoundationWeb.Onboarding.OnboardController.create_document",
+        "requestBody": {
+          "description": "Document parameters and the binary PDF file",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": { "$ref": "#/components/schemas/Upload_document_parameters" },
+              "encoding": {
+                "file": { "contentType": "application/pdf" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Document uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Upload_document_response" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid or missing parameters",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported media type — the file is not a PDF",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -108,7 +170,17 @@
           "tax_number": { "type": "string", "description": "Legal representative tax number" },
           "email": { "type": "string", "description": "Legal representative email" },
           "phone": { "type": "string", "description": "Legal representative phone number in E.164 format" },
-          "name": { "type": "string", "description": "Legal representative name" }
+          "name": { "type": "string", "description": "Legal representative name" },
+          "is_pep": {
+            "type": "boolean",
+            "description": "Whether the legal representative is a politically exposed person (PEP)",
+            "default": false
+          },
+          "is_us_person": {
+            "type": "boolean",
+            "description": "Whether the legal representative is a US person for tax purposes",
+            "default": false
+          }
         },
         "required": ["tax_number", "email", "phone", "name"]
       },
@@ -129,6 +201,76 @@
           }
         },
         "required": ["tax_number", "ip_address", "consent_at"]
+      },
+      "Upload_document_parameters": {
+        "title": "Upload document parameters",
+        "type": "object",
+        "description": "Multipart form parameters for uploading an onboarding document.",
+        "properties": {
+          "reference_type": {
+            "type": "string",
+            "description": "The kind of record the document belongs to.",
+            "enum": ["entity", "entity_representative"]
+          },
+          "reference_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the entity (`entity_id`) or representative (`id`) the document belongs to."
+          },
+          "document_type": {
+            "type": "string",
+            "description": "Document classification. Entities use `company_contract`, `power_of_attorney`, or `financial_statement`; representatives use `identification`.",
+            "enum": ["power_of_attorney", "financial_statement", "identification", "company_contract"]
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "The PDF file to upload."
+          }
+        },
+        "required": ["reference_type", "reference_id", "document_type", "file"]
+      },
+      "Document_data": {
+        "title": "Document data",
+        "type": "object",
+        "description": "Document data resulting from an onboarding upload.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "description": "Document ID" },
+          "reference_type": {
+            "type": "string",
+            "description": "The kind of record the document belongs to.",
+            "enum": ["entity", "entity_representative"]
+          },
+          "reference_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the entity or representative the document belongs to."
+          },
+          "s3_key": { "type": "string", "description": "Storage object key for the uploaded file." },
+          "document_type": { "type": "string", "description": "Document classification type." },
+          "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
+          "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
+        }
+      },
+      "Upload_document_response": {
+        "title": "Upload document response",
+        "type": "object",
+        "description": "Response returned after a document is uploaded during onboarding.",
+        "properties": {
+          "message": { "type": "string", "description": "Response status message" },
+          "data": { "$ref": "#/components/schemas/Document_data" }
+        },
+        "example": {
+          "message": "Document uploaded successfully",
+          "data": {
+            "id": "d9f3b1a2-8c4d-4e5f-a6b7-1c2d3e4f5a6b",
+            "reference_type": "entity",
+            "reference_id": "01a06ee8-4973-caa8-eda0-dc64b5aa648e",
+            "document_type": "financial_statement",
+            "inserted_at": "2026-09-24T11:25:00.000000Z",
+            "updated_at": "2026-09-24T11:25:00.000000Z"
+          }
+        }
       },
       "Onboard_parameters": {
         "title": "Onboarding parameters",
@@ -159,7 +301,9 @@
               "tax_number": "111.444.777-35",
               "email": "john@gcorp.com",
               "phone": "+5541999990000",
-              "name": "John"
+              "name": "John",
+              "is_pep": false,
+              "is_us_person": false
             }
           ],
           "consent": {
@@ -242,6 +386,12 @@
             "enum": ["in_validation", "in_review", "rejected", "approved"]
           },
           "tax_number_linked": { "type": "string", "description": "Entity representative tax number" },
+          "required_documents": {
+            "type": "array",
+            "nullable": true,
+            "description": "Documents the representative must upload for compliance. `null` when none are required.",
+            "items": { "type": "string", "enum": ["identification"] }
+          },
           "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
           "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
         }
@@ -269,6 +419,15 @@
           "representatives": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/Entity_representative_data" }
+          },
+          "required_documents": {
+            "type": "array",
+            "nullable": true,
+            "description": "Documents the entity must upload for compliance. `null` when none are required.",
+            "items": {
+              "type": "string",
+              "enum": ["company_contract", "power_of_attorney", "financial_statement"]
+            }
           },
           "inserted_at": { "type": "string", "format": "date-time", "description": "Inserted at" },
           "updated_at": { "type": "string", "format": "date-time", "description": "Updated at" }
@@ -332,9 +491,11 @@
                 "name_linked": "Representative Name",
                 "status": "in_validation",
                 "tax_number_linked": "12345678912",
+                "required_documents": ["identification"],
                 "updated_at": "2026-09-05T00:11:52.054493Z"
               }
             ],
+            "required_documents": ["company_contract", "financial_statement"],
             "inserted_at": "2026-09-05T00:11:52.015299Z",
             "updated_at": "2026-09-05T00:11:52.015299Z"
           }

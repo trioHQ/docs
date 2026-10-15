@@ -1,0 +1,231 @@
+---
+title: "Split Payments"
+description: "Distribute a receivable among split recipients on QR Codes and boletos"
+---
+
+A split distributes the amount received by a receivable among one or more **split recipients**. It is configured the same way across **Dynamic QR Codes**, **Static QR Codes**, and **Boletos**.
+
+> All examples use fictitious data.
+
+---
+
+## Where it applies
+
+| Receivable | Create endpoint |
+| ------------------ | --------------------------------------- |
+| Dynamic QR Code | `POST /banking/cashin/pix/qrcodes` |
+| Static QR Code | `POST /banking/cashin/pix/qrcodes/static` |
+| Boleto | `POST /banking/cashin/boletos` |
+
+Splits are optional. When the `split` array is omitted, the receivable is created without any split.
+
+---
+
+# Split configurations
+
+A split is configured with the top-level `split` array.
+
+```json
+"split": [
+  {
+    "type": "percentage",
+    "value": 70,
+    "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+  },
+  {
+    "type": "percentage",
+    "value": 30,
+    "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+  }
+]
+```
+
+Each item in the array describes one portion of the split:
+
+| Field | What it represents |
+| --------------------------- | ------------------------------------------------------------ |
+| `type` | How `value` is interpreted: `percentage` or `fixed` |
+| `value` | Percentage (`0`–`100`) when `type` is `percentage`, or a fixed amount in **cents** when `type` is `fixed` |
+| `counterparty_recipient_id` | UUID of the split recipient that receives this portion |
+
+## Split type
+
+```text
+percentage → value is a percentage of the received amount (0–100)
+fixed      → value is a fixed monetary amount, in cents
+```
+
+For a **R$ 100.00** received amount:
+
+```text
+┌──────────────────────────────────────────────┐
+│ Received amount              R$ 100.00         │
+├──────────────────────────────────────────────┤
+│ Recipient A   percentage 70  → R$ 70.00        │
+│ Recipient B   percentage 30  → R$ 30.00        │
+└──────────────────────────────────────────────┘
+```
+
+---
+
+# Split recipients
+
+A split entry always references a `counterparty_recipient_id`. This ID identifies a **split recipient** that you create beforehand.
+
+Create a recipient with:
+
+```http
+POST /counterparty_recipients
+```
+
+The recipient carries the counterparty identity (`tax_number`, `name`) and a reference, selected with `ref_type`. The reference fields are sent **at the top level** of the body — which ones are required depends on `ref_type`.
+
+| Field | Required | What it represents |
+| ------------ | --------------------------------- | ---------------------------------------------- |
+| `tax_number` | always | Counterparty CPF or CNPJ |
+| `name` | always | Counterparty name |
+| `ref_type` | always | `pix_key` or `bank_account_detailed` |
+| `pix_key` | when `ref_type` is `pix_key` | Pix key |
+| `ispb` | when `ref_type` is `bank_account_detailed` | Bank ISPB |
+| `branch` | when `ref_type` is `bank_account_detailed` | Branch |
+| `number` | when `ref_type` is `bank_account_detailed` | Account number |
+| `digit` | when `ref_type` is `bank_account_detailed` | Account digit |
+| `type` | when `ref_type` is `bank_account_detailed` | Account type: `checking`, `payment`, `salary`, or `savings` |
+
+### Pix key recipient
+
+```json
+{
+  "tax_number": "12345678910",
+  "name": "Recipient Name",
+  "ref_type": "pix_key",
+  "pix_key": "05964110000197"
+}
+```
+
+### Bank account recipient
+
+```json
+{
+  "tax_number": "12345678910",
+  "name": "Recipient Name",
+  "ref_type": "bank_account_detailed",
+  "ispb": "12345678",
+  "branch": "0001",
+  "number": "87654321",
+  "digit": "1",
+  "type": "checking"
+}
+```
+
+The response returns the recipient `id`. Use that `id` as the `counterparty_recipient_id` in your split configurations.
+
+```text
+Create recipient
+        │
+        ▼
+   recipient.id ──────────► split[].counterparty_recipient_id
+```
+
+---
+
+# Merchant
+
+When a receivable is split, you can optionally register the merchant that owns the split with the `merchant` object.
+
+```json
+"merchant": {
+  "name": "Merchant Name",
+  "tax_number": "12345678000199"
+}
+```
+
+| Field | What it represents |
+| ------------ | ----------------------------------- |
+| `name` | Merchant name |
+| `tax_number` | Merchant CPF or CNPJ |
+
+When `merchant` is sent, it is saved as the org split merchant.
+
+---
+
+# Complete examples
+
+## Dynamic QR Code with split
+
+```json
+{
+  "amount": 10000,
+  "external_id": "qr-demo-2026-001",
+  "virtual_account_id": "019f0000-1234-5678-9abc-000000000001",
+  "counterparty": {
+    "name": "Payer Name",
+    "tax_number": "12345678901"
+  },
+  "description": "Pedido 12345",
+  "options": {
+    "allow_change_the_amount_on_payment": false,
+    "show_qrcode_image": true
+  },
+  "split": [
+    {
+      "type": "percentage",
+      "value": 70,
+      "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+    },
+    {
+      "type": "percentage",
+      "value": 30,
+      "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+    }
+  ],
+  "merchant": {
+    "name": "Merchant Name",
+    "tax_number": "12345678000199"
+  }
+}
+```
+
+## Boleto with split
+
+```json
+{
+  "amount": 10000,
+  "external_id": "boleto-demo-2026-001",
+  "virtual_account_id": "019f0000-1234-5678-9abc-000000000001",
+  "invoice_type": "invoice",
+  "wallet_type": "book_entry_electronic_bloquete",
+  "expiration_date": "2026-10-30",
+  "counterparty": {
+    "name": "Maria Silva",
+    "tax_number": "12345678901",
+    "address": "Rua das Flores, 100",
+    "district": "Centro",
+    "city": "Sao Paulo",
+    "state": "SP",
+    "postal_code": "01001000"
+  },
+  "due_detail": {
+    "due_date": "2026-08-17"
+  },
+  "split": [
+    {
+      "type": "percentage",
+      "value": 70,
+      "counterparty_recipient_id": "0198aaaa-1111-2222-3333-444444444444"
+    },
+    {
+      "type": "percentage",
+      "value": 30,
+      "counterparty_recipient_id": "0198bbbb-5555-6666-7777-888888888888"
+    }
+  ],
+  "merchant": {
+    "name": "Merchant Name",
+    "tax_number": "12345678000199"
+  }
+}
+```
+
+For the remaining boleto fields (discounts, fine, interest, boleto type), see the
+[Create Boleto](/guides/create-boleto) guide.

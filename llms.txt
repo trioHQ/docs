@@ -84,6 +84,7 @@ Key facts an agent needs before reading further:
 ## API reference: accounts and counterparties
 
 - [Create onboarding](https://docs.trio.com.br/api-reference/banking-api/onboarding/create.md): Create an organization and entity and submit them to compliance
+- [Upload onboarding document](https://docs.trio.com.br/api-reference/banking-api/onboarding/create-document.md): Upload a PDF document for an onboarding entity or representative
 - [List entities](https://docs.trio.com.br/api-reference/banking-api/entities/list.md): All entities of the current organization
 - [Get entity](https://docs.trio.com.br/api-reference/banking-api/entities/get.md): Entity by ID
 - [List bank accounts](https://docs.trio.com.br/api-reference/banking-api/bank-accounts/list-bank-accounts.md)
