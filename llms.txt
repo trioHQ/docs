@@ -60,6 +60,8 @@ Key facts an agent needs before reading further:
 
 - [Customer onboarding](https://docs.trio.com.br/guides/onboarding-guide.md): Create organizations and entities through the API, compliance analysis, and tracking by webhook
 - [Cash in](https://docs.trio.com.br/guides/cash-in.md): Receive money with Pix QR codes, identifiers returned, and how to reconcile
+- [Fees](https://docs.trio.com.br/guides/fees.md): Charge a fee on the payment of a receivable and keep the margin above your Trio cost
+- [Split payments](https://docs.trio.com.br/guides/split-payments.md): Distribute a receivable among split recipients on QR codes and boletos
 - [Cash out](https://docs.trio.com.br/guides/cash-out.md): Pay out with Pix, identifiers returned, and how to reconcile
 - [QR code types](https://docs.trio.com.br/guides/qr-codes.md): Static versus dynamic Pix QR codes and when to use each
 - [Document lifecycle](https://docs.trio.com.br/guides/document-lifecycle.md): Status transitions of collecting and payment documents
@@ -104,9 +106,9 @@ Key facts an agent needs before reading further:
 - [List counterparty bank accounts](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparty-bank-accounts.md)
 - [Get counterparty bank account](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty-bank-account.md)
 - [Create counterparty bank account](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty-bank-account.md)
-- [List counterparty split recipients](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparty-split-recipients.md)
-- [Get counterparty split recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty-split-recipient.md)
-- [Create counterparty split recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty-split-recipient.md)
+- [List counterparty recipients](https://docs.trio.com.br/api-reference/banking-api/counterparties/list-counterparty-recipients.md)
+- [Get counterparty recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/get-counterparty-recipient.md)
+- [Create counterparty recipient](https://docs.trio.com.br/api-reference/banking-api/counterparties/create-counterparty-recipient.md)
 - [List institutions](https://docs.trio.com.br/api-reference/banking-api/institutions/list.md): Financial institutions accepted in bank account data
 
 ## API reference: receivables (cash-in)
