@@ -17,16 +17,16 @@ A split distributes the amount received by a receivable among one or more **spli
 | Static QR Code | `POST /banking/cashin/pix/qrcodes/static` |
 | Boleto | `POST /banking/cashin/boletos` |
 
-Splits are optional. When the `split` array is omitted, the receivable is created without any split.
+Splits are optional. When the `splits` array is omitted, the receivable is created without any split.
 
 ---
 
 # Split configurations
 
-A split is configured with the top-level `split` array.
+A split is configured with the top-level `splits` array.
 
 ```json
-"split": [
+"splits": [
   {
     "type": "percentage",
     "value": 70,
@@ -167,7 +167,7 @@ When `merchant` is sent, it is saved as the org split merchant.
     "allow_change_the_amount_on_payment": false,
     "show_qrcode_image": true
   },
-  "split": [
+  "splits": [
     {
       "type": "percentage",
       "value": 70,
@@ -208,7 +208,7 @@ When `merchant` is sent, it is saved as the org split merchant.
   "due_detail": {
     "due_date": "2026-08-17"
   },
-  "split": [
+  "splits": [
     {
       "type": "percentage",
       "value": 70,
