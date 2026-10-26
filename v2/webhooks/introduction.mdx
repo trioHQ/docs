@@ -1,6 +1,6 @@
 ---
 title: "Webhooks"
-description: "Register a webhook so Trio notifies your system when a transaction or an onboarding changes state, and learn how Trio delivers and retries each notification."
+description: "Register a webhook so Trio notifies your system when a transaction or an onboarding changes state, choose the payload version, and learn how Trio delivers and retries each notification."
 ---
 
 Most operations on Trio are asynchronous: a Pix payment, a boleto or an onboarding is accepted first and settles, fails or is approved later, in the background. A webhook is the URL Trio calls with an HTTP POST and a JSON payload each time one of those events happens, so your system reacts to the final state without polling the API.
@@ -21,7 +21,7 @@ POST /v2/webhooks
   "notification_url": "https://mynotificationurl.com/endpoint",
   "notification_secret": "some_notification_secret",
   "authentication_method": "url_secret",
-  "api_version": "v100",
+  "api_version": "v200",
   "entity_id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7c",
   "event_categories_allowed": [
     {
@@ -35,10 +35,10 @@ POST /v2/webhooks
 | Field | Required | Description |
 | --- | --- | --- |
 | `notification_url` | Yes | URL the events are sent to. |
-| `notification_secret` | For `url_secret` | Secret sent with every event. |
+| `notification_secret` | For `url_secret` | Secret sent with every event in the `x-webhook-secret` header. |
 | `authentication_method` | Yes | How Trio authenticates to the notification URL: `url_secret` or `oauth`. See [Webhook authentication](/v2/webhooks/authentication). |
 | `oauth_client_id`, `oauth_client_secret`, `oauth_url`, `oauth_scope` | For `oauth` | OAuth client ID, client secret, token URL and scope. An `oauth` webhook sends these instead of `notification_secret`. |
-| `api_version` | No | Version of the event payloads sent to the webhook: `v100` (default) or `v200`. |
+| `api_version` | No | Version of the event payloads sent to the webhook: `v100` (default) or `v200`. See below. |
 | `entity_id` | No | Entity to limit the webhook to. Leave it out to receive the events of every entity. |
 | `group_id` | No | Group of the entity to limit the webhook to. |
 | `event_categories_allowed` | No | Events to send to the webhook, as a list of `category` with its `types`. Empty or null sends every event; an empty `types` sends every type of the category. |
@@ -47,7 +47,7 @@ The response is the webhook, with its `id` and a generated `notification_key`: t
 
 ```json
 {
-  "api_version": "v100",
+  "api_version": "v200",
   "authentication_method": "url_secret",
   "entity_id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7c",
   "event_categories_allowed": [
@@ -68,34 +68,40 @@ The response is the webhook, with its `id` and a generated `notification_key`: t
 
 ## Choose the payload version
 
-`api_version` selects the version of the event payloads Trio sends to the webhook: `v100`, the default, or `v200`. The version belongs to the webhook, not to your API credential, so you can register a second webhook on `v200` and compare its payloads with the ones you already handle before switching.
+`api_version` selects the version of the event payloads Trio sends to the webhook. The version belongs to the webhook, not to your API credential, so you can register a second webhook on `v200` and compare its payloads with the ones you already handle before switching.
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the pages of this section show the v100 (V1) payloads */}
+| Version | What the webhook receives |
+| --- | --- |
+| `v100` (default, and every webhook created without a version) | The legacy payloads: categories named `collecting_document`, `payment_document` and so on, accounts named `virtual_account_id`, and no `stages`. These are the payloads documented for V1. |
+| `v200` | The V2 payloads: categories named after the V2 resources (`in_document`, `out_document`, `boleto`...), accounts named `bank_account_id` and `group_id`, nested `counterparty` and `reference` objects where the resource has them, and the resource's `stages`. These are the payloads documented in [Events](/v2/webhooks/events/overview). |
 
-<Note>
-  The payload examples in [Content and structure](/v2/webhooks/content-and-structure) and [Events](/v2/webhooks/events/overview) are the `v100` payloads.
-</Note>
+Both versions share the same envelope, described in [Content and structure](/v2/webhooks/content-and-structure). Onboarding events (category `entity`) have a single format and are sent to webhooks of both versions.
 
 ## Choose which events you receive
 
-By default a webhook receives every event of your organization. Narrow it down with three optional fields:
+By default a webhook receives every event of your organization. Three optional fields narrow it down:
 
-- `event_categories_allowed` lists the categories and types you want, with the names from the [Events](/v2/webhooks/events/overview) page. For example, `{ "category": "boleto", "types": ["settled", "created"] }` delivers only those two boleto events; `"types": []` delivers every type of the category.
+- `event_categories_allowed` lists the categories and types you want. For example, `{ "category": "boleto", "types": ["settled", "created"] }` delivers only those two boleto events; `"types": []` delivers every type of the category. The types are the ones listed on the [Events](/v2/webhooks/events/overview) page. In `event_categories_allowed` the four document categories still use their V1 names, even for a `v200` webhook: write `collecting_document` for `in_document`, `collecting_document_refund` for `in_document_refund`, `payment_document` for `out_document` and `payment_document_refund` for `out_document_refund`. The V2 document names are refused with `422` in this field; every other category uses the same name in the filter and in the notification.
 - `entity_id` limits the webhook to the events of one entity.
 - `group_id` limits it to the events of one group of that entity.
 
+<Warning>
+  Today the three filters apply to `v100` webhooks and to `entity` events. A `v200` webhook receives every event of the eleven V2 categories of the organization, whatever its `event_categories_allowed`, `entity_id` and `group_id`. Filter on `category`, `type` and `data.entity_id` in your handler until this changes.
+</Warning>
+
+{/* TODO(v2): verify with engineering — V2 events reach v200 webhooks through notify_org_webhooks_v200 in trio_service's Bacen event service, which selects the organization's webhooks by api_version only; the entity, group and category filters are applied in the internet-banking event service, which only v100-translated events and entity events go through. The webhook's group_id is stored in the legacy bank_account_id column. */}
+
 ## Delivery and retries
 
-Trio delivers every notification as an HTTP POST with a JSON body to `notification_url`, so your endpoint must accept that method and content.
+Trio delivers every notification as an HTTP POST with a JSON body to `notification_url`, with the headers described in [Webhook authentication](/v2/webhooks/authentication). Your endpoint must accept that method and content type.
 
-- Trio waits 3 seconds for a 2XX status code. Any 2XX marks the notification as delivered.
-- When your endpoint answers anything else or does not answer in time, Trio retries up to 5 times. The first retry comes 16 seconds after the failure and the wait doubles at each new failure.
+- **Acknowledge fast.** Trio waits 1 second for the response. A `200`, `201`, `202` or `204` status marks the notification as delivered.
+- **Errors are retried.** When your endpoint answers any other status, refuses the connection or fails the TLS handshake, Trio queues the notification for retry. The first retry comes 5 seconds after the failure and the wait doubles at each new failure, up to 3 minutes between attempts. Trio stops after 24 attempts or 1 hour after the first failure, whichever comes first.
+- **Timeouts are not retried.** A notification your endpoint does not answer within 1 second is logged as a timeout and is not sent again. Read the resource back from the API if you suspect you missed an event.
 - Serve the endpoint over HTTPS so the payload is protected in transit.
 
-{/* TODO(v2): verify — V1 lists the retry intervals as 16s, 32s, 104s, 208s, which is not a strict doubling; confirm the V2 schedule */}
-
 <Tip>
-  Answer with a 2XX as soon as you have stored the notification and do the heavy work afterwards. A handler that takes longer than 3 seconds is retried and receives the same event again, so keep your processing idempotent.
+  Answer with a `2XX` as soon as you have stored the notification and do the heavy work afterwards. A retried notification carries the same event again, so keep your processing idempotent: treat `ref_id`, `category` and `type` together as the key of a notification.
 </Tip>
 
 ## Manage webhooks
@@ -111,5 +117,5 @@ Every webhook of the organization is managed through the API or the Trio App:
 
 - [Webhook authentication](/v2/webhooks/authentication): verify that a notification came from Trio.
 - [Content and structure](/v2/webhooks/content-and-structure): read the envelope every notification shares.
-- [Events](/v2/webhooks/events/overview): every category and type, with example payloads.
+- [Events](/v2/webhooks/events/overview): every category and type, with the `data` of each.
 - [Creating your first webhook](/v2/guides/creating-your-first-webhook): register a webhook from the Trio App, step by step.

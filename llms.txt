@@ -23,21 +23,21 @@ Key facts an agent needs before reading further:
 
 ## Getting started
 
-- [Welcome](https://docs.trio.com.br/index.md): Trio V2 API documentation: what Trio does, what changed in V2 and where to start
-- [Plan your integration](https://docs.trio.com.br/v2/getting_started/plan-your-integration.md): What a Trio integration involves, how long it usually takes and where to start on the V2 API
+- [Welcome](https://docs.trio.com.br/index.md): Trio API documentation: what Trio does, what changed in V2 and where to start
+- [Plan your integration](https://docs.trio.com.br/v2/getting_started/plan-your-integration.md): What a Trio integration involves, how long it usually takes and where to start on the API
 - [Sandbox account](https://docs.trio.com.br/v2/guides/sandbox_account.md): Create a free sandbox account to test the Trio API and webhooks without financial risk
-- [First API credential](https://docs.trio.com.br/v2/guides/creating-your-first-api-credential.md): Create a Client ID and Secret Key in the Trio App to authenticate your V2 API requests
+- [First API credential](https://docs.trio.com.br/v2/guides/creating-your-first-api-credential.md): Create a Client ID and Secret Key in the Trio App to authenticate your API requests
 - [First webhook](https://docs.trio.com.br/v2/guides/creating-your-first-webhook.md): Register a webhook in the Trio App and start receiving event notifications
 - [Support](https://docs.trio.com.br/v2/getting_started/support.md): Support channels, availability, the user manual and what to include when reporting an issue
 
 ## API conventions
 
-- [Environments](https://docs.trio.com.br/v2/developers/environments.md): Production and sandbox base URLs for the V2 API
+- [Environments](https://docs.trio.com.br/v2/developers/environments.md): Production and sandbox base URLs for the API
 - [Authentication](https://docs.trio.com.br/v2/developers/authentication.md): How to authenticate V2 requests, act on another organization and which headers every request carries
-- [Concepts](https://docs.trio.com.br/v2/developers/concepts.md): Core objects of the V2 API: company, entity, group, bank account, counterparty and documents
-- [Error handling](https://docs.trio.com.br/v2/developers/error-table.md): HTTP status codes, the error body and the error codes returned by the V2 API
+- [Concepts](https://docs.trio.com.br/v2/developers/concepts.md): Core objects of the API: company, entity, group, bank account, counterparty and documents
+- [Error handling](https://docs.trio.com.br/v2/developers/error-table.md): HTTP status codes, the error body and the error codes returned by the API
 - [Pagination](https://docs.trio.com.br/v2/developers/pagination.md): How V2 list endpoints paginate with before and after cursors, limit and has_more
-- [Date and time](https://docs.trio.com.br/v2/developers/date-and-time.md): Date and time formats used by the V2 API: UTC timestamps and plain dates
+- [Date and time](https://docs.trio.com.br/v2/developers/date-and-time.md): Date and time formats used by the API: UTC timestamps and plain dates
 - [Rate limits](https://docs.trio.com.br/v2/developers/rate-limit.md): Rate limits per environment and how to back off when the API answers 429
 - [Request identification](https://docs.trio.com.br/v2/developers/request-identification.md): Request identifiers and how to use them with support
 
@@ -52,21 +52,21 @@ Key facts an agent needs before reading further:
 
 - [Customer onboarding](https://docs.trio.com.br/v2/guides/onboarding-guide.md): Open an organization for a customer through the onboarding API, follow its compliance analysis through webhooks and operate on the customer's behalf once it is approved
 - [Receivables](https://docs.trio.com.br/v2/guides/receivables/overview.md): How to receive money on Trio: Pix QR codes, boletos, Pix Automático, fees, split payments and sandbox simulations
-- [Cash in](https://docs.trio.com.br/v2/guides/receivables/cash-in.md): Create your first dynamic QR code with the V2 API and read the response
+- [Cash in](https://docs.trio.com.br/v2/guides/receivables/cash-in.md): Create your first dynamic QR code with the API and read the response
 - [QR code types](https://docs.trio.com.br/v2/guides/pix/qr-codes.md): Choose between static, dynamic and dynamic-with-due-date Pix QR codes, and generate a dynamic QR code
-- [Pix Automático](https://docs.trio.com.br/v2/guides/receivables/using-pix-automatic.md): Create recurrences, manage collections and attempts, and follow each step through webhooks with the V2 API
+- [Pix Automático](https://docs.trio.com.br/v2/guides/receivables/using-pix-automatic.md): Create recurrences, manage collections and attempts, and follow each step through webhooks with the API
 - [Create a boleto](https://docs.trio.com.br/v2/guides/boleto/create-boleto.md): Build the request body of POST /v2/in/boletos, from the charge and payer to discounts, fines, interest and splits, and read the boleto that comes back
 - [Boleto types](https://docs.trio.com.br/v2/guides/boleto/boleto-types.md): Choose the invoice_type and wallet_type values that classify a boleto when you create it
 - [Boleto best practices](https://docs.trio.com.br/v2/guides/boleto/best-practices.md): Understand how a boleto behaves after creation, from the embedded Pix QR code and the document lifecycle to webhooks, due dates, refunds and rate limits
 - [Fees](https://docs.trio.com.br/v2/guides/receivables/fees.md): Charge a fee on the payment of a receivable and keep the margin above your Trio cost
 - [Split payments](https://docs.trio.com.br/v2/guides/receivables/split-payments.md): Distribute the amount of a receivable among split recipients on QR codes and boletos
-- [Document lifecycle](https://docs.trio.com.br/v2/guides/pix/document-lifecycle.md): Statuses and stages an in document goes through in the Trio V2 API
+- [Document lifecycle](https://docs.trio.com.br/v2/guides/pix/document-lifecycle.md): Statuses and stages an in document goes through in the Trio API
 - [Simulate a successful deposit](https://docs.trio.com.br/v2/guides/receivables/simulating-deposit-success.md): Settle a sandbox deposit end to end by paying your own QR code from a second bank account
 - [Simulate deposit failures](https://docs.trio.com.br/v2/guides/receivables/simulating-deposit-failures.md): Use bank account parameters to reproduce rejected and refunded deposits in the sandbox
 - [Payments](https://docs.trio.com.br/v2/guides/payments/overview.md): Cash-out guides for V2: paying Pix keys, BR codes, bank accounts, boletos, utility bills, taxes and DARFs from your bank accounts
 - [Cash out](https://docs.trio.com.br/v2/guides/payments/cash-out.md): Pay a Pix key, a BR code or a bank account from one of your bank accounts, asynchronously or after checking the receiver
-- [Pix key formats](https://docs.trio.com.br/v2/guides/pix/using-pix-key.md): Check which Pix key types the V2 API accepts and the regular expression that validates each one
-- [Integration best practices](https://docs.trio.com.br/v2/operations/best-practices.md): How cash-in and cash-out identifiers, statuses, timeouts and webhooks behave on the V2 API, and how to handle them so your reconciliation never breaks
+- [Pix key formats](https://docs.trio.com.br/v2/guides/pix/using-pix-key.md): Check which Pix key types the API accepts and the regular expression that validates each one
+- [Integration best practices](https://docs.trio.com.br/v2/operations/best-practices.md): How cash-in and cash-out identifiers, statuses, timeouts and webhooks behave on the API, and how to handle them so your reconciliation never breaks
 - [Closed-loop reconciliation](https://docs.trio.com.br/v2/operations/closed-loop.md): The compliance rules Trio applies to deposits and payouts on a bank account, so every transaction is either received or refused with an event you can act on
 
 ## Trio SDK (Trio Checkout)
@@ -92,12 +92,12 @@ Key facts an agent needs before reading further:
 - [List Counterparties](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/list-counterparties.md): List counterparties
 - [Get Counterparty](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/get-counterparty.md): Show a counterparty
 - [Find or Create Counterparty](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/create-counterparty.md): Find or create a counterparty
-- [List Counterparty Bank Accounts](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/list-counterparty-bank-accounts.md): Lists counterparty bank accounts by counterparty ID
-- [Get Counterparty Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/get-counterparty-bank-account.md): Show a counterparty bank account
-- [Create Counterparty Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/create-counterparty-bank-account.md): Creates a counterparty bank account
-- [Create Counterparty Recipient](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/create-counterparty-recipient.md): Creates a counterparty recipient
-- [Show Counterparty Recipient](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/get-counterparty-recipient.md): Show a counterparty recipient
-- [List Counterparty Recipients](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/list-counterparty-recipients.md): Lists the recipients of a counterparty
+- [List Counterparty Bank Accounts](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/bank-accounts/list-counterparty-bank-accounts.md): Lists counterparty bank accounts by counterparty ID
+- [Get Counterparty Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/bank-accounts/get-counterparty-bank-account.md): Show a counterparty bank account
+- [Create Counterparty Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/bank-accounts/create-counterparty-bank-account.md): Creates a counterparty bank account
+- [Create Counterparty Recipient](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/recipients/create-counterparty-recipient.md): Creates a counterparty recipient
+- [Show Counterparty Recipient](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/recipients/get-counterparty-recipient.md): Show a counterparty recipient
+- [List Counterparty Recipients](https://docs.trio.com.br/v2/api-reference/banking-api/counterparties/recipients/list-counterparty-recipients.md): Lists the recipients of a counterparty
 - [List Bank Accounts](https://docs.trio.com.br/v2/api-reference/banking-api/bank-accounts/list-bank-accounts.md): List all available bank accounts
 - [Get Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/bank-accounts/get-bank-account.md): Shows a bank account
 - [Create Bank Account](https://docs.trio.com.br/v2/api-reference/banking-api/bank-accounts/create-bank-account.md): Creates a bank account
@@ -126,20 +126,20 @@ Key facts an agent needs before reading further:
 - [Recreate boleto](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/boletos/recreate.md): Cancels a boleto and creates a new one with the same fields, the new amount and the new due date (or the current one)
 - [Add protest](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/boletos/add-protest.md): Add protest to a boleto
 - [Remove protest](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/boletos/remove-protest.md): Remove protest from a boleto
-- [Create static QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-static/post.md): Create a new static QRCode
-- [Get static QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-static/get.md): Get a specific static QRCode
-- [Get static QR code image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-static/get-image.md): Gets a static QRCode image
-- [Get static QR code hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-static/get-hash.md): Gets a static QRCode hash
-- [Create dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-dynamic/post.md): Creates a new dynamic pix QRCode
-- [Get dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-dynamic/get.md): Gets a specific dynamic QRCode
-- [Update dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-dynamic/update.md): Updates a dynamic pix QRCode
-- [Get dynamic QR code image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image.md): Gets a dynamic pix QRCode image
-- [Get dynamic QR code hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-hash.md): Gets a dynamic hash
-- [Create dynamic QR code with due date](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-with-due/post.md): Creates a new dynamic pix QRCode with due date, allowing fine, interest, rebate and discount rules
-- [Get dynamic QR code with due date](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-with-due/get.md): Gets a specific dynamic QRCode with due date
-- [Get dynamic QR code with due date image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-with-due/get-image.md): Gets the image of a dynamic pix QRCode with due date
-- [Get dynamic QR code with due date hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/qrcode-with-due/get-hash.md): Gets the hash of a dynamic QRCode with due date
-- [Refund Pix](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/refunds/post.md): Refund an in document
+- [Create static QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-static/post.md): Create a new static QRCode
+- [Get static QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-static/get.md): Get a specific static QRCode
+- [Get static QR code image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-static/get-image.md): Gets a static QRCode image
+- [Get static QR code hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-static/get-hash.md): Gets a static QRCode hash
+- [Create dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post.md): Creates a new dynamic pix QRCode
+- [Get dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get.md): Gets a specific dynamic QRCode
+- [Update dynamic QR code](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/update.md): Updates a dynamic pix QRCode
+- [Get dynamic QR code image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-image.md): Gets a dynamic pix QRCode image
+- [Get dynamic QR code hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-hash.md): Gets a dynamic hash
+- [Create dynamic QR code with due date](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/post.md): Creates a new dynamic pix QRCode with due date, allowing fine, interest, rebate and discount rules
+- [Get dynamic QR code with due date](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get.md): Gets a specific dynamic QRCode with due date
+- [Get dynamic QR code with due date image](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-image.md): Gets the image of a dynamic pix QRCode with due date
+- [Get dynamic QR code with due date hash](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-hash.md): Gets the hash of a dynamic QRCode with due date
+- [Refund Pix](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/pix/refunds/post.md): Refund an in document
 - [List Recurrences](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/recurrences/list-recurrences.md): List recurrences with parameters
 - [Generate a Recurrence](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/recurrences/generate-recurrence.md): Generate a recurrence
 - [Get Recurrence](https://docs.trio.com.br/v2/api-reference/banking-api/receivables/recurrences/get-recurrence.md): Get recurrence with stages
@@ -156,13 +156,13 @@ Key facts an agent needs before reading further:
 
 ## API reference: payments (cash-out)
 
-- [Check Pix Key](https://docs.trio.com.br/v2/api-reference/banking-api/payments/transfer-pix/check-key.md): Checks a key
-- [Get Pix Key Check](https://docs.trio.com.br/v2/api-reference/banking-api/payments/transfer-pix/get-key-check.md): Gets a specific check key
-- [Generate a Pix Payment](https://docs.trio.com.br/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment.md): Generates a pix payment
-- [Generate a Pix Payment (async)](https://docs.trio.com.br/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async.md): Generates an async pix payment
-- [Check Pix BR Code](https://docs.trio.com.br/v2/api-reference/banking-api/payments/brcode/check-brcode.md): Checks a brcode hash
-- [Get Pix BR Code Check](https://docs.trio.com.br/v2/api-reference/banking-api/payments/brcode/get-brcode-check.md): Gets a specific check brcode hash
-- [Generate a Pix Payment (BR Code)](https://docs.trio.com.br/v2/api-reference/banking-api/payments/brcode/generate-pix-payment-brcode.md): Generates a pix payment
+- [Check Pix Key](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/transfer-pix/check-key.md): Checks a key
+- [Get Pix Key Check](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/transfer-pix/get-key-check.md): Gets a specific check key
+- [Generate a Pix Payment](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment.md): Generates a pix payment
+- [Generate a Pix Payment (async)](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async.md): Generates an async pix payment
+- [Check Pix BR Code](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/brcode/check-brcode.md): Checks a brcode hash
+- [Get Pix BR Code Check](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/brcode/get-brcode-check.md): Gets a specific check brcode hash
+- [Generate a Pix Payment (BR Code)](https://docs.trio.com.br/v2/api-reference/banking-api/payments/pix/brcode/generate-pix-payment-brcode.md): Generates a pix payment
 - [Check boleto](https://docs.trio.com.br/v2/api-reference/banking-api/payments/boleto/check-boleto.md): Check a boleto barcode or line code
 - [Pay boleto](https://docs.trio.com.br/v2/api-reference/banking-api/payments/boleto/pay-boleto.md): Generate a pay boleto
 - [Pay boleto (async)](https://docs.trio.com.br/v2/api-reference/banking-api/payments/boleto/pay-boleto-async.md): Generate an async pay boleto

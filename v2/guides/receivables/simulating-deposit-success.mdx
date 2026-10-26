@@ -25,7 +25,7 @@ All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
   </Step>
 
   <Step title="Create a QR code that points to the new account">
-    Send a `POST` to [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) with the new account's `id` in `bank_account_id`. The amount is in cents (BRL 100.00 = `10000`), so `5000` is a BRL 50.00 deposit.
+    Send a `POST` to [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post) with the new account's `id` in `bank_account_id`. The amount is in cents (BRL 100.00 = `10000`), so `5000` is a BRL 50.00 deposit.
 
     ```http
     POST /v2/in/pix/qrcodes

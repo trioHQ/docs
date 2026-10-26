@@ -13,7 +13,7 @@ V2 offers two ways to pay a Pix. Both create the same out document and return th
 
 | | Asynchronous | Check, then pay |
 | --- | --- | --- |
-| Endpoints | [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async) | [`POST /v2/out/pix/keys/check`](/v2/api-reference/banking-api/payments/transfer-pix/check-key) or [`POST /v2/out/pix/brcodes/check`](/v2/api-reference/banking-api/payments/brcode/check-brcode), then [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment) |
+| Endpoints | [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async) | [`POST /v2/out/pix/keys/check`](/v2/api-reference/banking-api/payments/pix/transfer-pix/check-key) or [`POST /v2/out/pix/brcodes/check`](/v2/api-reference/banking-api/payments/pix/brcode/check-brcode), then [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment) |
 | Destination | The Pix key or BR code, sent as `reference` | The `check_id` returned by the check, or a bank account sent as `counterparty` |
 | Receiver check | Trio checks the key or BR code while it processes the payment | You check first and see the receiver's name and tax number before paying |
 | Use it when | You want one call per payment, such as automated payouts, and optionally assert the receiver you expect | You want to confirm who receives the money before paying, or you need to pay a bank account directly |
@@ -145,7 +145,7 @@ The response identifies the receiver and returns the check `id`. For a CPF, `tax
 }
 ```
 
-A BR code is checked the same way: send the `entity_id` and the copy-and-paste code as `hash` to [`POST /v2/out/pix/brcodes/check`](/v2/api-reference/banking-api/payments/brcode/check-brcode).
+A BR code is checked the same way: send the `entity_id` and the copy-and-paste code as `hash` to [`POST /v2/out/pix/brcodes/check`](/v2/api-reference/banking-api/payments/pix/brcode/check-brcode).
 
 ### 2. Pay with the check ID
 

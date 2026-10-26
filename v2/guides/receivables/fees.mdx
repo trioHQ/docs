@@ -11,8 +11,8 @@ The fee works the same way on the three receivables:
 
 | Receivable | Create endpoint |
 | --- | --- |
-| Dynamic QR code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) |
-| Static QR code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post) |
+| Dynamic QR code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post) |
+| Static QR code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/pix/qrcode-static/post) |
 | Boleto | [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post) |
 
 ## Set the fee
@@ -40,7 +40,7 @@ The three responses return the configured fee as a money object:
 }
 ```
 
-On a dynamic QR code you can change the fee after creation with [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/update), which takes `fee` in cents at the top level of the body.
+On a dynamic QR code you can change the fee after creation with [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/update), which takes `fee` in cents at the top level of the body.
 
 ## How the fee is settled
 

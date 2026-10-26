@@ -21,13 +21,11 @@ This page covers how boletos work at Trio: the hybrid boleto with Pix (BolePix),
     GET /v2/in/pix/qrcodes/{id}
     ```
 
-    The BR code (the Pix copy-and-paste code) comes in `data.hash`. See the [Get dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get) reference.
+    The BR code (the Pix copy-and-paste code) comes in `data.hash`. See the [Get dynamic QR code](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get) reference.
   </Accordion>
 
   <Accordion title="How do I identify if a boleto was paid via Pix?">
-    When the boleto is paid through the embedded Pix QR code, the in document has `type` set to `pix_boleto`, which distinguishes it from a traditional boleto payment (`type: boleto`). The payment is sent through the `collecting_document` webhook with the same `type`:
-
-    {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec, and the `collecting_document` event name is a V1 name. The `pix_boleto` and `boleto` types are verified on the V2 in document. */}
+    When the boleto is paid through the embedded Pix QR code, the in document has `type` set to `pix_boleto`, which distinguishes it from a traditional boleto payment (`type: boleto`). The payment is sent through the `in_document` webhook with the same `type`:
 
     ```text
     type: pix_boleto
@@ -86,7 +84,7 @@ This page covers how boletos work at Trio: the hybrid boleto with Pix (BolePix),
 
 <AccordionGroup>
   <Accordion title="Which webhook reports a boleto payment?">
-    The payment is communicated through the `collecting_document` webhook. When the boleto is paid via the Pix QR code, the `type` received is `pix_boleto`.
+    The payment is communicated through the `in_document` webhook. When the boleto is paid via the Pix QR code, the `type` received is `pix_boleto`.
   </Accordion>
 
   <Accordion title="Does the external_id provided at boleto creation appear in the webhook?">
@@ -166,7 +164,7 @@ This page covers how boletos work at Trio: the hybrid boleto with Pix (BolePix),
 
 <AccordionGroup>
   <Accordion title="Can I use the refund endpoint for a boleto?">
-    It depends on how the boleto was paid. [`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/refunds/post) is intended for transactions originated via **Pix**:
+    It depends on how the boleto was paid. [`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/pix/refunds/post) is intended for transactions originated via **Pix**:
 
     ```http
     POST /v2/documents/in/{id}/refund

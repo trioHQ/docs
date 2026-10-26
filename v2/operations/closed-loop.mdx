@@ -25,7 +25,7 @@ These are the cash-in compliance rules you can enable for a bank account:
 | Deposits from legal entities | Yes | A payment is made not by an individual with a natural person tax number (CPF in Brazil) but by a legal entity with a legal tax number (CNPJ in Brazil). |
 | Deposits from unauthorized participants | Yes | A payment is made by an institution that is not authorized by the Central Bank of Brazil. |
 
-The payer restrictions come from the `counterparty` object you send to [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post). The [Cash in](/v2/guides/receivables/cash-in) guide walks through the whole flow.
+The payer restrictions come from the `counterparty` object you send to [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post). The [Cash in](/v2/guides/receivables/cash-in) guide walks through the whole flow.
 
 ## Payouts
 
@@ -39,7 +39,7 @@ These are the cash-out compliance rules enabled for a bank account:
 | Block payouts to different tax number | Yes | You attempt to pay an account that does not belong to the tax number you sent in `counterparty.tax_number`. |
 | Block payouts to different bank accounts | Yes | You attempt to pay an account that is not among the ones you sent in `counterparty.bank_accounts`. |
 
-On V2 you state the expected receiver in the `counterparty` object of [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async): the payment is refused if the Pix key or BR code belongs to another tax number, or to none of the bank accounts listed. The [Cash out](/v2/guides/payments/cash-out) guide shows the full request.
+On V2 you state the expected receiver in the `counterparty` object of [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async): the payment is refused if the Pix key or BR code belongs to another tax number, or to none of the bank accounts listed. The [Cash out](/v2/guides/payments/cash-out) guide shows the full request.
 
 ## Next steps
 

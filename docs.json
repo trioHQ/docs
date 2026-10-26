@@ -158,12 +158,22 @@
                       "v2/api-reference/banking-api/counterparties/list-counterparties",
                       "v2/api-reference/banking-api/counterparties/get-counterparty",
                       "v2/api-reference/banking-api/counterparties/create-counterparty",
-                      "v2/api-reference/banking-api/counterparties/list-counterparty-bank-accounts",
-                      "v2/api-reference/banking-api/counterparties/get-counterparty-bank-account",
-                      "v2/api-reference/banking-api/counterparties/create-counterparty-bank-account",
-                      "v2/api-reference/banking-api/counterparties/create-counterparty-recipient",
-                      "v2/api-reference/banking-api/counterparties/get-counterparty-recipient",
-                      "v2/api-reference/banking-api/counterparties/list-counterparty-recipients"
+                      {
+                        "group": "Bank Accounts",
+                        "pages": [
+                          "v2/api-reference/banking-api/counterparties/bank-accounts/list-counterparty-bank-accounts",
+                          "v2/api-reference/banking-api/counterparties/bank-accounts/get-counterparty-bank-account",
+                          "v2/api-reference/banking-api/counterparties/bank-accounts/create-counterparty-bank-account"
+                        ]
+                      },
+                      {
+                        "group": "Recipients",
+                        "pages": [
+                          "v2/api-reference/banking-api/counterparties/recipients/create-counterparty-recipient",
+                          "v2/api-reference/banking-api/counterparties/recipients/get-counterparty-recipient",
+                          "v2/api-reference/banking-api/counterparties/recipients/list-counterparty-recipients"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -221,41 +231,46 @@
                         ]
                       },
                       {
-                        "group": "Static QR Code (Pix)",
+                        "group": "Pix",
                         "pages": [
-                          "v2/api-reference/banking-api/receivables/qrcode-static/post",
-                          "v2/api-reference/banking-api/receivables/qrcode-static/get",
-                          "v2/api-reference/banking-api/receivables/qrcode-static/get-image",
-                          "v2/api-reference/banking-api/receivables/qrcode-static/get-hash"
+                          {
+                            "group": "Static QR Code",
+                            "pages": [
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-static/post",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-static/get",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-static/get-image",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-static/get-hash"
+                            ]
+                          },
+                          {
+                            "group": "Dynamic QR Code",
+                            "pages": [
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/update",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-image",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-hash"
+                            ]
+                          },
+                          {
+                            "group": "Dynamic QR Code with Due Date",
+                            "pages": [
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-with-due/post",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-image",
+                              "v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-hash"
+                            ]
+                          },
+                          {
+                            "group": "Refund",
+                            "pages": [
+                              "v2/api-reference/banking-api/receivables/pix/refunds/post"
+                            ]
+                          }
                         ]
                       },
                       {
-                        "group": "Dynamic QR Code (Pix)",
-                        "pages": [
-                          "v2/api-reference/banking-api/receivables/qrcode-dynamic/post",
-                          "v2/api-reference/banking-api/receivables/qrcode-dynamic/get",
-                          "v2/api-reference/banking-api/receivables/qrcode-dynamic/update",
-                          "v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image",
-                          "v2/api-reference/banking-api/receivables/qrcode-dynamic/get-hash"
-                        ]
-                      },
-                      {
-                        "group": "Dynamic QR Code with Due Date (Pix)",
-                        "pages": [
-                          "v2/api-reference/banking-api/receivables/qrcode-with-due/post",
-                          "v2/api-reference/banking-api/receivables/qrcode-with-due/get",
-                          "v2/api-reference/banking-api/receivables/qrcode-with-due/get-image",
-                          "v2/api-reference/banking-api/receivables/qrcode-with-due/get-hash"
-                        ]
-                      },
-                      {
-                        "group": "Refund (Pix)",
-                        "pages": [
-                          "v2/api-reference/banking-api/receivables/refunds/post"
-                        ]
-                      },
-                      {
-                        "group": "Recurrences (Pix)",
+                        "group": "Recurrences",
                         "pages": [
                           "v2/api-reference/banking-api/receivables/recurrences/list-recurrences",
                           "v2/api-reference/banking-api/receivables/recurrences/generate-recurrence",
@@ -278,20 +293,25 @@
                     "group": "Payments",
                     "pages": [
                       {
-                        "group": "Transfer (Pix)",
+                        "group": "Pix",
                         "pages": [
-                          "v2/api-reference/banking-api/payments/transfer-pix/check-key",
-                          "v2/api-reference/banking-api/payments/transfer-pix/get-key-check",
-                          "v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment",
-                          "v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async"
-                        ]
-                      },
-                      {
-                        "group": "QR Code (Pix)",
-                        "pages": [
-                          "v2/api-reference/banking-api/payments/brcode/check-brcode",
-                          "v2/api-reference/banking-api/payments/brcode/get-brcode-check",
-                          "v2/api-reference/banking-api/payments/brcode/generate-pix-payment-brcode"
+                          {
+                            "group": "Transfer",
+                            "pages": [
+                              "v2/api-reference/banking-api/payments/pix/transfer-pix/check-key",
+                              "v2/api-reference/banking-api/payments/pix/transfer-pix/get-key-check",
+                              "v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment",
+                              "v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async"
+                            ]
+                          },
+                          {
+                            "group": "QR Code",
+                            "pages": [
+                              "v2/api-reference/banking-api/payments/pix/brcode/check-brcode",
+                              "v2/api-reference/banking-api/payments/pix/brcode/get-brcode-check",
+                              "v2/api-reference/banking-api/payments/pix/brcode/generate-pix-payment-brcode"
+                            ]
+                          }
                         ]
                       },
                       {
@@ -690,7 +710,7 @@
                         ]
                       },
                       {
-                        "group": "Recurrences (Pix)",
+                        "group": "Recurrences (Pix Automático)",
                         "pages": [
                           "api-reference/banking-api/receivables/recurrences/list-recurrences",
                           "api-reference/banking-api/receivables/recurrences/generate-recurrence",
@@ -933,6 +953,114 @@
     {
       "source": "/v2",
       "destination": "/"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/list-counterparty-bank-accounts",
+      "destination": "/v2/api-reference/banking-api/counterparties/bank-accounts/list-counterparty-bank-accounts"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/get-counterparty-bank-account",
+      "destination": "/v2/api-reference/banking-api/counterparties/bank-accounts/get-counterparty-bank-account"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/create-counterparty-bank-account",
+      "destination": "/v2/api-reference/banking-api/counterparties/bank-accounts/create-counterparty-bank-account"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/create-counterparty-recipient",
+      "destination": "/v2/api-reference/banking-api/counterparties/recipients/create-counterparty-recipient"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/get-counterparty-recipient",
+      "destination": "/v2/api-reference/banking-api/counterparties/recipients/get-counterparty-recipient"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/counterparties/list-counterparty-recipients",
+      "destination": "/v2/api-reference/banking-api/counterparties/recipients/list-counterparty-recipients"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-static/post",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-static/post"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-static/get",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-static/get"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-static/get-image",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-static/get-image"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-static/get-hash",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-static/get-hash"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-dynamic/post",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-dynamic/get",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-dynamic/update",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/update"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-image"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-hash",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-hash"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-with-due/post",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/post"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-with-due/get",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-with-due/get-image",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-image"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/qrcode-with-due/get-hash",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/get-hash"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/receivables/refunds/post",
+      "destination": "/v2/api-reference/banking-api/receivables/pix/refunds/post"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/transfer-pix/check-key",
+      "destination": "/v2/api-reference/banking-api/payments/pix/transfer-pix/check-key"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/transfer-pix/get-key-check",
+      "destination": "/v2/api-reference/banking-api/payments/pix/transfer-pix/get-key-check"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment",
+      "destination": "/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async",
+      "destination": "/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/brcode/check-brcode",
+      "destination": "/v2/api-reference/banking-api/payments/pix/brcode/check-brcode"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/brcode/get-brcode-check",
+      "destination": "/v2/api-reference/banking-api/payments/pix/brcode/get-brcode-check"
+    },
+    {
+      "source": "/v2/api-reference/banking-api/payments/brcode/generate-pix-payment-brcode",
+      "destination": "/v2/api-reference/banking-api/payments/pix/brcode/generate-pix-payment-brcode"
     }
   ]
 }

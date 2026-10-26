@@ -1,6 +1,6 @@
 ---
 title: "Integration best practices"
-description: "How cash-in and cash-out identifiers, statuses, timeouts and webhooks behave on the V2 API, and how to handle them so your reconciliation never breaks."
+description: "How cash-in and cash-out identifiers, statuses, timeouts and webhooks behave on the API, and how to handle them so your reconciliation never breaks."
 ---
 
 Cash-in and cash-out operations return different identifiers at different moments, and they reach their final status in different ways. This page explains those differences and the practices that keep your integration free of duplicate payouts and unreconciled payments.
@@ -22,7 +22,7 @@ You use these identifiers for reconciliation, transaction tracking, idempotency,
 
 ### The identifier is final from the start
 
-A cash-out request creates the financial transaction immediately, so [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async) and [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment) return the final transaction identifier in the response:
+A cash-out request creates the financial transaction immediately, so [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async) and [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment) return the final transaction identifier in the response:
 
 ```json
 {
@@ -90,7 +90,7 @@ Before retrying:
 
 ### The first identifier is the QR code, not the payment
 
-A cash-in request only creates the QR code. At that stage the payment has not happened, there is no financial settlement and no final transaction document exists. [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) returns the QR code identifier in `data.id`:
+A cash-in request only creates the QR code. At that stage the payment has not happened, there is no financial settlement and no final transaction document exists. [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post) returns the QR code identifier in `data.id`:
 
 ```json
 {
@@ -129,7 +129,6 @@ Treat `data.id` as the QR code identifier (the `ref_id`), not as the final finan
 
 Once the payment completes, Trio sends a `settled` webhook containing the `external_id`, the `ref_id` (the QR code `id`) and the final in document `id`. These three fields let you associate the QR code request, the payment confirmation and the final financial transaction.
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this example is the V1 payload, including `virtual_account_id` and `category: collecting_document`. */}
 
 ```json
 {
@@ -141,12 +140,12 @@ Once the payment completes, Trio sends a `settled` webhook containing the `exter
     "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
     "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
     "receipt_url": "https://receipts.sandbox.trio.com.br/.../in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
-    "ref_id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
-    "type": "pix",
-    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+    "reference_id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "document_type": "pix",
+    "bank_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
   },
   "type": "settled",
-  "category": "collecting_document",
+  "category": "in_document",
   "timestamp": "2025-01-31T18:22:14.477163Z"
 }
 ```

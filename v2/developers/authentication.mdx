@@ -1,9 +1,9 @@
 ---
 title: "Authentication"
-description: "How to authenticate V2 requests, act on another organization and which headers every request carries."
+description: "How to authenticate requests, act on another organization and which headers every request carries."
 ---
 
-The V2 API uses [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication): your Client ID (`client_id`) is the username and your Secret Key (`client_secret`) is the password. You create credentials for `sandbox` and `production` in the Trio App; see [First API credential](/v2/guides/creating-your-first-api-credential).
+The API uses [HTTP basic authentication](https://en.wikipedia.org/wiki/Basic_access_authentication): your Client ID (`client_id`) is the username and your Secret Key (`client_secret`) is the password. You create credentials for `sandbox` and `production` in the Trio App; see [First API credential](/v2/guides/creating-your-first-api-credential).
 
 All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
@@ -17,7 +17,7 @@ Missing or invalid credentials are refused with `401` and the error code `INVALI
 
 ## Request headers
 
-Besides the credentials, V2 requests carry:
+Besides the credentials, requests carry:
 
 - `Content-Type: application/json` on every request with a body;
 - `Trio-Version`: the version of the API the request targets. A request whose header is missing or names a version that is not the current one is refused with `400` and the error code `INVALID_TRIO_VERSION`.

@@ -1,6 +1,6 @@
 ---
 title: "Cash in"
-description: "Create your first dynamic QR code with the V2 API and read the response."
+description: "Create your first dynamic QR code with the API and read the response."
 ---
 
 Cash-in transactions are the deposits that arrive in your bank accounts, for example a dynamic QR code that a payer scans and pays. This tutorial creates your first dynamic QR code in the sandbox and walks through the response. For the other ways to receive money, see the [Receivables overview](/v2/guides/receivables/overview).
@@ -16,7 +16,7 @@ All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
 ## Create the QR code
 
-Send a `POST` to the [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) endpoint:
+Send a `POST` to the [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post) endpoint:
 
 ```http
 POST /v2/in/pix/qrcodes
@@ -103,7 +103,7 @@ The fields you use most:
 
 ## Share the BR code
 
-If you did not request the image, share the `hash` with the payer: it is the BR code they paste into their banking application. To render the image on your side, encode the `hash` as a QR code, or fetch it ready-made from [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image), which returns it in Base64.
+If you did not request the image, share the `hash` with the payer: it is the BR code they paste into their banking application. To render the image on your side, encode the `hash` as a QR code, or fetch it ready-made from [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-image), which returns it in Base64.
 
 ## What happens next
 

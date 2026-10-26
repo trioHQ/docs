@@ -6,7 +6,7 @@ description: "Choose how Trio authenticates to your notification URL and verify 
 A V2 webhook has two layers of authentication. `authentication_method` chooses how Trio identifies itself to your notification URL: with a shared secret (`url_secret`) or with an OAuth token (`oauth`). On top of that, Trio signs every notification with the webhook's `notification_key`, so you can check that the body came from Trio and was not changed on the way.
 
 <Note>
-  Coming from V1? The **Secret** you type in the Trio App is the `notification_secret` of the V2 API, and the webhook key shown in the webhook details is the `notification_key`.
+  Coming from V1? The **Secret** you type in the Trio App is the `notification_secret` of the API, and the webhook key shown in the webhook details is the `notification_key`.
 </Note>
 
 ## Authentication method
@@ -15,11 +15,7 @@ Set `authentication_method` when you [register the webhook](/v2/webhooks/introdu
 
 ### Shared secret
 
-A `url_secret` webhook needs `notification_url` and `notification_secret`. Trio sends the secret with every event, so your endpoint compares it with the value you stored and rejects the request when it differs.
-
-{/* TODO(v2): verify — the x-webhook-secret header is not described in the V2 spec; this is the V1 behaviour */}
-
-The secret travels in the HTTP header `x-webhook-secret`.
+A `url_secret` webhook needs `notification_url` and `notification_secret`. Trio sends the secret with every notification in the HTTP header `x-webhook-secret`, so your endpoint compares it with the value you stored and rejects the request when it differs.
 
 ### OAuth
 
@@ -32,30 +28,37 @@ An `oauth` webhook needs `oauth_client_id`, `oauth_client_secret`, `oauth_url` a
 | `oauth_url` | Yes | OAuth token URL Trio requests the token from. |
 | `oauth_scope` | Yes | OAuth scope Trio requests. |
 
-{/* TODO(v2): verify — the V2 spec does not state the OAuth grant type nor how Trio presents the token to the notification URL */}
+{/* TODO(v2): verify — the OAuth grant type and how Trio presents the token to the notification URL are not in the webhook sender code read for this page; confirm with the team. */}
+
+## Headers of a notification
+
+Every notification is an HTTP POST with these headers:
+
+| Header | Value |
+| --- | --- |
+| `content-type` | `application/json` |
+| `x-webhook-secret` | The webhook's `notification_secret`. |
+| `x-webhook-signature` | The HMAC-SHA-256 signature of the body, described below. |
 
 ## Signature
 
 Every notification is signed with the webhook's `notification_key`, the key Trio generates when the webhook is created. The key is returned by [Create webhook](/v2/api-reference/banking-api/developers/webhooks/create-webhook) and [Get webhook](/v2/api-reference/banking-api/developers/webhooks/get-webhook), and shown in the webhook details of the Trio App.
 
-{/* TODO(v2): verify — the x-webhook-signature header and HMAC-SHA-256 signing are not described in the V2 spec; this is the V1 behaviour */}
+The signature travels in the HTTP header `x-webhook-signature`. Trio computes it over the exact bytes of the request body. To verify it:
 
-The signature travels in the HTTP header `x-webhook-signature`. To verify it:
-
-1. Compute the HMAC-SHA-256 of the request body with `notification_key` as the key.
+1. Compute the HMAC-SHA-256 of the raw request body with `notification_key` as the key.
 2. Encode the result as uppercase hexadecimal.
 3. Compare it with the header value using a constant-time comparison.
 
 ```javascript
 import { createHmac, timingSafeEqual } from "crypto"
 
+// rawBody is the request body exactly as received, before any JSON parsing
 const expectedSignature = req.headers["x-webhook-signature"]
-const algorithm = "sha256"
-const signatureKey = "your_signature_key"
-const message = JSON.stringify(req.body)
+const signatureKey = "your_notification_key"
 
-const computedSignature = createHmac(algorithm, signatureKey)
-	.update(message)
+const computedSignature = createHmac("sha256", signatureKey)
+	.update(rawBody)
 	.digest("hex")
 	.toUpperCase()
 
@@ -65,9 +68,11 @@ const isValid = timingSafeEqual(
 )
 ```
 
-<Tip>
-  Compute the HMAC over the body exactly as Trio sent it. If your framework parses the JSON before your handler runs, make sure `JSON.stringify(req.body)` reproduces the original bytes, or keep a copy of the raw body.
-</Tip>
+<Warning>
+  Sign the raw body, not a re-serialized copy. If your framework parses the JSON before your handler runs, `JSON.stringify(req.body)` can reorder keys or change number formatting and the signature will not match. Keep the raw body available to the handler.
+</Warning>
+
+A webhook created without a `notification_key` receives an empty `x-webhook-signature` header. Every webhook created through the API or the Trio App has a key.
 
 If your `notification_key` is accidentally made public, [contact support](/v2/getting_started/support). Trio rotates the key and coordinates the change with you.
 

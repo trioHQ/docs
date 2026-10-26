@@ -624,7 +624,7 @@ A rule configured with `calculation_type: amount` is returned with its `amount` 
 
 ## After creation
 
-Every boleto is hybrid: the same `id` identifies its embedded Pix QR code, which you read with [`GET /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get). Payments reach you as webhook events; the [events overview](/v2/webhooks/events/overview) lists them, and the [Boleto best practices](/v2/guides/boleto/best-practices) guide covers the hybrid boleto, its lifecycle and reconciliation.
+Every boleto is hybrid: the same `id` identifies its embedded Pix QR code, which you read with [`GET /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get). Payments reach you as webhook events; the [events overview](/v2/webhooks/events/overview) lists them, and the [Boleto best practices](/v2/guides/boleto/best-practices) guide covers the hybrid boleto, its lifecycle and reconciliation.
 
 The boleto itself is managed through these endpoints:
 
@@ -658,7 +658,7 @@ To change the amount, recreate the boleto:
 }
 ```
 
-A boleto paid through its Pix QR code can be refunded with [Refund a receivable](/v2/api-reference/banking-api/receivables/refunds/post) (`POST /v2/documents/in/{id}/refund`), where `{id}` is the in document of the payment, not the boleto. The best practices guide explains when a refund applies.
+A boleto paid through its Pix QR code can be refunded with [Refund a receivable](/v2/api-reference/banking-api/receivables/pix/refunds/post) (`POST /v2/documents/in/{id}/refund`), where `{id}` is the in document of the payment, not the boleto. The best practices guide explains when a refund applies.
 
 ## Next steps
 

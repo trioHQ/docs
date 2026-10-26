@@ -7,7 +7,6 @@ Every notification Trio sends has the same JSON structure: an envelope that says
 
 ## The envelope
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec */}
 
 ```json
 {
@@ -22,14 +21,12 @@ Every notification Trio sends has the same JSON structure: an envelope that says
 | Field | Description |
 | --- | --- |
 | `ref_id` | ID of the resource the event refers to: the document, refund, recurrence or entity. |
-| `category` | Category the event belongs to, such as `collecting_document` or `payment_document`. |
+| `category` | Category the event belongs to, such as `in_document` or `out_document`. |
 | `type` | Type of the event within the category, such as `created`, `settled` or `failed`. |
 | `timestamp` | Timestamp of the event, in the format described in [Date and time](/v2/developers/date-and-time). |
 | `data` | The resource in the state the event reports: the document, refund, recurrence or entity, with its own `id`. |
 
-{/* TODO(v2): verify — V1 defines ref_id as "the identification from the reference" and it equals data.id (or data.entity_id) in every V1 example; confirm it is not a per-event ID */}
 
-{/* TODO(v2): verify — the V1 examples also carry context_id and context_type, and some carry inserted_at, origin_type and ref_stage_id; none of them is documented */}
 
 The examples on the Events page carry a few more envelope fields, such as `context_id` and `context_type`. They are not needed to handle a notification.
 
@@ -37,7 +34,6 @@ The examples on the Events page carry a few more envelope fields, such as `conte
 
 The notification below reports a cash-in document that settled: `category` and `type` say what happened, `ref_id` says to which document, and `data` carries the document itself. Amounts are in cents (BRL 100.00 = `10000`), so this payment is BRL 1.00.
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload (it still carries virtual_account_id) */}
 
 ```json
 {
@@ -47,7 +43,6 @@ The notification below reports a cash-in document that settled: `category` and `
       "currency": "BRL"
     },
     "counterparty": {
-      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
       "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
       "name": "Conta 002",
       "tax_number": "45865162797606"
@@ -57,19 +52,19 @@ The notification below reports a cash-in document that settled: `category` and `
     "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
     "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
     "transaction_date": "2025-01-31T18:22:14.510717Z",
-    "type": "pix",
-    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+    "document_type": "pix",
+    "bank_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
   },
   "timestamp": "2025-01-31T18:22:14.477163Z",
   "type": "settled",
-  "category": "collecting_document",
+  "category": "in_document",
   "ref_id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41"
 }
 ```
 
 To handle it:
 
-1. Route on `category` and `type`. Together they name the event, `collecting_document.settled` here.
+1. Route on `category` and `type`. Together they name the event, `in_document.settled` here.
 2. Find your own record with `ref_id`, or with `data.external_id` when you sent one in the request that created the resource.
 3. Update that record from `data`. If you prefer to read the current state from the API, fetch the resource by `ref_id`.
 

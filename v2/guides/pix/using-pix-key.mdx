@@ -1,9 +1,9 @@
 ---
 title: "Pix key formats"
-description: "Check which Pix key types the V2 API accepts and the regular expression that validates each one."
+description: "Check which Pix key types the API accepts and the regular expression that validates each one."
 ---
 
-A Pix key identifies a bank account in the Pix ecosystem, so it is the simplest thing to ask a customer for before a payout; the V2 API accepts the five key types below and validates each one with the regular expression shown.
+A Pix key identifies a bank account in the Pix ecosystem, so it is the simplest thing to ask a customer for before a payout; the API accepts the five key types below and validates each one with the regular expression shown.
 
 | Type | Regex | Example | V2 `type` |
 | --- | --- | --- | --- |
@@ -17,4 +17,4 @@ A Pix key identifies a bank account in the Pix ecosystem, so it is the simplest 
 As of July 01, 2026, a CNPJ may contain alphanumeric characters. The validation accepts both the legacy numeric format and the new alphanumeric format defined by the Brazilian Federal Revenue Service.
 </Note>
 
-Before paying a key, check it with [`POST /v2/out/pix/keys/check`](/v2/api-reference/banking-api/payments/transfer-pix/check-key), sending the `entity_id` that pays and the `key`. The response returns the key `type`, the resolved `counterparty` and the check `id`, which [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment) takes as `check_id`; the [Cash out](/v2/guides/payments/cash-out) guide walks through the payment. To register a Pix key on one of your own bank accounts, see [Create a Pix key](/v2/api-reference/banking-api/receivables/pix-keys/create-pix-key).
+Before paying a key, check it with [`POST /v2/out/pix/keys/check`](/v2/api-reference/banking-api/payments/pix/transfer-pix/check-key), sending the `entity_id` that pays and the `key`. The response returns the key `type`, the resolved `counterparty` and the check `id`, which [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment) takes as `check_id`; the [Cash out](/v2/guides/payments/cash-out) guide walks through the payment. To register a Pix key on one of your own bank accounts, see [Create a Pix key](/v2/api-reference/banking-api/receivables/pix-keys/create-pix-key).

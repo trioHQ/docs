@@ -1,6 +1,6 @@
 ---
 title: "Document lifecycle"
-description: "Statuses and stages an in document goes through in the Trio V2 API."
+description: "Statuses and stages an in document goes through in the Trio API."
 ---
 
 {/* TODO(v2): verify — the V1 page said "payout" and "the balance is deducted from your account", which is cash-out wording, although the page sits in the Pix (receivables) group. This V2 page follows the in-document statuses from the V2 spec and the "balance is deducted" clause was removed. V2 out documents have their own enums: status created, confirmed, settled, onhold, refunded, reversed, failed; stage status created, confirmed, settled, failed, refund_link, onhold. */}
@@ -41,10 +41,10 @@ List in documents with [`GET /v2/documents/in`](/v2/api-reference/banking-api/do
 | --- | --- | --- |
 | `created` | The transaction was received and queued for processing. | No |
 | `confirmed` | The settlement process has started. | No |
-| `kyc` | Defined by the V2 API; not yet described. | |
+| `kyc` | Defined by the API; not yet described. | |
 | `settled` | The transaction was successfully processed and settled. | Yes |
-| `refunded` | Defined by the V2 API; not yet described. | |
-| `reversed` | Defined by the V2 API; not yet described. | |
+| `refunded` | Defined by the API; not yet described. | |
+| `reversed` | Defined by the API; not yet described. | |
 | `failed` | The transaction could not be processed due to invalid information or because the bank rejected it. | Yes |
 
 ## Stage statuses

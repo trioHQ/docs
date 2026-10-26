@@ -3,7 +3,7 @@ title: "QR code types"
 description: "Choose between static, dynamic and dynamic-with-due-date Pix QR codes, and generate a dynamic QR code."
 ---
 
-Pix QR codes are the fastest way to collect a payment: the payer scans the code or pastes the BR code (the Pix copy-and-paste code) into their banking application. The V2 API offers three types; this guide explains when to use each and how to generate a dynamic QR code, the type most online merchants and payment service providers rely on. For the full cash-in picture, see the [Receivables overview](/v2/guides/receivables/overview).
+Pix QR codes are the fastest way to collect a payment: the payer scans the code or pastes the BR code (the Pix copy-and-paste code) into their banking application. The API offers three types; this guide explains when to use each and how to generate a dynamic QR code, the type most online merchants and payment service providers rely on. For the full cash-in picture, see the [Receivables overview](/v2/guides/receivables/overview).
 
 ## Static QR code
 
@@ -13,7 +13,7 @@ A static QR code carries fixed payment information that does not change between 
 - Suitable for recurring collections.
 - Can be permanently displayed or printed.
 
-Create one with [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post). Send `amount: 0` for an open-amount code, where the payer chooses the amount.
+Create one with [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/pix/qrcode-static/post). Send `amount: 0` for an open-amount code, where the payer chooses the amount.
 
 ## Dynamic QR code
 
@@ -23,11 +23,11 @@ A dynamic QR code is generated for one transaction and carries that transaction'
 - Supports your own identifiers and metadata.
 - Enables automated reconciliation and tracking.
 
-Create one with [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post), as shown [below](#generate-a-dynamic-qr-code). After creation, [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/update) updates the `amount`, `expiration_datetime` or `fee` of an existing dynamic QR code and returns `204 No Content`.
+Create one with [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post), as shown [below](#generate-a-dynamic-qr-code). After creation, [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/update) updates the `amount`, `expiration_datetime` or `fee` of an existing dynamic QR code and returns `204 No Content`.
 
 ## Dynamic QR code with due date
 
-A dynamic QR code with due date is a dynamic QR code that carries a due date and the payment rules attached to it: fine, interest, rebate and discount. Use it when the charge behaves like an invoice. Create one with [`POST /v2/in/pix/qrcodes/with_due`](/v2/api-reference/banking-api/receivables/qrcode-with-due/post).
+A dynamic QR code with due date is a dynamic QR code that carries a due date and the payment rules attached to it: fine, interest, rebate and discount. Use it when the charge behaves like an invoice. Create one with [`POST /v2/in/pix/qrcodes/with_due`](/v2/api-reference/banking-api/receivables/pix/qrcode-with-due/post).
 
 ## Which type to use
 
@@ -130,7 +130,7 @@ The payer is the nested `counterparty` object and the creator is the nested `ori
 ### Deliver the code to the payer
 
 - **BR code**: send the `hash` so the payer pastes it into their banking application.
-- **QR code image**: render the `hash` as a QR code image for the payer to scan. You can also ask the API for the image, either with `options.show_qrcode_image: true` on creation or later with [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image), which returns it in Base64.
+- **QR code image**: render the `hash` as a QR code image for the payer to scan. You can also ask the API for the image, either with `options.show_qrcode_image: true` on creation or later with [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get-image), which returns it in Base64.
 
 ## Follow the payment
 

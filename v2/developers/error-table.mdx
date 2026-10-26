@@ -1,9 +1,9 @@
 ---
 title: "Error handling"
-description: "HTTP status codes, the error body and the error codes returned by the V2 API."
+description: "HTTP status codes, the error body and the error codes returned by the API."
 ---
 
-The V2 API groups outcomes by HTTP status code: `2xx` means the request worked as expected, `4xx` means it failed because of invalid information or a validation error, and `5xx` means something went wrong on Trio's side. Every error also returns a JSON body that tells you what went wrong, so you can handle it during the integration.
+The API groups outcomes by HTTP status code: `2xx` means the request worked as expected, `4xx` means it failed because of invalid information or a validation error, and `5xx` means something went wrong on Trio's side. Every error also returns a JSON body that tells you what went wrong, so you can handle it during the integration.
 
 ## Error body
 

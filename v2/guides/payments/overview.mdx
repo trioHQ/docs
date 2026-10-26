@@ -3,7 +3,7 @@ title: "Payments"
 description: "Cash-out guides for V2: paying Pix keys, BR codes, bank accounts, boletos, utility bills, taxes and DARFs from your bank accounts."
 ---
 
-A payment is money that leaves one of your bank accounts. On the V2 API every payment debits the `bank_account_id` you send and creates an **out document** whose status you follow through webhooks or by reading the document.
+A payment is money that leaves one of your bank accounts. On the API every payment debits the `bank_account_id` you send and creates an **out document** whose status you follow through webhooks or by reading the document.
 
 Pix can be paid in two ways. Asynchronously, you send the Pix key or BR code (the Pix copy-and-paste code) and Trio checks it while processing the payment. In two steps, you check the key or BR code first and pay with the resulting `check_id`; the same endpoint also pays a bank account directly. Besides Pix, you can check and pay boletos, utility bills, taxes and DARFs.
 
@@ -14,7 +14,7 @@ Pix can be paid in two ways. Asynchronously, you send the Pix key or BR code (th
   <Card title="Pix key types" href="/v2/guides/pix/using-pix-key">
     The key types V2 accepts and how they are validated before a payment.
   </Card>
-  <Card title="Pix payment reference" href="/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async">
+  <Card title="Pix payment reference" href="/v2/api-reference/banking-api/payments/pix/transfer-pix/generate-pix-payment-async">
     Key and BR code checks, and the asynchronous and synchronous Pix payment endpoints.
   </Card>
   <Card title="Boleto, utility, tax and DARF" href="/v2/api-reference/banking-api/payments/boleto/pay-boleto">

@@ -9,8 +9,8 @@ A split distributes the amount received by a receivable among one or more split 
 
 | Receivable | Create endpoint |
 | --- | --- |
-| Dynamic QR code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) |
-| Static QR code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post) |
+| Dynamic QR code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/post) |
+| Static QR code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/pix/qrcode-static/post) |
 | Boleto | [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post) |
 
 Splits are optional. When you omit the `splits` array, the receivable is created without any split.
@@ -59,7 +59,7 @@ For a received amount of BRL 100.00:
 
 ## Create a split recipient
 
-A split entry always references a `counterparty_recipient_id`: the identifier of a split recipient that you create beforehand with [`POST /v2/counterparty_recipients`](/v2/api-reference/banking-api/counterparties/create-counterparty-recipient).
+A split entry always references a `counterparty_recipient_id`: the identifier of a split recipient that you create beforehand with [`POST /v2/counterparty_recipients`](/v2/api-reference/banking-api/counterparties/recipients/create-counterparty-recipient).
 
 ```http
 POST /v2/counterparty_recipients

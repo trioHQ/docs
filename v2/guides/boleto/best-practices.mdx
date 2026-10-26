@@ -14,7 +14,7 @@ Every boleto created through Trio also carries an embedded Pix QR code. The paye
 `POST /v2/in/boletos` does not return the BR code (the Pix copy-and-paste code) directly. After creating the boleto:
 
 1. Take the `id` returned in `data.id`.
-2. Read the QR code with [`GET /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get), using that same `id`.
+2. Read the QR code with [`GET /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/pix/qrcode-dynamic/get), using that same `id`.
 
 ```http
 GET /v2/in/pix/qrcodes/{id}
@@ -26,9 +26,8 @@ The BR code comes in the `data.hash` field of the response.
 
 When the boleto is paid through its Pix QR code, the in document Trio creates for the payment (the receivable, returned by [`GET /v2/documents/in/{id}`](/v2/api-reference/banking-api/documents/receivables/get-receivable)) has the type `pix_boleto`. The document `type` tells the two payment methods apart: `boleto` and `pix_boleto` are distinct values of the enum.
 
-The payment is delivered through the `collecting_document` webhook with:
+The payment is delivered through the `in_document` webhook with:
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the event name `collecting_document` is also not in the V2 spec. The `pix_boleto` type is verified on the V2 in document. */}
 
 ```json
 {
@@ -98,9 +97,8 @@ Do not treat the existence of a boleto as confirmation of payment. Confirm payme
 
 Webhooks are registered through [`POST /v2/webhooks`](/v2/api-reference/banking-api/developers/webhooks/create-webhook). The `api_version` field (`v100` or `v200`) sets the version of the event payloads you receive. The examples below are from version `v100`; the [events overview](/v2/webhooks/events/overview) lists the available events.
 
-The `collecting_document` webhook communicates events related to receiving the boleto.
+The `in_document` webhook communicates events related to receiving the boleto.
 
-{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the event name `collecting_document` is also not in the V2 spec. */}
 
 When the boleto is paid through the embedded Pix, the `type` you receive is:
 
@@ -245,7 +243,7 @@ There is an important difference:
 
 ## Refunding a boleto
 
-[`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/refunds/post) applies to transactions that originated through Pix. This includes a boleto that was paid through its Pix QR code.
+[`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/pix/refunds/post) applies to transactions that originated through Pix. This includes a boleto that was paid through its Pix QR code.
 
 ```http
 POST /v2/documents/in/{id}/refund
@@ -433,7 +431,7 @@ This simplifies support, reconciliation and payment tracking.
 | --- | --- |
 | Embedded Pix | Yes, every boleto has a Pix QR code |
 | BR code (copy and paste) | Read with `GET /v2/in/pix/qrcodes/{id}`, field `data.hash` |
-| Payment through Pix | In document and `collecting_document` webhook with `type = pix_boleto` |
+| Payment through Pix | In document and `in_document` webhook with `type = pix_boleto` |
 | Paid boleto | `settled` |
 | Cancelled boleto | `cancelled` |
 | Expired boleto | `expired` |
