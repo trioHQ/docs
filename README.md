@@ -138,7 +138,7 @@ When the spec gains an operation, add a page for it and list the page in `docs.j
 
 ### llms.txt
 
-`llms.txt` is a hand-curated index for AI agents and still lists the V1 pages only. Add the V2 pages to it, or delete the file to fall back to the index Mintlify generates.
+`llms.txt` is a hand-curated index for AI agents. It lists the V2 pages only, in the order of the V2 navigation, with each page's title and description; V1 is legacy and is not indexed. When you add or rename a V2 page, add or update its line.
 
 ### Taking a version offline
 
