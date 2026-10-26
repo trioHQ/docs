@@ -444,7 +444,7 @@
           "options": {
             "fee": 0
           },
-          "split": [
+          "splits": [
             {
               "type": "percentage",
               "value": 70,
@@ -589,7 +589,7 @@
             },
             "type": "object"
           },
-          "split": {
+          "splits": {
             "description": "Cashin split configurations",
             "items": {
               "properties": {
@@ -2694,7 +2694,7 @@
             "show_qrcode_image": true,
             "fee": 0
           },
-          "split": [
+          "splits": [
             {
               "type": "percentage",
               "value": 70,
@@ -2778,7 +2778,7 @@
             ],
             "type": "object"
           },
-          "split": {
+          "splits": {
             "description": "Cashin split configurations",
             "items": {
               "properties": {
@@ -6778,7 +6778,7 @@
             "show_qrcode_image": false,
             "fee": 0
           },
-          "split": [
+          "splits": [
             {
               "type": "percentage",
               "value": 70,
@@ -6827,7 +6827,7 @@
             ],
             "type": "object"
           },
-          "split": {
+          "splits": {
             "description": "Cashin split configurations",
             "items": {
               "properties": {
