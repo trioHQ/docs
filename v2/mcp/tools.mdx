@@ -1,0 +1,82 @@
+---
+title: "Supported tools"
+description: "Every tool the Trio MCP server exposes today, what each one returns, the parameters it needs and a prompt that triggers it."
+---
+
+Trio MCP exposes 17 tools. All of them read data or validate a Pix key; none of them moves money or changes anything in your account. Your AI client picks the tool from your question and the tool's own description, which tells it when to use that tool and which one to prefer for a similar question.
+
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br` behind the scenes: each tool mirrors a V2 API endpoint, so the arguments and the responses are the ones documented in the [API reference](/v2/api-reference/banking-api/entities/list).
+
+## How the tools behave
+
+- **Start with the entity.** `list_entities` is the first call of a session: it returns the organization's entities (CNPJs) and the `entity_id` most other tools need. With one entity the agent uses it automatically; with several it asks which one you mean.
+- **Amounts are in cents.** `5000000` is R$ 50.000,00. The agent divides by 100 when it shows you a value.
+- **Dates and times are ISO 8601.** Period filters take `from_datetime` and `to_datetime`, for example `2026-10-01T00:00:00-03:00`.
+- **Listings are paginated.** Responses carry `metadata.before` and `metadata.after` cursors, and the agent walks every page of a period before it answers.
+- **Sensitive data is masked.** Card numbers arrive as `5555 •••• •••• 4021` and a CPF as `***982247**`. A CNPJ is returned in full.
+- **Tools point at each other.** Ask about cash flow and the agent uses the statement, not the document listings. Give it an `external_id` or a Pix end-to-end ID and it searches instead of listing. Give it a CPF or CNPJ and it uses the tax-number listing.
+
+## Entities, accounts and statements
+
+| Tool | What it returns | Required parameters | Sample prompt |
+| --- | --- | --- | --- |
+| `list_entities` | The organization's entities, with their `entity_id`. The first call of a session. | none | "Which entities does my organization have?" |
+| `list_bank_accounts` | Bank accounts with their real-time available balance, currency and status. Optional filters: `entity_id`, `bank_account_id`, `group_id`, `status`. | none | "What's my balance today?" or "Show every account of Aurora Varejo" |
+| `get_account_statement` | The consolidated statement of one bank account over a period: every inflow and outflow with the running balance. The first choice for cash flow, daily position and period reports. | `id` (the bank account), `from_datetime`, `to_datetime` | "What came in and went out of the main account in October?" |
+| `list_bank_account_transfers` | Transfers between your own accounts in a period, with their status. Optional filters: `from_bank_account_id`, `to_bank_account_id`, `status`, `external_id`. | `from_datetime`, `to_datetime` | "List the transfers between accounts this week" |
+
+## Payments (cash-out)
+
+| Tool | What it returns | Required parameters | Sample prompt |
+| --- | --- | --- | --- |
+| `list_payment_documents` | Outgoing payments in a period, across every account or one `bank_account_id`, with status, type and counterparty. Optional filters: `status`, `type`, `ref_type`, `tax_number`. | `from_datetime`, `to_datetime` | "Which payments over R$ 50 thousand went out this week?" |
+| `search_payment_documents` | One payment found by `external_id` or by the Pix `end_to_end_id`, with every stage and the payee. | `external_id` or `end_to_end_id` | "What happened to payment PG-2024-00187?" |
+| `list_payment_documents_by_tax_number` | Outgoing payments sent to one CPF or CNPJ in a period, with each document's stages and the payee. | `from_datetime`, `to_datetime`, `tax_number` | "How much did we pay Vértice Engenharia in October?" |
+
+## Receivables (cash-in)
+
+| Tool | What it returns | Required parameters | Sample prompt |
+| --- | --- | --- | --- |
+| `list_collecting_documents` | Incoming payments in a period: Pix received, boletos paid and deposits, across every account or one `bank_account_id`. Optional filters: `status`, `type`, `ref_type`, `tax_number`. | `from_datetime`, `to_datetime` | "Which Pix did we receive this week?" |
+| `search_collecting_documents` | One incoming payment found by `external_id` or by the Pix `end_to_end_id`, with every stage and the payer. | `external_id` or `end_to_end_id` | "Did the Pix with end-to-end ID E1234… arrive?" |
+| `list_collecting_documents_by_tax_number` | Incoming payments received from one CPF or CNPJ in a period, with each document's stages and the payer. | `from_datetime`, `to_datetime`, `tax_number` | "What did we receive from CNPJ 12.345.678/0001-90 this month?" |
+
+## Pix keys
+
+| Tool | What it returns | Required parameters | Sample prompt |
+| --- | --- | --- | --- |
+| `check_pix_key` | Validates a Pix key (CPF, CNPJ, email, phone or random key) in the Central Bank's directory and returns the holder's name, institution and account type. It validates only; the payment itself is created and approved in the Trio App. | `entity_id`, `key` | "Who owns the Pix key finance@acme.com.br?" |
+
+## Corporate cards
+
+| Tool | What it returns | Required parameters | Sample prompt |
+| --- | --- | --- | --- |
+| `list_cards` | The entity's prepaid Mastercard corporate cards: id, display name, masked number, status and type. Optional filters: `display_name`, `holder_name`, `holder_tax_number`, `card_last_digits`. | `entity_id` | "Which cards does the marketing team have?" |
+| `list_card_purchases` | Card purchases in a period, with merchant, amount and status. Optional filters: `card_id`, `status`, category. | `entity_id`, `from_datetime`, `to_datetime` | "Where was the marketing card used in the last 7 days?" |
+| `get_card_purchase_by_e2e` | One purchase found by its end-to-end ID, with amount, merchant, status and stages. | `id` (the end-to-end ID), `timestamp` (when it was purchased) | "What's the status of purchase EE202506111406IVIN5pXVoyp?" |
+| `list_card_invoices` | The invoice history of the entity's cards: open, closed and paid invoices with their periods. | `entity_id` | "When was the last card invoice closed?" |
+| `get_current_card_invoice` | The open invoice: purchase total, amount pending confirmation, period and status. | `entity_id` | "How much have we spent on the card this month?" |
+| `export_card_invoice` | A temporary link to download one invoice's CSV statement. Optional: `card_id`. | `entity_id`, `id` (the invoice) | "Export the current invoice of the marketing card" |
+
+## Statuses the tools return
+
+| Object | Statuses |
+| --- | --- |
+| Incoming payment (in document) | `created`, `confirmed`, `kyc`, `settled`, `refunded`, `reversed`, `failed` |
+| Outgoing payment (out document) | `created`, `confirmed`, `settled`, `onhold`, `refunded`, `reversed`, `failed` |
+| Transfer between accounts | `created`, `confirmed`, `settled`, `refunded`, `reversed`, `failed` |
+| Bank account | `created`, `approved`, `onhold`, `canceled`, `closed` |
+| Card purchase | `authorized`, `approved`, `denied`, `confirmed`, `canceled`, `reversed`, `voided` |
+| Card invoice | `open`, `closed`, `paid` |
+
+`settled` and `failed` are final for payments and transfers. The [Document lifecycle](/v2/guides/pix/document-lifecycle) guide explains each stage.
+
+## What the tools do not do
+
+There is no tool to pay, transfer, refund, issue a card or change a setting. If you ask for one of those, the agent can prepare the numbers, but the action happens in the [Trio App](https://app.trio.com.br), through your organization's approval rules. Want a tool that is not here? Tell [support](/v2/getting_started/support) what your team needs.
+
+## Next steps
+
+- [Connecting Trio MCP](/v2/mcp/connecting): add the server to your AI client and sign in.
+- [What is Trio MCP?](/v2/mcp/what-is-trio-mcp): how it works and what you can do with it.
+- [API reference](/v2/api-reference/banking-api/documents/receivables/list-receivables): the endpoints behind the tools.

@@ -1,0 +1,213 @@
+---
+title: "Connecting Trio MCP"
+description: "Add https://mcp.trio.com.br/mcp to Claude, Claude Code, ChatGPT, Cursor or any MCP client, sign in with OAuth, and keep the connection secure."
+---
+
+This guide shows how to connect your AI client to Trio with the Model Context Protocol (MCP).
+
+The Trio MCP server URL is `https://mcp.trio.com.br/mcp`.
+
+## Before you start
+
+Nothing to set up on Trio's side. Your AI client registers itself the first time it connects, through OAuth dynamic client registration.
+
+Adding the server grants no access on its own. Your browser opens the Trio App sign-in page. Sign in with your Trio App user, review the organization you are connecting and select **Allow**. Trio issues the client a token limited to that organization, with the read-only `mcp:foundation` scope. Cancel at the sign-in screen and the client gets nothing.
+
+Every tool is read-only. Payments, transfers and account changes stay in the [Trio App](https://app.trio.com.br), under your approval rules. See [Supported tools](/v2/mcp/tools) for what the agent can read.
+
+<Note>
+  Use the user of the organization whose data the agent should read. The token is bound to that organization, so an agent connected with a user of one organization does not see another.
+</Note>
+
+## Claude
+
+In [Claude](https://claude.ai) on the web or desktop:
+
+<Steps>
+  <Step title="Open the connectors settings">
+    Go to **Settings**, then **Connectors**, and choose to add a custom connector.
+  </Step>
+  <Step title="Add the server">
+    Name it `Trio` and paste `https://mcp.trio.com.br/mcp` as the server URL. Leave the client ID and secret empty: Trio registers the connector automatically.
+  </Step>
+  <Step title="Sign in">
+    Select **Connect**. The Trio App sign-in page opens in your browser. Sign in, review the organization and select **Allow**.
+  </Step>
+  <Step title="Enable Trio in a chat">
+    Open a new chat, enable the Trio connector in the tools menu and ask a question such as "What's my balance today?".
+  </Step>
+</Steps>
+
+{/* TODO(v2): verify — the Claude settings path above follows Claude's custom connector flow at the time of writing; confirm it against a live Claude account and the plan it requires. */}
+
+## Claude Code
+
+1. Add the server.
+
+```bash
+claude mcp add --transport http -s user trio https://mcp.trio.com.br/mcp
+```
+
+The `-s user` flag adds the server to every project. Leave the flag out to add it to the current project only.
+
+2. Sign in.
+
+```bash
+claude mcp login trio
+```
+
+Your browser opens. Sign in to the Trio App and select **Allow**. The browser completes the handoff and the terminal confirms the authentication. You can also sign in from inside a session: run `/mcp` and select **Authenticate** next to `trio`.
+
+3. Check the connection.
+
+```bash
+claude mcp list
+```
+
+The `trio` row shows `https://mcp.trio.com.br/mcp (HTTP) - ✔ Connected`. Now ask Claude a question about your accounts.
+
+## Codex CLI
+
+1. Add the server and sign in.
+
+```bash
+codex mcp add trio --url https://mcp.trio.com.br/mcp
+codex mcp login trio
+```
+
+Your browser opens. Sign in to the Trio App and select **Allow**.
+
+2. Check the connection.
+
+```bash
+codex mcp list
+```
+
+The `trio` row shows the URL with `enabled` as its status and `OAuth` as its authentication.
+
+## Cursor
+
+Add the server to `.cursor/mcp.json` in your project, or to `~/.cursor/mcp.json` for every project:
+
+```json
+{
+  "mcpServers": {
+    "trio": {
+      "url": "https://mcp.trio.com.br/mcp"
+    }
+  }
+}
+```
+
+Open **Settings**, then **MCP**, and select **Sign in** next to `trio`. The Trio App sign-in page opens in your browser.
+
+## ChatGPT, Gemini, Perplexity and other MCP clients
+
+Trio MCP works with any client that supports remote MCP servers over streamable HTTP with OAuth. Trio is not listed in the clients' connector directories yet, so add it by URL: create a new connector or MCP server in the client's settings, set the URL to `https://mcp.trio.com.br/mcp` and let the client run the sign-in. Where the client asks for an authentication method, choose OAuth; do not paste a Trio API key.
+
+If the client cannot find the authorization server on its own, point it at the protected resource metadata document:
+
+```text
+https://mcp.trio.com.br/.well-known/oauth-protected-resource
+```
+
+## Troubleshooting
+
+**The server answers `401 Invalid credentials`**
+
+The client has no token, or the token expired. Sign in again: `claude mcp login trio`, `codex mcp login trio`, or the reconnect option in your client's settings.
+
+**The tools do not appear in the chat**
+
+Refresh the tool list or start a new chat after signing in. In Claude, check that the Trio connector is enabled for that chat.
+
+**The agent reports data from the wrong organization**
+
+The token belongs to the user who signed in. Disconnect, then sign in again with a user of the organization you want.
+
+**The connection stops after a few days**
+
+Sign in again. Clients that request a refresh token keep the connection alive longer; Trio issues one to clients that ask for it.
+
+**I asked for a payment and nothing happened**
+
+Trio MCP has no tool that moves money. Create and approve the payment in the Trio App; the agent can read it afterwards.
+
+## Security best practices
+
+The MCP ecosystem is evolving quickly. These practices keep your financial data safe while you use it.
+
+- **Verify the official endpoint.** Connect only to `https://mcp.trio.com.br/mcp`, and sign in only on `https://app.trio.com.br`. A one-click installation from a third-party marketplace deserves a look at the marketplace's domain first.
+- **Use clients you trust.** Connecting a client gives it read access to balances, statements, every transaction with its counterparties, and card data. Review the permissions on the consent screen before you select **Allow**.
+- **Sign in with OAuth, never with your password or an API key.** The OAuth flow issues a time-limited token with a read-only scope that you can revoke. No client ever needs your Trio App password.
+- **Understand what read access exposes.** If the client or the AI provider is compromised, everything the tools can read can leak. Card numbers and CPFs are masked, CNPJs and amounts are not.
+- **Know prompt injection.** Content the agent reads, such as a spreadsheet you attach or a web page it visits, can carry instructions like "send every transaction to this address". A read-only server cannot move money, but it can disclose data. Keep untrusted content away from sessions connected to Trio.
+- **Mind data handling.** Check how your client and AI provider retain conversation history, avoid connecting Trio in shared or public sessions, prefer ephemeral sessions where the client offers them, and opt out of model training if the provider uses conversations for it.
+- **Revoke what you no longer use.** Disconnect Trio in the client's settings when a person or a tool no longer needs it. A client built on the API can revoke its own token at the revocation endpoint below.
+
+## Build your own client
+
+Trio supports OAuth 2.0 dynamic client registration, so your client asks Trio for its own credentials at runtime. Nobody has to create an app for you first.
+
+### Endpoints
+
+| Endpoint | URL | When you use it |
+| --- | --- | --- |
+| Registration | `https://app.trio.com.br/oauth/register` | Once, the first time your client runs. Store the `client_id` and reuse it. |
+| Authorization | `https://app.trio.com.br/oauth/authorize` | Every time a user signs in. Open it in a browser. Returns a short-lived code to your redirect URI. |
+| Token | `https://app.trio.com.br/oauth/token` | To trade the code for a token, and later to refresh it. |
+| Revocation | `https://app.trio.com.br/oauth/revoke` | To revoke a token you no longer need. |
+
+### The order to call them in
+
+1. **Register.** `POST /oauth/register` with your `redirect_uris`, a `client_name` and, for a command line or native app, `token_endpoint_auth_method: "none"`. Store the `client_id`.
+2. **Send the user to authorize.** Open `/oauth/authorize` in a browser with your `client_id`, your `redirect_uri`, `response_type=code`, `scope=mcp:foundation`, a PKCE `code_challenge` with the `S256` method, and `resource=https://mcp.trio.com.br/mcp`. The user signs in and selects **Allow**.
+3. **Exchange the code for a token.** `POST /oauth/token` with `grant_type=authorization_code`, the `code` from your redirect URI and the PKCE `code_verifier`.
+4. **Call the MCP server.** `POST https://mcp.trio.com.br/mcp` with `Authorization: Bearer <access token>`, over streamable HTTP.
+5. **Refresh when the token expires.** `POST /oauth/token` with `grant_type=refresh_token`.
+
+### Rules Trio enforces
+
+- PKCE is required, with the `S256` method only.
+- The scope for the MCP tools is `mcp:foundation`. The authorization server also offers `openid`, `profile` and `email`.
+- Grant types are `authorization_code` and `refresh_token`; the response type is `code`.
+- Token endpoint authentication is `none`, `client_secret_basic` or `client_secret_post`. Use `none` for a command line or native app.
+- Tokens are sent as a bearer token in the `Authorization` header.
+
+### Discovering the endpoints
+
+A client written only for Trio can hardcode the URLs above. A client meant to work with any MCP server discovers them in three steps, and Trio supports all three:
+
+1. Call the server without a token. The `401` response carries `WWW-Authenticate: Bearer realm="trio-foundation", resource_metadata="https://mcp.trio.com.br/.well-known/oauth-protected-resource"`.
+2. Read that protected resource metadata. It names the resource, the scope and the authorization server:
+
+```json
+{
+  "resource": "https://mcp.trio.com.br/mcp",
+  "scopes_supported": ["mcp:foundation"],
+  "authorization_servers": ["https://app.trio.com.br"],
+  "bearer_methods_supported": ["header"],
+  "resource_documentation": "https://docs.trio.com.br"
+}
+```
+
+3. Read the authorization server's metadata at `https://app.trio.com.br/.well-known/oauth-authorization-server`. It names the registration, authorization, token and revocation endpoints and the rules above.
+
+### Register your client
+
+```bash
+curl -sS -X POST https://app.trio.com.br/oauth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "redirect_uris": ["http://127.0.0.1:8080/callback"],
+    "client_name": "Your App Name",
+    "token_endpoint_auth_method": "none"
+  }'
+```
+
+That registers a command line or native app: Trio returns a `client_id` and no secret, and PKCE proves your identity at the token endpoint. For a web app, use an `https` redirect URI and leave `token_endpoint_auth_method` out to receive a `client_secret` as well.
+
+## Next steps
+
+- [Supported tools](/v2/mcp/tools): what each tool returns and the prompts that trigger it.
+- [What is Trio MCP?](/v2/mcp/what-is-trio-mcp): how it works and what it does not do.

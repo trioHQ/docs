@@ -1,0 +1,55 @@
+---
+title: "What is Trio MCP?"
+description: "Connect Claude, ChatGPT and other AI clients to your Trio account through the Model Context Protocol, read-only."
+---
+
+Trio MCP is a hosted server that connects AI clients such as Claude, ChatGPT, Gemini and Perplexity to your company's Trio account through the [Model Context Protocol](https://modelcontextprotocol.io/docs/getting-started/intro), the open standard AI agents use to talk to other systems. Once connected, your agent reads balances, statements, incoming and outgoing payments, transfers, corporate cards and invoices, and answers your finance team with the numbers of the operation.
+
+Agents read, analyze and explain. People approve. No Trio MCP tool moves money or changes anything in your account.
+
+## Why use Trio MCP?
+
+- **Nothing to build.** Add the server to the AI client your team already uses and sign in with your Trio App user. There is no code, no API key to rotate and no server to host.
+- **Built for agents.** Every tool describes when to use it and which tool to prefer for a similar question, amounts come in cents, dates in ISO 8601 and listings are paginated with cursors, so the agent covers the whole period before it answers.
+- **Scoped to your organization.** Every call runs with the credentials that authenticated the session and sees that organization's data only. Card numbers and CPFs arrive masked.
+- **Read-only by design.** Payments keep going through the approval rules of your account in the [Trio App](https://app.trio.com.br).
+
+## What can you do with Trio MCP?
+
+| You ask | The agent does |
+| --- | --- |
+| "What's the consolidated balance across our entities?" | Lists the entities and their bank accounts and sums the available balances. |
+| "Which payments over R$ 50 thousand went out this week?" | Lists the week's outgoing payments, page by page, and filters them by amount. |
+| "Did the Pix with end-to-end ID E1234… arrive?" | Searches outgoing and incoming payments by the end-to-end ID and shows every stage of the document it finds. |
+| "How much did we pay Vértice Engenharia in October?" | Lists the payments sent to that CNPJ and totals them. |
+| "Export the current invoice of the marketing card." | Finds the card, reads the open invoice and returns a temporary link to its CSV. |
+| "Check this spreadsheet against the statement." | Walks the account statement for the period and flags every entry that does not match, by `external_id`. |
+| "Compare this payment batch with each supplier's history before we approve it." | Reads what each payee usually receives and points out the outliers, so the people who approve decide with context. |
+
+The [Supported tools](/v2/mcp/tools) page lists every tool with its parameters and a sample prompt.
+
+## How it works
+
+1. You add `https://mcp.trio.com.br/mcp` to your AI client and sign in to Trio in your browser. Trio issues the client a token limited to your organization.
+2. You ask a question. The client sends it to the model together with the list of Trio tools and their descriptions.
+3. The model picks a tool, the client calls it on the Trio MCP server with your token, and the server answers with the same data the [V2 API](/v2/api-reference/banking-api/entities/list) returns.
+4. The model reads the result, calls more tools if it needs to, and writes the answer.
+
+Each tool mirrors a V2 API read endpoint, so what the agent sees is what your integration sees: the same documents, statuses and identifiers.
+
+## What Trio MCP does not do
+
+- It does not create payments, transfers or refunds, and it cannot approve anything. Money movement stays in the Trio App, under your approval rules.
+- It does not issue, block or top up cards, and it does not change account settings or webhooks.
+- It does not see other organizations. A token is bound to the organization whose user signed in.
+
+If you need an agent that writes, build it on the [V2 API](/v2/getting_started/plan-your-integration) with its own credentials and approval flow.
+
+## Who can use it
+
+Trio MCP is live for every Trio customer. Any user of your organization in the Trio App can connect an AI client and sign in; the agent then reads the data that user's organization holds. There is nothing to request or enable first.
+
+## Next steps
+
+- [Connecting Trio MCP](/v2/mcp/connecting): add the server to Claude, Claude Code, ChatGPT, Cursor or any MCP client, and read the security practices before you grant access.
+- [Supported tools](/v2/mcp/tools): what each tool returns and the prompts that trigger it.

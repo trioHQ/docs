@@ -108,6 +108,14 @@
                 ]
               },
               {
+                "group": "Trio MCP",
+                "pages": [
+                  "v2/mcp/what-is-trio-mcp",
+                  "v2/mcp/connecting",
+                  "v2/mcp/tools"
+                ]
+              },
+              {
                 "group": "Trio SDK",
                 "pages": [
                   "v2/trio-sdk/introduction",

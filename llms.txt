@@ -18,6 +18,7 @@ Key facts an agent needs before reading further:
 - Rate limits: 60 requests per second in production and 5 in sandbox, per account and per endpoint. A `429` response means back off and retry.
 - Every response carries an `X-Request-Id` header. Quote it when contacting support.
 - Most operations are asynchronous. Webhooks deliver the final state as HTTP POST with a JSON body; a webhook chooses the payload version with `api_version` (`v100` or `v200`).
+- Trio MCP, a hosted Model Context Protocol server at `https://mcp.trio.com.br/mcp`, lets AI clients such as Claude and ChatGPT read the organization's balances, statements, payments, transfers and cards through OAuth. All its tools are read-only.
 - Pages are available as Markdown by appending `.md` to any documentation URL. The full documentation in one file is at https://docs.trio.com.br/llms-full.txt.
 
 ## Getting started
@@ -75,6 +76,12 @@ Key facts an agent needs before reading further:
 - [Local example](https://docs.trio.com.br/v2/trio-sdk/local-example.md): Run a complete Trio Checkout example on your machine, with a Node.js back end that creates the session and a static front end that opens the checkout
 - [PayIn flow](https://docs.trio.com.br/v2/trio-sdk/flows/payin.md): Create a payin checkout session so your users can cash in money through Trio Checkout with almost zero friction
 - [PayOut flow](https://docs.trio.com.br/v2/trio-sdk/flows/payout.md): Create a payout checkout session so your users can withdraw money to a Pix key of their own through Trio Checkout
+
+## Trio MCP
+
+- [What is Trio MCP?](https://docs.trio.com.br/v2/mcp/what-is-trio-mcp.md): Connect Claude, ChatGPT and other AI clients to your Trio account through the Model Context Protocol, read-only
+- [Connecting Trio MCP](https://docs.trio.com.br/v2/mcp/connecting.md): Add https://mcp.trio.com.br/mcp to Claude, Claude Code, ChatGPT, Cursor or any MCP client, sign in with OAuth, and keep the connection secure
+- [Supported tools](https://docs.trio.com.br/v2/mcp/tools.md): Every tool the Trio MCP server exposes today, what each one returns, the parameters it needs and a prompt that triggers it
 
 ## API reference: onboarding, entities, counterparties and bank accounts
 
