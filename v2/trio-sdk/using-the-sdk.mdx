@@ -1,0 +1,118 @@
+---
+title: "Using the SDK"
+description: "Embed Trio Checkout in your website, create a session in your back end and open the checkout for your users."
+---
+
+This is a step-by-step guide to integrating the Trio Checkout SDK into your system. Before you start, make sure that:
+
+- You have created your API credentials in the [Trio App](https://app.trio.com.br/developers/api_keys) (see [Creating your first API credential](/v2/guides/creating-your-first-api-credential)) and have the `client_id` and `client_secret` of your company, in the sandbox or in production.
+- You have read how to create a checkout session in the Initiation API reference.
+
+{/* TODO(v2): verify — the checkout session endpoint (POST /checkout/sessions) belongs to the Initiation API, which has no V2 reference pages; the V1 link to it was kept as plain text. */}
+
+<Steps>
+  <Step title="Embed the SDK">
+    Add the SDK through a `script` tag just before the closing `</head>` tag of your HTML:
+
+    ```html
+    <head>
+      <script src="https://assets.trio.com.br/checkout-js-sdk.min.js"></script>
+    </head>
+    ```
+
+    If you have a mobile application, you can embed the same tag in a WebView inside your application.
+  </Step>
+
+  <Step title="Create a payment session">
+    All payment information is sensitive, so the data the front end will use is prepared in your back end beforehand. To use the SDK you create a **session**, which represents an instance of a transaction inside Trio's front end application. Every session is created with a payload, and the payload varies with the type of session.
+
+    The field `options.session_type` defines which type is created and must be one of the four available: `payin`, `payout`, `guest_onboarding` or `user_onboarding`. To learn about each type, its use cases and how to create a session for it, see:
+
+    - [PayIn flow](/v2/trio-sdk/flows/payin)
+    - [PayOut flow](/v2/trio-sdk/flows/payout)
+
+    After creating a session, save the `id` it returns: you need it to instantiate the SDK interface. When its expiration time ends, the session expires automatically and cannot be used again.
+
+    <Warning>
+      Always generate a session in the back end of your application. Generating it in your front end exposes your `client_secret`, which your end users could intercept.
+    </Warning>
+  </Step>
+
+  <Step title="Create a new instance of the SDK">
+    With the session `id` in hand and the SDK installed, you have access to a module called `Trio` in the browser. It has two primary functions:
+
+    - `create()` prepares the information to be sent to your back end;
+    - `open()` pops up the user experience for the end user, so the transaction can be completed.
+
+    `Trio.create()` takes an object with the following properties.
+
+    | Property | Required | Description |
+    | --- | --- | --- |
+    | `environment` | No | `sandbox` or `production`. Defaults to `production` when omitted. |
+    | `session` | Yes | The `id` of the session to use, for example `01GYR8ZJR9ZH5X82ACN8QQ2GMK`. |
+    | `onSuccess` | No | Called when a payment completes successfully. Receives the `data` object with information about the created payment. |
+    | `onExit` | No | Called when the end user closes the Trio Checkout. |
+    | `onEvent` | No | Called after each event during the flow, for fine-grained control of failures and secondary events. |
+    | `onLoad` | No | Called when the SDK bridge is initialized by `Trio.create()`. |
+  </Step>
+
+  <Step title="Open the checkout">
+    Once you have everything needed to initiate a payment, call `Trio.create()` and then `Trio.open()`:
+
+    ```javascript
+    try {
+      Trio.create({
+        environment: 'production',
+
+        session: '01GYR8ZJR9ZH5X82ACN8QQ2GMK',
+
+        onSuccess: (data) => {
+          console.log('onSuccess triggered')
+          console.log(data)
+        },
+
+        onExit: () => {
+          console.log('onExit triggered')
+        },
+
+        onEvent: (event_type, data) => {
+          console.log('onEvent triggered')
+          console.log(event_type)
+          console.log(data)
+        },
+
+        onLoad: () => {
+          console.log('onLoad triggered')
+        }
+      })
+    }
+    catch (error) {
+      console.error(error)
+    }
+    ```
+
+    Then open it by running `Trio.open()`:
+
+    ```html
+    <button type="button" onclick="Trio.open()">Open checkout</button>
+    ```
+  </Step>
+
+  <Step title="Get information about the transactions">
+    Every payment processed by Trio generates a document: an in document for a PayIn and an out document for a PayOut. You can handle the transactions through the `onEvent` callback or by receiving the [webhook events](/v2/webhooks/events/overview) of the document.
+
+    You can also open the documents in the Trio App:
+
+    | Environment | PayIn | PayOut |
+    | --- | --- | --- |
+    | Sandbox | `app.sandbox.trio.com.br/documents/in/{document_id}` | `app.sandbox.trio.com.br/documents/out/{document_id}` |
+    | Production | `app.trio.com.br/documents/in/{document_id}` | `app.trio.com.br/documents/out/{document_id}` |
+  </Step>
+</Steps>
+
+## Next steps
+
+- [PayIn flow](/v2/trio-sdk/flows/payin): the session payload to receive money.
+- [PayOut flow](/v2/trio-sdk/flows/payout): the session payload to pay a user.
+- [Local example](/v2/trio-sdk/local-example): a runnable back end and front end.
+- [Webhooks](/v2/webhooks/introduction): receive the document events instead of polling.

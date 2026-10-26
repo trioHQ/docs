@@ -1,0 +1,253 @@
+---
+title: "Integration best practices"
+description: "How cash-in and cash-out identifiers, statuses, timeouts and webhooks behave on the V2 API, and how to handle them so your reconciliation never breaks."
+---
+
+Cash-in and cash-out operations return different identifiers at different moments, and they reach their final status in different ways. This page explains those differences and the practices that keep your integration free of duplicate payouts and unreconciled payments.
+
+You use these identifiers for reconciliation, transaction tracking, idempotency, duplicate prevention, lookups and operational investigations, so persist every one of them.
+
+<Note>
+  **Coming from V1?** Every V2 path starts with `/v2`, the receiving or paying account is `bank_account_id` (there are no virtual accounts), responses use `inserted_at` / `updated_at` instead of `timestamp`, and `origin_type` became the nested `origin.{id,type}`. The cash-out response already returned `out_document_id` in V1 and still does.
+</Note>
+
+## Identifier overview
+
+| Operation | Identifier returned on creation | Final financial identifier available |
+| --- | --- | --- |
+| Cash out | `data.out_document_id` | Immediately |
+| Cash in | `data.id` of the QR code (the `ref_id` in webhooks) | After the `settled` webhook |
+
+## Cash out
+
+### The identifier is final from the start
+
+A cash-out request creates the financial transaction immediately, so [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async) and [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment) return the final transaction identifier in the response:
+
+```json
+{
+  "data": {
+    "out_document_id": "0192057d-ab3f-3651-f054-6ef9c8e68f20",
+    "approval_request_id": null
+  }
+}
+```
+
+`out_document_id` already identifies the out document. When the payment needs approval, `approval_request_id` carries the ID of the approval request.
+
+Persist `out_document_id` and use it for status queries, reconciliation, receipt validation, support investigations and audit trails. You read the document back with [`GET /v2/documents/out/{id}`](/v2/api-reference/banking-api/documents/payments/get-payment).
+
+### Lifecycle
+
+{/* TODO(v2): verify — the V1 page described the cash-out lifecycle as `processing → settled` or `processing → failed`. `processing` is not a V2 out document status; the V2 enum is created, confirmed, settled, onhold, refunded, reversed, failed, and the spec does not describe when onhold, refunded or reversed apply or whether settled stays final once refunded/reversed exist. */}
+
+An out document is `created` and ends as either `settled` or `failed`:
+
+```text
+created → settled
+```
+
+```text
+created → failed
+```
+
+Both `settled` and `failed` are final states. Once either is reached, no further events occur and the transaction lifecycle is permanently closed.
+
+### Understanding `failed`
+
+A cash out that reaches `failed` was not completed, is finalized immediately and receives no further updates. Possible causes include:
+
+- Invalid Pix key;
+- Banking rejection;
+- Insufficient balance;
+- Banking processing failures.
+
+### Understanding `settled`
+
+A cash out that reaches `settled` was completed, the funds were delivered and the transaction becomes immutable.
+
+### Response times
+
+| Scenario | Expected time |
+| --- | --- |
+| Stable environment average | `200ms ~ 280ms` |
+| Temporary oscillation | Up to `1000ms` |
+
+### Timeouts
+
+<Warning>
+  If a cash-out request times out, do not create another payment request right away. The transaction may have been processed successfully, and a second request without validation generates a duplicate payout.
+</Warning>
+
+Before retrying:
+
+1. Search the out document with the same `external_id` using [`GET /v2/documents/out/search`](/v2/api-reference/banking-api/documents/payments/search-payments);
+2. Check the webhook notifications you received;
+3. Check your reconciliation status;
+4. Contact [Trio support](/v2/getting_started/support) if you still cannot tell what happened.
+
+## Cash in
+
+### The first identifier is the QR code, not the payment
+
+A cash-in request only creates the QR code. At that stage the payment has not happened, there is no financial settlement and no final transaction document exists. [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) returns the QR code identifier in `data.id`:
+
+```json
+{
+  "data": {
+    "id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "status": "created",
+    "description": "Paid to merchant.com",
+    "hash": "00020101021226790014br.gov.bcb.pix2557brcode-h.trio.com.br/...",
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
+    "bank_account_id": "019296ff-1f72-2ad7-0201-41de08355fda",
+    "fee": {
+      "amount": 0,
+      "currency": "BRL"
+    },
+    "options": {
+      "allow_change_the_amount_on_payment": true
+    },
+    "origin": {
+      "id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
+      "type": "none"
+    },
+    "expiration_datetime": "2026-10-14T13:00:00Z",
+    "inserted_at": "2026-10-14T12:00:00Z",
+    "updated_at": "2026-10-14T12:00:00Z"
+  }
+}
+```
+
+Treat `data.id` as the QR code identifier (the `ref_id`), not as the final financial transaction identifier. The in document `id` is generated only after a successful settlement.
+
+### Settlement
+
+Once the payment completes, Trio sends a `settled` webhook containing the `external_id`, the `ref_id` (the QR code `id`) and the final in document `id`. These three fields let you associate the QR code request, the payment confirmation and the final financial transaction.
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this example is the V1 payload, including `virtual_account_id` and `category: collecting_document`. */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "external_id": "49d754c2-ac14-4219-bbe4-3e78e9ab8067",
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/.../in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "ref_id": "0192bebb-fbdb-b6f3-6be1-7153e373b609",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "type": "settled",
+  "category": "collecting_document",
+  "timestamp": "2025-01-31T18:22:14.477163Z"
+}
+```
+
+The in document itself also points back to the QR code: [`GET /v2/documents/in/{id}`](/v2/api-reference/banking-api/documents/receivables/get-receivable) returns `reference.id` with the QR code `id` and `reference.type` as `pix_qrcode`, and [`GET /v2/documents/in/search`](/v2/api-reference/banking-api/documents/receivables/search-receivables) finds the document by `external_id`.
+
+### Lifecycle
+
+Possible sequences of events for a cash in:
+
+```text
+created → settled
+```
+
+```text
+created → failed → settled
+```
+
+```text
+created → failed → failed → settled
+```
+
+For cash in, `failed` is not necessarily a final status. A `failed` event only means that a payment attempt was rejected. It does not mean that the QR code expired, that it was canceled or that the operation is permanently closed: the QR code remains active and may still receive future payment attempts.
+
+Common `failed` scenarios include third-party payment attempts, rejected payer validations and business rule validation failures. See [Closed-loop reconciliation](/v2/operations/closed-loop) for the compliance rules that refuse a deposit.
+
+Once a cash in reaches `settled`, the payment is finalized, the in document `id` is generated, the QR code is automatically closed and no further events occur. After settlement, additional `failed` events are not possible.
+
+### Response times and retries
+
+| Scenario | Expected time |
+| --- | --- |
+| Stable environment average | `80ms ~ 100ms` |
+| Recommended timeout threshold | Up to `500ms` |
+
+If you receive no response within `500ms` while generating a QR code, you may create a new request, but it must use a new `external_id`.
+
+## `external_id` and idempotency
+
+`external_id` is the primary reconciliation identifier between your platform and Trio, and it must be unique for every operation.
+
+Cash-in and cash-out operations enforce an idempotency window of 24 hours (1 day). During this period the same `external_id` cannot be reused and duplicate requests may return the previous transaction, which prevents accidental duplicate operations.
+
+Recommended:
+
+- Use UUIDs;
+- Persist all identifiers in your database;
+- Associate identifiers with your internal orders or payments;
+- Query the transaction before retrying a request.
+
+Avoid:
+
+- Reusing identifiers;
+- Sequential IDs;
+- Blind automatic retries;
+- Creating new operations without validating the previous one.
+
+## Webhook processing
+
+<Tip>
+  Treat webhooks as the source of truth for final transaction status updates.
+</Tip>
+
+For production environments:
+
+- Process webhooks asynchronously;
+- Return `HTTP 200 OK` immediately;
+- Persist webhook payloads;
+- Maintain an audit history;
+- Avoid long-running synchronous processing.
+
+See [Webhooks](/v2/webhooks/introduction) for the delivery model and retry schedule.
+
+## Summary
+
+Cash-in and cash-out operations behave differently and need different handling.
+
+For cash out:
+
+- The final transaction identifier (`out_document_id`) is returned immediately;
+- `failed` and `settled` are terminal states;
+- Handle timeout retries carefully to avoid duplicate payouts.
+
+For cash in:
+
+- The initial request creates only the QR code reference (`ref_id`);
+- The final financial transaction exists only after settlement;
+- `failed` does not necessarily represent a permanent failure;
+- Multiple payment attempts may occur before settlement;
+- The in document `id` is received only through the webhook notification.
+
+For both:
+
+- `external_id` is always unique;
+- All identifiers are persisted for reconciliation;
+- Webhooks are the authoritative source of transaction state;
+- Proper timeout and retry handling prevents duplicate operations and reconciliation inconsistencies.
+
+## Next steps
+
+- [Closed-loop reconciliation](/v2/operations/closed-loop): the compliance rules that refuse deposits and payouts.
+- [Document lifecycle](/v2/guides/pix/document-lifecycle): every status an in document goes through.
+- [Cash out](/v2/guides/payments/cash-out): the synchronous and asynchronous Pix payment flows.
+- [Webhooks](/v2/webhooks/introduction): delivery, authentication and retries.

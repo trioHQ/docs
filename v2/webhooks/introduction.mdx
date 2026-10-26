@@ -1,10 +1,115 @@
 ---
 title: "Webhooks"
-description: "Delivery model, timeout and retry schedule for V2 webhooks."
+description: "Register a webhook so Trio notifies your system when a transaction or an onboarding changes state, and learn how Trio delivers and retries each notification."
 ---
 
-{/* v1 counterpart: webhooks/introduction.mdx. Start from it and change what differs in V2. */}
+Most operations on Trio are asynchronous: a Pix payment, a boleto or an onboarding is accepted first and settles, fails or is approved later, in the background. A webhook is the URL Trio calls with an HTTP POST and a JSON payload each time one of those events happens, so your system reacts to the final state without polling the API.
+
+## Register a webhook
+
+You can register a webhook in two ways:
+
+- In the [Trio App](https://app.sandbox.trio.com.br), following [Creating your first webhook](/v2/guides/creating-your-first-webhook).
+- Through the API, with [Create webhook](/v2/api-reference/banking-api/developers/webhooks/create-webhook). All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
+
+```http
+POST /v2/webhooks
+```
+
+```json
+{
+  "notification_url": "https://mynotificationurl.com/endpoint",
+  "notification_secret": "some_notification_secret",
+  "authentication_method": "url_secret",
+  "api_version": "v100",
+  "entity_id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7c",
+  "event_categories_allowed": [
+    {
+      "category": "boleto",
+      "types": ["settled", "created"]
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `notification_url` | Yes | URL the events are sent to. |
+| `notification_secret` | For `url_secret` | Secret sent with every event. |
+| `authentication_method` | Yes | How Trio authenticates to the notification URL: `url_secret` or `oauth`. See [Webhook authentication](/v2/webhooks/authentication). |
+| `oauth_client_id`, `oauth_client_secret`, `oauth_url`, `oauth_scope` | For `oauth` | OAuth client ID, client secret, token URL and scope. An `oauth` webhook sends these instead of `notification_secret`. |
+| `api_version` | No | Version of the event payloads sent to the webhook: `v100` (default) or `v200`. |
+| `entity_id` | No | Entity to limit the webhook to. Leave it out to receive the events of every entity. |
+| `group_id` | No | Group of the entity to limit the webhook to. |
+| `event_categories_allowed` | No | Events to send to the webhook, as a list of `category` with its `types`. Empty or null sends every event; an empty `types` sends every type of the category. |
+
+The response is the webhook, with its `id` and a generated `notification_key`: the key Trio signs the events with. Store the key; you need it to verify every notification you receive.
+
+```json
+{
+  "api_version": "v100",
+  "authentication_method": "url_secret",
+  "entity_id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7c",
+  "event_categories_allowed": [
+    {
+      "category": "boleto",
+      "types": ["settled", "created"]
+    }
+  ],
+  "group_id": null,
+  "id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7b",
+  "inserted_at": "2026-10-01T12:00:00.000000Z",
+  "notification_key": "KXe1JxmdHIcRhAsnbaTBvSGNSQli4I798oGMb8abeMBcKzJoUpWkOQ==",
+  "notification_secret": "some_notification_secret",
+  "notification_url": "https://mynotificationurl.com/endpoint",
+  "updated_at": "2026-10-01T12:00:00.000000Z"
+}
+```
+
+## Choose the payload version
+
+`api_version` selects the version of the event payloads Trio sends to the webhook: `v100`, the default, or `v200`. The version belongs to the webhook, not to your API credential, so you can register a second webhook on `v200` and compare its payloads with the ones you already handle before switching.
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the pages of this section show the v100 (V1) payloads */}
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  The payload examples in [Content and structure](/v2/webhooks/content-and-structure) and [Events](/v2/webhooks/events/overview) are the `v100` payloads.
 </Note>
+
+## Choose which events you receive
+
+By default a webhook receives every event of your organization. Narrow it down with three optional fields:
+
+- `event_categories_allowed` lists the categories and types you want, with the names from the [Events](/v2/webhooks/events/overview) page. For example, `{ "category": "boleto", "types": ["settled", "created"] }` delivers only those two boleto events; `"types": []` delivers every type of the category.
+- `entity_id` limits the webhook to the events of one entity.
+- `group_id` limits it to the events of one group of that entity.
+
+## Delivery and retries
+
+Trio delivers every notification as an HTTP POST with a JSON body to `notification_url`, so your endpoint must accept that method and content.
+
+- Trio waits 3 seconds for a 2XX status code. Any 2XX marks the notification as delivered.
+- When your endpoint answers anything else or does not answer in time, Trio retries up to 5 times. The first retry comes 16 seconds after the failure and the wait doubles at each new failure.
+- Serve the endpoint over HTTPS so the payload is protected in transit.
+
+{/* TODO(v2): verify — V1 lists the retry intervals as 16s, 32s, 104s, 208s, which is not a strict doubling; confirm the V2 schedule */}
+
+<Tip>
+  Answer with a 2XX as soon as you have stored the notification and do the heavy work afterwards. A handler that takes longer than 3 seconds is retried and receives the same event again, so keep your processing idempotent.
+</Tip>
+
+## Manage webhooks
+
+Every webhook of the organization is managed through the API or the Trio App:
+
+- [List webhooks](/v2/api-reference/banking-api/developers/webhooks/list-webhooks) returns every webhook in a single page; the list is not paginated.
+- [Get webhook](/v2/api-reference/banking-api/developers/webhooks/get-webhook) returns one webhook, including its `notification_key`.
+- [Replace webhook](/v2/api-reference/banking-api/developers/webhooks/replace-webhook) replaces a webhook with the one you send. Send every field: an omitted field is cleared, so leaving out `entity_id` or `event_categories_allowed` removes that filter.
+- [Delete webhook](/v2/api-reference/banking-api/developers/webhooks/delete-webhook) stops the deliveries.
+
+## Next steps
+
+- [Webhook authentication](/v2/webhooks/authentication): verify that a notification came from Trio.
+- [Content and structure](/v2/webhooks/content-and-structure): read the envelope every notification shares.
+- [Events](/v2/webhooks/events/overview): every category and type, with example payloads.
+- [Creating your first webhook](/v2/guides/creating-your-first-webhook): register a webhook from the Trio App, step by step.

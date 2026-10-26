@@ -3,31 +3,25 @@ title: "Request identification"
 description: "Request identifiers and how to use them with support."
 ---
 
-Request identifiers are unique values associated with each API request, allowing for efficient tracking and troubleshooting of individual requests.
+Every API request is assigned a unique request identifier. Quote it when you contact support: it lets the team locate and investigate that exact request.
 
-### **Request Identifier**
+## The X-Request-Id header
 
-Each API request made to our service is assigned a unique request identifier. This identifier can be found in the response headers under the `X-Request-Id` key. Additionally, the request identifiers are present in the URLs of individual request logs in your [app](https://app.sandbox.trio.com.br/developers/logs).
+The identifier is returned in the `X-Request-Id` response header. It also appears in the URL of each request log in the [Trio App](https://app.sandbox.trio.com.br/developers/logs).
 
 {/* TODO(v2): verify — the X-Request-Id response header is kept from V1; the V2 spec does not document response headers. */}
-
-#### **Example**
 
 ```text
 X-Request-Id: GEzmrWO6-L7HK28FP0eD
 ```
 
-### **Contacting Support**
+## Contacting support
 
-**If you need to contact us about a specific request, providing the request identifier will ensure the fastest possible resolution.**
+Including the request identifier ensures the fastest possible resolution. When you contact support, include:
 
-By including the request identifier in your support query, our support team can quickly locate and investigate the specific request in question. This enables us to efficiently diagnose any issues, provide insights, and offer guidance or solutions to resolve your concerns.
+- the request identifier, from the `X-Request-Id` header or the request logs in the Trio App;
+- the `error_code` returned when the request failed (see [Error handling](/v2/developers/error-table));
+- a description of the issue;
+- any relevant code snippets or additional details.
 
-When contacting support, please include the following information:
-
-- The request identifier (found in the X-Request-Id header or the development console)
-- The `error_code` returned, when the request failed (see the [error table](/v2/developers/error-table))
-- A description of the issue you are experiencing
-- Any relevant code snippets or additional details that may help with the investigation
-
-Remember to always include the request identifier to expedite the resolution process and ensure a swift and effective response from our support team. The [Support](/v2/getting_started/support) page lists the channels and their availability.
+The [Support](/v2/getting_started/support) page lists the channels and their availability.

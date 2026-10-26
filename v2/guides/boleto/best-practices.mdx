@@ -1,43 +1,32 @@
 ---
-title: "Boas práticas e entendimentos sobre Boleto"
-description: "Principais comportamentos, boas práticas e pontos de atenção para integrações de boleto com a Trio."
+title: Boleto best practices
+description: Understand how a boleto behaves after creation, from the embedded Pix QR code and the document lifecycle to webhooks, due dates, refunds and rate limits.
 ---
 
-# Boas práticas e entendimentos sobre Boleto
+This guide collects the behaviors of a Trio boleto that go beyond creating the document: the embedded Pix QR code, payer data, the lifecycle, webhooks, due date versus expiration date, refunds and rate limits. It complements the [Create a boleto](/v2/guides/boleto/create-boleto) guide and does not replace the [Create boleto](/v2/api-reference/banking-api/receivables/boletos/post) API reference. All endpoints use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
-Este guia reúne alguns comportamentos importantes do boleto na Trio que vão além da criação do documento.
+## Hybrid boleto: boleto and Pix
 
-A ideia é ajudar o integrador a entender o ciclo do boleto, o pagamento via Pix, o uso dos campos de vencimento, os webhooks e alguns cuidados importantes na implementação.
+Every boleto created through Trio also carries an embedded Pix QR code. The payer chooses between paying with the traditional boleto data (barcode or digitable line) or through Pix.
 
-> **Importante:** este guia complementa o [Guia de criação de Boleto](/v2/guides/boleto/create-boleto) e não substitui a [referência da API](/v2/api-reference/banking-api/receivables/boletos/post).
+### Getting the Pix code of a boleto
 
-## 1. Boleto híbrido: boleto + Pix
+`POST /v2/in/boletos` does not return the BR code (the Pix copy-and-paste code) directly. After creating the boleto:
 
-Todo boleto criado pela Trio também possui um **QR Code Pix embutido**. Isso permite que o pagador escolha entre pagar utilizando os dados tradicionais do boleto ou através do Pix.
-
-### Como obter o Pix do boleto?
-
-O `create boleto` não retorna diretamente o hash do QR Code Pix para uso como copia e cola.
-
-Após criar o boleto:
-
-1. Crie o boleto através de `POST /v2/in/boletos`.
-2. Pegue o `id` retornado em `data.id`.
-3. Consulte o QR Code através de:
+1. Take the `id` returned in `data.id`.
+2. Read the QR code with [`GET /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get), using that same `id`.
 
 ```http
 GET /v2/in/pix/qrcodes/{id}
 ```
 
-O `id` utilizado nessa consulta é o mesmo `id` retornado na criação do boleto. O hash do Pix copia e cola vem no campo `data.hash` da resposta.
+The BR code comes in the `data.hash` field of the response.
 
-Consulte também a [referência de consulta do QR Code dinâmico](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get).
+### Identifying a payment made through Pix
 
-### Como identificar um pagamento via Pix?
+When the boleto is paid through its Pix QR code, the in document Trio creates for the payment (the receivable, returned by [`GET /v2/documents/in/{id}`](/v2/api-reference/banking-api/documents/receivables/get-receivable)) has the type `pix_boleto`. The document `type` tells the two payment methods apart: `boleto` and `pix_boleto` are distinct values of the enum.
 
-Quando o boleto é pago utilizando o QR Code Pix, o documento de recebimento gerado (consultável em `GET /v2/documents/in/{id}`) possui o tipo `pix_boleto`. O `type` do documento de recebimento diferencia os dois meios: `boleto` e `pix_boleto` são valores distintos do enum.
-
-Esse pagamento é enviado através do webhook `collecting_document` com:
+The payment is delivered through the `collecting_document` webhook with:
 
 {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the event name `collecting_document` is also not in the V2 spec. The `pix_boleto` type is verified on the V2 in document. */}
 
@@ -47,15 +36,13 @@ Esse pagamento é enviado através do webhook `collecting_document` com:
 }
 ```
 
-Isso permite diferenciar um pagamento realizado através do Pix do boleto de um pagamento tradicional do boleto.
+This lets you tell a payment made through the boleto's Pix QR code from a traditional boleto payment.
 
-**Boa prática:** trate `type = pix_boleto` como um pagamento originado via Pix e mantenha a reconciliação pelo `id` e pelo `external_id`.
+**Best practice:** treat `type = pix_boleto` as a payment that originated through Pix, and keep reconciling by `id` and `external_id`.
 
----
+## Payer data
 
-## 2. Dados do pagador (`counterparty`)
-
-O objeto `counterparty` possui campos de endereço necessários para a emissão do boleto, como:
+The `counterparty` object carries the address fields the boleto document needs:
 
 - `address`
 - `district`
@@ -63,23 +50,17 @@ O objeto `counterparty` possui campos de endereço necessários para a emissão 
 - `state`
 - `postal_code`
 
-Todos eles são obrigatórios na criação, junto com `name` e `tax_number`. Na resposta, o pagador é retornado como `counterparty.id`, o identificador que a Trio atribui a ele.
+All of them are required at creation, together with `name` and `tax_number`. In the response, the payer comes back as `counterparty.id`, the identifier Trio assigns to it.
 
-### O endereço é validado?
+### Is the address validated?
 
-Não. O endereço informado no `counterparty` **não é validado pela Trio quanto à sua existência ou correspondência com o pagador**.
+No. Trio does not validate whether the address in `counterparty` exists or matches the payer. The fields are there to fill in the information the document requires. Even so, send the payer's real and correct data whenever you have it.
 
-Esses dados são necessários para preencher as informações exigidas pelo documento.
+**Best practice:** do not use generic addresses or made-up data just to satisfy the schema. If your checkout does not collect an address today, decide how you will obtain it before issuing boletos.
 
-Mesmo assim, a recomendação é enviar os dados reais e corretos do pagador sempre que disponíveis.
+## Boleto lifecycle
 
-> **Boa prática:** não utilize endereços genéricos ou dados inventados apenas para preencher o schema. Se o seu checkout não coleta endereço atualmente, avalie como esse dado será obtido antes de emitir o boleto.
-
----
-
-## 3. Ciclo de vida do boleto
-
-O boleto segue o ciclo de documentos utilizado pela Trio:
+A boleto follows the document lifecycle Trio uses for every document, described in [Document lifecycle](/v2/guides/pix/document-lifecycle):
 
 ```text
 Created
@@ -89,112 +70,104 @@ Confirmed
 Settled
 ```
 
-### Principais status
+### Main statuses
 
 {/* TODO(v2): verify — the V2 Boleto_Status enum is created, confirmed, settled, onhold, refunded, failed, cancelled. V1 documented an `expired` status, which does not exist in V2; the meanings of onhold, refunded and failed below are inferred from their names, the spec does not describe them. */}
 
-| Status | Significado |
+| Status | Meaning |
 | --- | --- |
-| `created` | Boleto criado |
-| `confirmed` | Boleto registrado e confirmado |
-| `settled` | Boleto pago/liquidado |
-| `onhold` | Boleto retido |
-| `refunded` | Pagamento do boleto estornado |
-| `failed` | Falha no processamento do boleto |
-| `cancelled` | Boleto cancelado (via `POST /v2/in/boletos/{id}/cancel` ou recriação) |
+| `created` | Boleto created |
+| `confirmed` | Boleto registered and confirmed |
+| `settled` | Boleto paid (settled) |
+| `onhold` | Boleto on hold |
+| `refunded` | Boleto payment refunded |
+| `failed` | Boleto processing failed |
+| `cancelled` | Boleto cancelled (through [`POST /v2/in/boletos/{id}/cancel`](/v2/api-reference/banking-api/receivables/boletos/cancel) or by recreation) |
 
-O status que representa um **boleto pago** é `settled`.
+`settled` is the status of a paid boleto.
 
 {/* TODO(v2): verify — V1 said the boleto moves to `expired` after expiration_date; there is no `expired` value in the V2 Boleto_Status enum. Confirm which status (if any) an expired boleto carries. */}
 
-Após a `expiration_date`, o boleto passa para `expired` e não pode mais receber pagamento.
+After the `expiration_date`, the boleto moves to `expired` and can no longer be paid.
 
-> **Boa prática:** não considere apenas a existência do boleto como confirmação de pagamento. A confirmação deve ser baseada no status/evento de liquidação recebido pela integração.
+<Warning>
+Do not treat the existence of a boleto as confirmation of payment. Confirm payment from the settlement status or event your integration receives.
+</Warning>
 
----
+## Webhooks
 
-## 4. Webhooks
+Webhooks are registered through [`POST /v2/webhooks`](/v2/api-reference/banking-api/developers/webhooks/create-webhook). The `api_version` field (`v100` or `v200`) sets the version of the event payloads you receive. The examples below are from version `v100`; the [events overview](/v2/webhooks/events/overview) lists the available events.
 
-Os webhooks são cadastrados através de `POST /v2/webhooks`. O campo `api_version` (`v100` ou `v200`) define a versão dos payloads dos eventos enviados. Os exemplos abaixo são da versão `v100`.
-
-O webhook `collecting_document` é utilizado para comunicar eventos relacionados ao recebimento do boleto.
+The `collecting_document` webhook communicates events related to receiving the boleto.
 
 {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; the event name `collecting_document` is also not in the V2 spec. */}
 
-Quando o boleto é pago através do Pix embutido, o `type` recebido é:
+When the boleto is paid through the embedded Pix, the `type` you receive is:
 
 ```text
 pix_boleto
 ```
 
-Além disso, o `external_id` informado na criação do boleto é retornado nos webhooks.
+The `external_id` you sent when creating the boleto also comes back in the webhooks.
 
-### O vencimento gera webhook?
+### Does expiration trigger a webhook?
 
-Não existe um evento específico de webhook apenas para informar que o boleto venceu.
-
-O controle do vencimento deve ser feito pela própria integração quando necessário.
+No. There is no webhook event whose only purpose is to tell you a boleto has expired. Track expiration in your own integration when you need it.
 
 {/* TODO(v2): verify — `expired` is not in the V2 Boleto_Status enum (see section 3). */}
 
-Após a `expiration_date`, o status do boleto é alterado para:
+After the `expiration_date`, the boleto status changes to:
 
 ```text
 expired
 ```
 
-**Boa prática:** mantenha uma rotina de consulta/status no seu sistema para documentos que precisam ser acompanhados até a expiração, especialmente quando o negócio depende de informar o cliente sobre boletos vencidos ou expirados. A consulta é feita em `GET /v2/in/boletos/{id}`.
+**Best practice:** keep a polling routine for documents you need to follow until expiration, especially when your business must tell customers about overdue or expired boletos. Read the boleto with [`GET /v2/in/boletos/{id}`](/v2/api-reference/banking-api/receivables/boletos/get).
 
----
+## Due date versus expiration date
 
-## 5. `due_date` x `expiration_date`
+The two fields have different roles.
 
-Esses dois campos possuem funções diferentes.
+### Due date
 
-### `due_date`
+`due_date` is the due date of the boleto. After it, the configured charges may apply:
 
-É a **data de vencimento** do boleto.
+- fine;
+- interest.
 
-Depois dessa data, podem ser aplicados os encargos configurados, como:
+### Expiration date
 
-- multa;
-- juros.
-
-### `expiration_date`
-
-É a **data limite para pagamento** do boleto.
+`expiration_date` is the payment deadline of the boleto.
 
 {/* TODO(v2): verify — `expired` is not in the V2 Boleto_Status enum (see section 3). */}
 
-Depois dela, o boleto deixa de aceitar pagamentos e passa para `expired`.
+After it, the boleto stops accepting payments and moves to `expired`.
 
-### Exemplo
+### Example
 
 ```text
-due_date:        10/09/2026
-expiration_date: 30/09/2026
+due_date:        2026-09-10
+expiration_date: 2026-09-30
 ```
 
-Nesse cenário:
+In this scenario:
 
 ```text
-10/09 ─────────────── 30/09
+Sep 10 ─────────────── Sep 30
   ↑                       ↑
-Vencimento             Expiração
+Due date              Expiration
   │                       │
-  │                       └─ Não aceita mais pagamento
+  │                       └─ No longer accepts payment
   │
-  └─ Após essa data podem existir
-     juros/multa configurados
+  └─ From this date, the configured
+     interest and fine may apply
 ```
 
-Portanto, um boleto pode continuar sendo pago **após o vencimento**, desde que ainda esteja dentro do período de validade definido pela `expiration_date`.
+So a boleto can still be paid after its due date, as long as it is within the validity period set by `expiration_date`.
 
----
+## Updating the due date
 
-## 6. Atualização do vencimento
-
-É possível atualizar o vencimento de um boleto através de:
+Update the due date of a boleto with [`PUT /v2/in/boletos/{id}`](/v2/api-reference/banking-api/receivables/boletos/update):
 
 ```http
 PUT /v2/in/boletos/{id}
@@ -210,18 +183,18 @@ PUT /v2/in/boletos/{id}
 
 {/* TODO(v2): verify — barcode and Pix QR code staying the same after a due-date update is product behaviour not described in the V2 spec. */}
 
-Ao alterar o vencimento:
+When you change the due date:
 
-- o `due_detail` é atualizado;
-- a resposta é `204 No Content`, sem corpo: consulte `GET /v2/in/boletos/{id}` para ver os dados atualizados;
-- o `barcode` não muda;
-- o QR Code Pix não muda.
+- `due_detail` is updated;
+- the response is `204 No Content` with no body: read `GET /v2/in/boletos/{id}` to see the updated data;
+- the `barcode` does not change;
+- the Pix QR code does not change.
 
-Somente o vencimento pode ser alterado por esse endpoint. Para alterar o valor, utilize a recriação descrita abaixo.
+Only the due date can be changed through this endpoint. To change the amount, recreate the boleto as described below.
 
-### Alteração de valor: recriação
+### Changing the amount: recreation
 
-Para alterar o valor de um boleto, utilize:
+To change the amount of a boleto, use [`POST /v2/in/boletos/{id}/recreate`](/v2/api-reference/banking-api/receivables/boletos/recreate):
 
 ```http
 POST /v2/in/boletos/{id}/recreate
@@ -236,55 +209,49 @@ POST /v2/in/boletos/{id}/recreate
 }
 ```
 
-O boleto original é cancelado e um novo boleto é criado com os mesmos campos, o novo valor e o novo vencimento (ou o vencimento atual, quando `due_detail` é omitido). A resposta é `201` com o novo boleto, que possui um novo `id`.
+The original boleto is cancelled and a new one is created with the same fields, the new amount and the new due date (or the current due date, when `due_detail` is omitted). The response is `201` with the new boleto, which has a new `id`.
 
-> **Boa prática:** ao recriar um boleto, atualize o `id`, o `barcode`, a `digitable_line` e a `boleto_url` guardados no seu sistema, e descarte os do boleto cancelado.
+**Best practice:** when you recreate a boleto, replace the `id`, `barcode`, `digitable_line` and `boleto_url` stored in your system, and discard those of the cancelled boleto.
 
-### Cancelamento
+### Cancellation
 
-Um boleto pode ser cancelado através de:
+Cancel a boleto with [`POST /v2/in/boletos/{id}/cancel`](/v2/api-reference/banking-api/receivables/boletos/cancel):
 
 ```http
 POST /v2/in/boletos/{id}/cancel
 ```
 
-A resposta é `204 No Content`.
+The response is `204 No Content`.
 
-### Protesto
+### Protest
 
-A API também permite adicionar e remover o protesto de um boleto:
+The API also lets you add and remove the protest of a boleto:
 
 ```http
 PUT /v2/in/boletos/{id}/protest/add
 PUT /v2/in/boletos/{id}/protest/remove
 ```
 
-Ambos respondem `204 No Content`. Consulte a referência de [adicionar protesto](/v2/api-reference/banking-api/receivables/boletos/add-protest) e [remover protesto](/v2/api-reference/banking-api/receivables/boletos/remove-protest).
+Both respond `204 No Content`. See the [Add protest](/v2/api-reference/banking-api/receivables/boletos/add-protest) and [Remove protest](/v2/api-reference/banking-api/receivables/boletos/remove-protest) references.
 
-### Boleto vencido x expirado
+### Overdue versus expired boleto
 
-Existe uma diferença importante:
+There is an important difference:
 
-- **Boleto vencido:** pode ter o vencimento atualizado.
-- **Boleto expirado:** não pode mais ser atualizado.
+- **Overdue boleto:** its due date can still be updated.
+- **Expired boleto:** it can no longer be updated.
 
-> **Boa prática:** se o seu negócio permite renegociação de boletos, faça a alteração antes que o documento chegue ao estado expirado.
+**Best practice:** if your business renegotiates boletos, make the change before the document reaches the expired state.
 
----
+## Refunding a boleto
 
-## 7. Estorno de boleto
-
-O endpoint:
+[`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/refunds/post) applies to transactions that originated through Pix. This includes a boleto that was paid through its Pix QR code.
 
 ```http
 POST /v2/documents/in/{id}/refund
 ```
 
-é aplicável a transações originadas pelo **Pix**.
-
-Isso inclui o caso em que o boleto foi pago através do seu QR Code Pix.
-
-O `{id}` é o identificador do **documento de recebimento** (o pagamento, consultável em `GET /v2/documents/in/{id}`), e não o `id` do boleto. O corpo informa o valor em centavos e uma descrição:
+The `{id}` is the identifier of the in document (the payment, returned by `GET /v2/documents/in/{id}`), not the `id` of the boleto. The body carries the amount in cents (BRL 100.00 = `10000`) and a description:
 
 ```json
 {
@@ -293,7 +260,7 @@ O `{id}` é o identificador do **documento de recebimento** (o pagamento, consul
 }
 ```
 
-A resposta retorna o identificador do estorno, que é criado de forma assíncrona:
+The response returns the identifier of the refund, which is created asynchronously:
 
 ```json
 {
@@ -303,88 +270,74 @@ A resposta retorna o identificador do estorno, que é criado de forma assíncron
 }
 ```
 
-Consulte o estorno em `GET /v2/documents/in/refunds/{id}` para acompanhar seus detalhes e estado final. Veja a referência de [estorno](/v2/api-reference/banking-api/receivables/refunds/post) e de [consulta do estorno](/v2/api-reference/banking-api/documents/receivables-refunds/get-receivable-refund).
+Read the refund with [`GET /v2/documents/in/refunds/{id}`](/v2/api-reference/banking-api/documents/receivables-refunds/get-receivable-refund) to follow its details and final state.
 
-### Exemplos
+### Examples
 
-**Boleto pago pela linha digitável**
-
-```text
-Boleto
-  ↓
-Pagamento tradicional
-  ↓
-Não utilizar /refund como estorno Pix
-```
-
-**Boleto pago pelo QR Code Pix**
+**Boleto paid through the digitable line**
 
 ```text
 Boleto
   ↓
-QR Code Pix
+Traditional payment
   ↓
-Pagamento Pix (type = pix_boleto)
-  ↓
-/refund disponível
+Do not use /refund as a Pix refund
 ```
 
-**Boa prática:** ao implementar uma rotina de devolução, identifique primeiro a origem do pagamento. Um boleto pago via Pix deve ser tratado como uma transação Pix para fins de refund.
+**Boleto paid through the Pix QR code**
 
----
+```text
+Boleto
+  ↓
+Pix QR code
+  ↓
+Pix payment (type = pix_boleto)
+  ↓
+/refund available
+```
 
-## 8. `boleto_url`
+**Best practice:** when you implement a refund routine, identify the origin of the payment first. A boleto paid through Pix is a Pix transaction for refund purposes.
 
-Na criação do boleto, a API retorna uma `boleto_url`.
+## Boleto URL
 
-Essa URL pode ser utilizada diretamente para disponibilizar o documento ao pagador.
+When you create a boleto, the API returns a `boleto_url`. You can hand this URL directly to the payer. The link:
 
-O link é:
+- is public;
+- requires no authentication;
+- suits e-mails, checkout pages and apps.
 
-- público;
-- não exige autenticação para acesso;
-- adequado para utilização em e-mails, checkout e aplicativos.
-
-Exemplo:
+Example:
 
 ```text
 https://receipts.sandbox.trio.com.br/.../boleto/...
 ```
 
-> **Boa prática:** armazene a `boleto_url` junto ao registro do boleto no seu sistema para facilitar o acesso e a comunicação com o cliente.
+**Best practice:** store the `boleto_url` with the boleto record in your system, so you can reach it quickly when talking to the customer.
 
----
+## Costs
 
-## 9. Custos
+Agree the cost per boleto directly with Trio's commercial team. This matters most for operations that work with:
 
-O custo por boleto deve ser tratado diretamente com o **time comercial da Trio**.
+- installment books (*carnês*, a series of boletos for one order);
+- multiple installments;
+- several boletos issued in advance;
+- high issuing volumes.
 
-Isso é especialmente importante para operações que trabalham com:
+Do not assume the cost from the number of paid or unpaid boletos alone; validate the commercial terms of your project. This cost is separate from the fee you can charge the payer in `options.fee`, described in [Fees](/v2/guides/receivables/fees).
 
-- carnês;
-- múltiplas parcelas;
-- emissão antecipada de vários boletos;
-- grandes volumes de emissão.
-
-Não assuma o custo apenas com base na quantidade de boletos pagos ou não pagos. Valide as condições comerciais do seu projeto.
-
----
-
-## 10. Rate limit e emissão de carnês
+## Rate limit and installment books
 
 {/* TODO(v2): verify — the 60 requests/second rate limit is not described in the V2 spec. */}
 
-A criação de boletos segue o **rate limit padrão da rota de criação: 60 requests por segundo**.
+Boleto creation follows the default rate limit of the create route: 60 requests per second. See [Rate limit](/v2/developers/rate-limit).
 
-Fora esse limite, não existe uma limitação específica de quantidade de boletos que podem ser emitidos.
+Beyond that limit there is no specific cap on how many boletos you can issue. You can, for example, create the installments of an installment book in sequence.
 
-Isso permite, por exemplo, criar várias parcelas de um carnê em sequência.
+### Keep `external_id` unique
 
-### `external_id` deve ser único
+Each boleto must have an `external_id` that is unique within your operation. The field takes up to 40 characters.
 
-Cada boleto criado deve possuir um `external_id` único dentro da sua operação. O campo aceita até 40 caracteres.
-
-Exemplo:
+Example:
 
 ```json
 {
@@ -404,106 +357,105 @@ Exemplo:
 }
 ```
 
-Evite reutilizar o mesmo `external_id` para diferentes boletos.
+Avoid reusing the same `external_id` for different boletos.
 
-> **Boa prática:** em carnês, associe o número da parcela ao `external_id`. Isso facilita a reconciliação, o rastreamento e a identificação do boleto correto no seu sistema. A listagem `GET /v2/in/boletos` aceita o filtro `external_id`.
+<Tip>
+In installment books, put the installment number in the `external_id`. It simplifies reconciliation, tracking and finding the right boleto in your system. [`GET /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/list) accepts an `external_id` filter.
+</Tip>
 
----
+## Recommended practices
 
-## 11. Boas práticas recomendadas
+For a safer and more predictable integration:
 
-Para uma integração mais segura e previsível, recomendamos:
+### Use `external_id` for reconciliation
 
-### Use `external_id` para reconciliação
-
-O `external_id` deve representar uma referência conhecida pelo seu sistema, como pedido, fatura ou parcela.
+`external_id` should be a reference your system knows, such as an order, an invoice or an installment.
 
 ```text
-Pedido 123
- ├── Parcela 01 → pedido-123-parcela-01
- ├── Parcela 02 → pedido-123-parcela-02
- └── Parcela 03 → pedido-123-parcela-03
+Order 123
+ ├── Installment 01 → pedido-123-parcela-01
+ ├── Installment 02 → pedido-123-parcela-02
+ └── Installment 03 → pedido-123-parcela-03
 ```
 
-### Não confunda vencimento com expiração
+### Do not confuse due date with expiration date
 
-`due_date` indica **quando o boleto vence**.
+`due_date` says when the boleto is due. `expiration_date` says until when it can be paid. They are different concepts.
 
-`expiration_date` indica **até quando ele pode ser pago**.
+### Do not rely on webhooks alone to control expiration
 
-São conceitos diferentes.
+There is no "boleto expired" webhook. If your application must act when a boleto expires, keep your own control or read the document status.
 
-### Não dependa somente do webhook para controlar expiração
+### Handle both payment methods
 
-Não existe um webhook específico de "boleto expirado".
+The same boleto can be paid:
 
-Se a sua aplicação precisa tomar alguma ação quando o boleto expira, mantenha um controle próprio ou consulte o status do documento.
+- through the digitable line or barcode;
+- through the embedded Pix QR code.
 
-### Considere os dois meios de pagamento
+Your reconciliation must be ready for both.
 
-O mesmo boleto pode ser pago:
+### Identify the origin of the payment
 
-- pela linha digitável/código de barras;
-- pelo QR Code Pix embutido.
-
-Sua reconciliação deve estar preparada para os dois cenários.
-
-### Identifique a origem do pagamento
-
-Para pagamentos via QR Code Pix do boleto, o documento de recebimento e o webhook utilizam:
+For payments through the boleto's Pix QR code, the in document and the webhook carry:
 
 ```text
 type: pix_boleto
 ```
 
-Essa informação é útil para separar pagamentos tradicionais de pagamentos realizados via Pix.
+Use it to separate traditional payments from Pix payments.
 
-### Respeite o rate limit
+### Respect the rate limit
 
 {/* TODO(v2): verify — the 60 requests/second rate limit is not described in the V2 spec. */}
 
-Para emissões em lote, como carnês, organize as requisições respeitando o limite de **60 requests por segundo**.
+For batch issuing, such as installment books, pace your requests within the limit of 60 requests per second.
 
-### Guarde os identificadores importantes
+### Store the important identifiers
 
-Para cada boleto, mantenha pelo menos:
+For each boleto, keep at least:
 
-- `id` da Trio;
+- the Trio `id`;
 - `external_id`;
-- valor (`amount.amount`, em centavos);
+- the amount (`amount.amount`, in cents);
 - `due_date`;
 - `expiration_date`;
 - `boleto_url`;
-- status atual.
+- the current status.
 
-Isso facilita suporte, conciliação e rastreamento de pagamentos.
+This simplifies support, reconciliation and payment tracking.
 
----
-
-## Resumo rápido
+## Quick summary
 
 {/* TODO(v2): verify — the `expired` row and the 60 requests/second row repeat V1 claims that are not in the V2 spec (see sections 3 and 10). */}
 
-| Tema | Comportamento |
+| Topic | Behavior |
 | --- | --- |
-| Pix embutido | Sim, todo boleto possui QR Code Pix |
-| Hash/copia e cola | Obtido através de `GET /v2/in/pix/qrcodes/{id}`, campo `data.hash` |
-| Pagamento via Pix | Documento de recebimento e webhook `collecting_document` com `type = pix_boleto` |
-| Boleto pago | `settled` |
-| Boleto cancelado | `cancelled` |
-| Boleto expirado | `expired` |
-| Webhook de vencimento | Não existe evento específico |
-| `external_id` no webhook | Sim |
-| Endereço do pagador | Necessário no schema, mas não é validado |
-| Pagamento após `due_date` | Pode ocorrer até a `expiration_date`, com encargos configurados quando aplicável |
-| Atualização de boleto vencido | Permitida |
-| Atualização de boleto expirado | Não permitida |
-| Resposta da atualização de vencimento | `204 No Content`, sem corpo |
-| Barcode após alteração do vencimento | Não muda |
-| QR Code Pix após alteração do vencimento | Não muda |
-| Alteração de valor | `POST /v2/in/boletos/{id}/recreate`: cancela o boleto e cria um novo |
-| Refund | Disponível quando a origem do pagamento é Pix, via `POST /v2/documents/in/{id}/refund` |
-| `boleto_url` | Pública e sem autenticação |
-| Rate limit de criação | 60 requests/segundo |
-| Limite de quantidade | Não há limite adicional de emissão |
-| Carnês | Permitidos, com `external_id` único por boleto |
+| Embedded Pix | Yes, every boleto has a Pix QR code |
+| BR code (copy and paste) | Read with `GET /v2/in/pix/qrcodes/{id}`, field `data.hash` |
+| Payment through Pix | In document and `collecting_document` webhook with `type = pix_boleto` |
+| Paid boleto | `settled` |
+| Cancelled boleto | `cancelled` |
+| Expired boleto | `expired` |
+| Expiration webhook | No specific event |
+| `external_id` in the webhook | Yes |
+| Payer address | Required by the schema, but not validated |
+| Payment after `due_date` | Possible until the `expiration_date`, with the configured charges when applicable |
+| Updating an overdue boleto | Allowed |
+| Updating an expired boleto | Not allowed |
+| Due-date update response | `204 No Content`, no body |
+| Barcode after a due-date update | Does not change |
+| Pix QR code after a due-date update | Does not change |
+| Changing the amount | `POST /v2/in/boletos/{id}/recreate`: cancels the boleto and creates a new one |
+| Refund | Available when the payment originated through Pix, via `POST /v2/documents/in/{id}/refund` |
+| `boleto_url` | Public, no authentication |
+| Creation rate limit | 60 requests per second |
+| Quantity limit | No additional issuing limit |
+| Installment books | Allowed, with a unique `external_id` per boleto |
+
+## Next steps
+
+- [Create a boleto](/v2/guides/boleto/create-boleto): build the request body.
+- [Boleto types](/v2/guides/boleto/boleto-types): choose `invoice_type` and `wallet_type`.
+- [Document lifecycle](/v2/guides/pix/document-lifecycle): statuses and stages of an in document.
+- [Events](/v2/webhooks/events/overview): the webhook events you can receive.

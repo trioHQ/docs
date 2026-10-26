@@ -1,29 +1,23 @@
 ---
-title: Invoice & Wallet Type
-description: Invoice Type & Wallet Type
+title: Boleto types
+description: Choose the invoice_type and wallet_type values that classify a boleto when you create it.
 ---
 
-When issuing a boleto, there are two fields used to classify the payment:
+When you create a boleto, two required fields classify it: `invoice_type` says which document or obligation originated the charge, and `wallet_type` says how the bank registers and manages the boleto. Both go in the body of [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post); the [Create a boleto](/v2/guides/boleto/create-boleto) guide covers the rest of the request.
 
-- **Invoice Type**: identifies **which document or obligation originated the charge**.
-- **Wallet Type**: identifies **how the boleto will be registered and managed by the bank**.
+```json
+"invoice_type": "invoice",
+"wallet_type": "book_entry_electronic_bloquete"
+```
 
-Although both fields are used when issuing boletos, they serve different purposes.
+## Invoice type
 
-Both are required fields of the [Create boleto](/v2/api-reference/banking-api/receivables/boletos/post) request (`POST /v2/in/boletos`). The full request body is explained in the [Create Boleto](/v2/guides/boleto/create-boleto) guide.
+`invoice_type` represents the type of document that originated the charge: the reason the boleto was issued, such as an invoice, a tax invoice, a school fee or a duplicate. The right-hand column gives the Brazilian document name each value stands for. If no value matches your charge, use `others`.
 
----
+### Most common values
 
-# Invoice Type
-
-The **Invoice Type** represents the **type of document that originated the charge**.
-
-In other words, it describes **the reason the boleto was issued**, such as an invoice, tax invoice, school fee, or duplicate.
-
-## Most commonly used types
-
-| Value | Description |
-|--------|-------------|
+| Value | Document (Portuguese name) |
+| --- | --- |
 | `invoice` | Fatura |
 | `invoice_note` | Nota Fiscal |
 | `receipt` | Recibo |
@@ -35,12 +29,10 @@ In other words, it describes **the reason the boleto was issued**, such as an in
 | `credit_card` | Fatura de Cartão de Crédito |
 | `others` | Outros |
 
-> If there is no specific type that matches your charge, use `others`.
+### All values
 
-## All Invoice Types
-
-| Value | Description |
-|--------|-------------|
+| Value | Document (Portuguese name) |
+| --- | --- |
 | `commercial_duplicate` | Duplicata Mercantil |
 | `indicated_commercial_duplicate` | Duplicata Mercantil por Indicação |
 | `service_duplicate` | Duplicata de Prestação de Serviços |
@@ -73,26 +65,22 @@ In other words, it describes **the reason the boleto was issued**, such as an in
 | `credit_card` | Fatura de Cartão de Crédito |
 | `others` | Outros |
 
----
+## Wallet type
 
-# Wallet Type
+`wallet_type` is the collection wallet (*carteira de cobrança*): the operational method the bank uses to register, issue and manage the boleto. It does not change the information shown to the payer; it only tells the bank how to process the boleto.
 
-The **Wallet Type** (Collection Wallet) defines **the operational method used by the bank to register, issue, and manage the boleto**.
+### Default value
 
-This field **does not change the information displayed to the payer**. It is only used to tell the bank how the boleto should be processed.
+By default, use:
 
-## Default value
-
-By default, use the following value:
-
-| Value | Description |
-|--------|-------------|
+| Value | Collection wallet (Portuguese name) |
+| --- | --- |
 | `book_entry_electronic_bloquete` | Carteira Escritural Eletrônica (Bloquete) |
 
-## All Wallet Types
+### All values
 
-| Value | Description |
-|--------|-------------|
+| Value | Collection wallet (Portuguese name) |
+| --- | --- |
 | `direct_electronic_partial_emission_booklet` | Cobrança Direta Eletrônica com emissão parcial de boleto |
 | `book_entry_electronic_booklet` | Carteira Escritural Eletrônica (Boleto) |
 | `direct_electronic_with_emission_booklet` | Cobrança Direta Eletrônica com emissão do boleto |
@@ -106,4 +94,8 @@ By default, use the following value:
 | `direct_electronic_our_number_emission_banks_bloquete` | Banco responsável pela geração do Nosso Número (Bloquete) |
 | `direct_electronic_our_number_emission_banks_booklet` | Banco responsável pela geração do Nosso Número (Boleto) |
 
----
+## Next steps
+
+- [Create a boleto](/v2/guides/boleto/create-boleto): build the full request body.
+- [Boleto best practices](/v2/guides/boleto/best-practices): what happens after the boleto is created.
+- [Create boleto](/v2/api-reference/banking-api/receivables/boletos/post): the API reference for `POST /v2/in/boletos`.

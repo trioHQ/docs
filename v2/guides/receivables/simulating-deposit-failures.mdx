@@ -1,52 +1,17 @@
 ---
-title: "Simulating deposit failures"
-description: "Use bank account parameters to reproduce rejected and refunded deposits in the sandbox"
+title: "Simulate deposit failures"
+description: "Use bank account parameters to reproduce rejected and refunded deposits in the sandbox."
 ---
 
-To proceed effectively, it is essential to understand the two-account mechanism used to create and simulate QR Code payments.
+Besides validating input on your side, you should see how Trio behaves when a deposit is refused: a payer with an invalid CPF or CNPJ, a legal entity paying a code meant for individuals, a repeated payment of the same QR code. This guide turns on the bank account rules that reject or refund such deposits and pays a QR code against them.
 
-If you need a refresher on this topic, please review the previous guide before continuing:
+## Before you start
 
-[Simulating Deposit Success](/v2/guides/receivables/simulating-deposit-success)
+The simulation uses the two-account setup from [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success): one bank account generates the QR code and the other pays it. Read that guide first if you have not set the accounts up.
 
-### Account Configuration for Transaction Restrictions
+## Account rules
 
-To ensure security and data integrity, you can configure account settings to restrict specific transaction types, such as invalid third-party payments.
-
-It is also important to test scenarios involving incorrect or incomplete data, including:
-
-- Invalid CPF or CNPJ values
-- Incomplete tax numbers
-- Malformed strings or invalid values
-
-When testing failure scenarios, you can follow two approaches:
-
-1. **Enforce Data Validation**\
-   Implement validation rules to prevent and properly handle invalid input.
-2. **Simulate Invalid Scenarios**\
-   Create test cases using incomplete or malformed data to observe how the system behaves.
-
-The second approach requires changes to the account configuration in order to reproduce specific failure scenarios and explore a broader range of possibilities.
-
-The following sections explain the configurations required to test these scenarios and better understand the system’s capabilities and limitations.
-
----
-
-## Configuring the Account
-
-To test failure scenarios, start by configuring your account settings.
-
-{/* TODO(v2): verify — the screenshots and the "Actions" flow are from the V1 console's Virtual Accounts screen; V2 has no virtual accounts */}
-
-First, list your bank accounts and click the **Actions** button to open the account details. This account will be used to generate the QR Code for the payment.
-
-![Image (37)](/images/image-\(37\).png)
-
-At the bottom of the details page, you will find a set of security and compliance rules available for the Pix account.
-
-These rules apply business logic and fraud-prevention measures to incoming and outgoing transactions.
-
-In V2, the same rules are exposed as the `parameters` object of the bank account. Read them with [`GET /v2/bank_accounts/{id}`](/v2/api-reference/banking-api/bank-accounts/get-bank-account) and toggle them with [`PUT /v2/bank_accounts/{id}`](/v2/api-reference/banking-api/bank-accounts/update-bank-account), which takes the boolean flags listed in the table below:
+Each bank account carries a set of security and compliance rules that apply business logic and fraud prevention to incoming and outgoing transactions. In V2 they are exposed as the `parameters` object of the bank account. Read them with [`GET /v2/bank_accounts/{id}`](/v2/api-reference/banking-api/bank-accounts/get-bank-account) and toggle them with [`PUT /v2/bank_accounts/{id}`](/v2/api-reference/banking-api/bank-accounts/update-bank-account), which takes the boolean flags listed in the table:
 
 ```json
 {
@@ -55,39 +20,64 @@ In V2, the same rules are exposed as the `parameters` object of the bank account
 }
 ```
 
-Understanding these rules is essential both for your integration and for properly testing different transaction scenarios.
-
 | Rule ID | Rule | V2 parameter | Description |
 | --- | --- | --- | --- |
-| **1** | **Block payins from unidentified individuals** | `in_block_for_unidentified_deposit` | Rejects payments where the sender's identity could not be verified. |
-| **2** | **Block duplicated QR Code payins** | `in_block_for_pix_qrcode_duplicated_payment` | Prevents repeated payments using the same QR Code. |
-| **3** | **Block payins with a different amount from the dynamic QR Code amount** | `in_block_for_pix_qrcode_different_amount_payment` | Ensures that the received amount matches the amount defined in the dynamic QR Code. |
-| **4** | **Block payins from legal entities** | `in_block_for_legal_entity` | Prevents receiving funds from companies (CNPJ), allowing only individuals (CPF). |
-| **5** | **Block payins from tax numbers different from the dynamic QR Code tax number** | `in_block_for_pix_qrcode_different_tax_number` | Ensures that the payer’s tax ID matches the one associated with the QR Code. |
-| **6** | **Block payins from unauthorized participants** | `in_block_for_unauthorized_participant` | Blocks payments from blacklisted participants. |
-| **7** | **Block payins from counterparty bank accounts different from the QR Code** | `in_block_for_pix_qrcode_different_counterparty_bank_account` | Verifies that the sender’s bank account matches the account expected for the QR Code payment. |
-| **8** | **Automatic refund for deposits incoming from minors** | `automatic_refund_for_person_underage` | Automatically refunds deposits made by individuals under 18 years old. |
-| **9** | **Automatic refund for deposits incoming from deceased individuals** | `automatic_refund_for_person_dead` | Automatically refunds payments made by individuals marked as deceased in official records. |
-| **10** | **Automatic refund for deposits incoming from individuals with invalid tax numbers** | `automatic_refund_for_person_invalid_tax_number` | Automatically refunds payments from individuals with invalid CPF or CNPJ values. |
-| **11** | **Block payouts to legal entities (CNPJ)** | `out_block_for_legal_entity` | Prevents outgoing payouts to companies, allowing payouts only to individuals. |
+| **1** | Block payins from unidentified individuals | `in_block_for_unidentified_deposit` | Rejects payments where the sender's identity could not be verified. |
+| **2** | Block duplicated QR code payins | `in_block_for_pix_qrcode_duplicated_payment` | Prevents repeated payments using the same QR code. |
+| **3** | Block payins with a different amount from the dynamic QR code amount | `in_block_for_pix_qrcode_different_amount_payment` | Ensures that the received amount matches the amount defined in the dynamic QR code. |
+| **4** | Block payins from legal entities | `in_block_for_legal_entity` | Prevents receiving funds from companies (CNPJ), allowing only individuals (CPF). |
+| **5** | Block payins from tax numbers different from the dynamic QR code tax number | `in_block_for_pix_qrcode_different_tax_number` | Ensures that the payer's tax number matches the one associated with the QR code. |
+| **6** | Block payins from unauthorized participants | `in_block_for_unauthorized_participant` | Blocks payments from blacklisted participants. |
+| **7** | Block payins from counterparty bank accounts different from the QR code | `in_block_for_pix_qrcode_different_counterparty_bank_account` | Verifies that the sender's bank account matches the account expected for the QR code payment. |
+| **8** | Automatic refund for deposits incoming from minors | `automatic_refund_for_person_underage` | Automatically refunds deposits made by individuals under 18 years old. |
+| **9** | Automatic refund for deposits incoming from deceased individuals | `automatic_refund_for_person_dead` | Automatically refunds payments made by individuals marked as deceased in official records. |
+| **10** | Automatic refund for deposits incoming from individuals with invalid tax numbers | `automatic_refund_for_person_invalid_tax_number` | Automatically refunds payments from individuals with invalid CPF or CNPJ values. |
+| **11** | Block payouts to legal entities (CNPJ) | `out_block_for_legal_entity` | Prevents outgoing payouts to companies, allowing payouts only to individuals. |
 
-The V2 `parameters` object also carries an `out_blocked` flag, which has no counterpart in this table.
+The V2 `parameters` object also carries an `out_blocked` flag, which has no counterpart in this table. Understanding these rules matters both for your integration and for testing the different transaction scenarios.
 
-By enabling or disabling these rules, you can simulate different failure scenarios during testing.
+## Simulate a failure
+
+<Steps>
+  <Step title="Open the rules of the receiving account">
+    {/* TODO(v2): verify — the screenshots and the "Actions" flow are from the V1 console's Virtual Accounts screen; V2 has no virtual accounts */}
+
+    In the [Trio App](https://app.sandbox.trio.com.br), list your bank accounts and click **Actions** on the account that generates the QR code. The rules are at the bottom of the account details page.
+
+    ![](/images/image-\(37\).png)
+
+    Through the API, read the same rules with `GET /v2/bank_accounts/{id}`.
+  </Step>
+
+  <Step title="Enable the rule you want to test">
+    Turn on the rule in the Trio App, or send its parameter as `true` with `PUT /v2/bank_accounts/{id}`. The JSON above enables rules 3 and 4.
+  </Step>
+
+  <Step title="Create a QR code on that account">
+    Generate a dynamic QR code with the receiving account's `id` in `bank_account_id`, as in [Cash in](/v2/guides/receivables/cash-in).
+  </Step>
+
+  <Step title="Pay the QR code from the other account">
+    Paste the BR code in the Trio App as described in [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success). The banking application shows the error below instead of settling the payment, which is what end users see in production:
+
+    `Invalid Pix Key/Copy & Paste`
+
+    ![](/images/image-\(36\).png)
+  </Step>
+</Steps>
+
+## What you see on the Trio side
 
 {/* TODO(v2): verify — which rules reject early in the payer's banking application is a business rule not described in the V2 spec */}
 
-> **Note**\
-> Most payment failures occur during the initial validation process, and the error is immediately returned to the payer’s banking application.
->
-> In these cases, no transaction record is created on the Trio side, and no additional integration handling is required.
->
-> This early rejection behavior applies to rules **#1**, **#2**, **#5**, **#6**, **#8**, **#9**, and **#10**.
+<Note>
+Most payment failures happen during the initial validation, and the error goes straight back to the payer's banking application. In these cases no transaction record is created on the Trio side and your integration has nothing to handle. This early rejection applies to rules **1**, **2**, **5**, **6**, **8**, **9** and **10**.
+</Note>
 
-When an invalid payment is attempted, the following error message will appear in the banking application:
+When a deposit is recorded on the Trio side, follow it through its `status` and `stages`, listed by [`GET /v2/documents/in`](/v2/api-reference/banking-api/documents/receivables/list-receivables), and through [webhook events](/v2/webhooks/events/overview). The [Document lifecycle](/v2/guides/pix/document-lifecycle) guide describes the statuses.
 
-`Invalid Pix Key/Copy & Paste`
+## Next steps
 
-This behavior is similar to what end users experience in production environments.
-
-![Image (36)](/images/image-\(36\).png)
+- [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success): the two-account setup this guide relies on.
+- [Document lifecycle](/v2/guides/pix/document-lifecycle): statuses and stages of an in document.
+- [List receivable refunds](/v2/api-reference/banking-api/documents/receivables-refunds/list-receivable-refunds): the API reference for refunded deposits.

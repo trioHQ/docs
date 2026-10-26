@@ -1,0 +1,279 @@
+---
+title: "Boleto FAQ"
+description: "Answers to the main questions integrators have about boletos at Trio: the embedded Pix QR code, payer data, statuses, webhooks, due date and expiration, refunds and installment books."
+---
+
+This page covers how boletos work at Trio: the hybrid boleto with Pix (BolePix), payer data, the status cycle, webhooks, due date and expiration, refunds and the issuance of installment books (carnês). It complements [Create a boleto](/v2/guides/boleto/create-boleto) and the [Create boleto](/v2/api-reference/banking-api/receivables/boletos/post) API reference.
+
+## BolePix
+
+<AccordionGroup>
+  <Accordion title="Does Trio's boleto have a Pix QR code?">
+    Yes. Every boleto created by Trio also has an **embedded Pix QR code**, so the payer can choose between the traditional boleto payment and a payment via Pix.
+  </Accordion>
+
+  <Accordion title="Is the BR code returned when the boleto is created?">
+    Not directly. When you create a boleto with [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post), the creation response does not include the Pix QR code hash.
+
+    To get the Pix data, use the `id` returned in `data.id` and make a follow-up request:
+
+    ```http
+    GET /v2/in/pix/qrcodes/{id}
+    ```
+
+    The BR code (the Pix copy-and-paste code) comes in `data.hash`. See the [Get dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get) reference.
+  </Accordion>
+
+  <Accordion title="How do I identify if a boleto was paid via Pix?">
+    When the boleto is paid through the embedded Pix QR code, the in document has `type` set to `pix_boleto`, which distinguishes it from a traditional boleto payment (`type: boleto`). The payment is sent through the `collecting_document` webhook with the same `type`:
+
+    {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec, and the `collecting_document` event name is a V1 name. The `pix_boleto` and `boleto` types are verified on the V2 in document. */}
+
+    ```text
+    type: pix_boleto
+    ```
+
+    <Tip>
+      Use the `type` field received in the webhook to identify the payment origin, and reconcile using the transaction identifiers.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Payer data
+
+<AccordionGroup>
+  <Accordion title="Is the address provided in counterparty validated by Trio?">
+    The address fills the fields the boleto schema requires, but Trio **does not validate whether the address belongs to the payer or corresponds to a real, existing address**. The address fields are `address`, `district`, `city`, `state` and `postal_code`.
+
+    Even though the address is not validated, send real, accurate data whenever it is available.
+  </Accordion>
+</AccordionGroup>
+
+## Boleto status
+
+<AccordionGroup>
+  <Accordion title="What are the main statuses of a boleto?">
+    The boleto cycle follows Trio's document flow:
+
+    ```text
+    created → confirmed → settled
+    ```
+
+    {/* TODO(v2): verify — `expired` is not in the V2 Boleto_Status enum (created, confirmed, settled, onhold, refunded, failed, cancelled). The V1 FAQ documents `expired` when the boleto reaches `expiration_date`; confirm which status V2 uses. */}
+
+    In addition to these states, a boleto moves to `expired` when it reaches its final payment deadline.
+
+    | Status | Meaning |
+    | --- | --- |
+    | `created` | Boleto created |
+    | `confirmed` | Boleto registered and confirmed |
+    | `settled` | Boleto paid and settled |
+    | `expired` | Boleto expired and can no longer be paid |
+
+    The V2 status enum also defines `onhold`, `refunded`, `failed` and `cancelled`; a boleto canceled with [`POST /v2/in/boletos/{id}/cancel`](/v2/api-reference/banking-api/receivables/boletos/cancel) is `cancelled`.
+  </Accordion>
+
+  <Accordion title="Which status indicates the boleto was paid?">
+    `settled` indicates the boleto has been **paid and settled**. Do not treat `created` or `confirmed` alone as payment confirmation.
+  </Accordion>
+
+  <Accordion title="What happens when the boleto reaches expiration_date?">
+    When `expiration_date` is reached, the boleto moves to `expired` and no longer accepts payments.
+  </Accordion>
+</AccordionGroup>
+
+## Webhooks
+
+<AccordionGroup>
+  <Accordion title="Which webhook reports a boleto payment?">
+    The payment is communicated through the `collecting_document` webhook. When the boleto is paid via the Pix QR code, the `type` received is `pix_boleto`.
+  </Accordion>
+
+  <Accordion title="Does the external_id provided at boleto creation appear in the webhook?">
+    Yes. The `external_id` you send when creating the boleto is returned in the webhooks related to the document.
+
+    Use `external_id` as the reference to your own system: it makes it easier to reconcile the transaction at Trio with the order or charge in your platform.
+  </Accordion>
+
+  <Accordion title="Is there a specific webhook for when the boleto becomes due?">
+    No. Trio does not send an event just to report that the boleto reached its `due_date`. Handle that according to your own business needs. When the boleto reaches `expiration_date`, its status changes to `expired`.
+  </Accordion>
+
+  <Accordion title="Do I need to track boleto expiration in my system?">
+    If your application needs to act when the boleto expires, yes. Since there is no dedicated expiration webhook, keep track of the dates in your system or query the boleto status with [`GET /v2/in/boletos/{id}`](/v2/api-reference/banking-api/receivables/boletos/get) when needed.
+  </Accordion>
+</AccordionGroup>
+
+## Due date and expiration
+
+<AccordionGroup>
+  <Accordion title="What is the difference between due_date and expiration_date?">
+    The two fields represent different moments:
+
+    - `due_date`: the boleto's due date.
+    - `expiration_date`: the final date by which the boleto can still be paid.
+
+    For example:
+
+    ```text
+    due_date:        2026-09-10
+    expiration_date: 2026-09-30
+    ```
+
+    Here the boleto is due on September 10 but can still be paid until September 30, as long as it is still valid.
+  </Accordion>
+
+  <Accordion title="Can I pay a boleto after its due_date?">
+    Yes. The boleto keeps accepting payments after the due date, as long as it has not reached `expiration_date`. After `due_date`, the charges configured for the boleto may apply, such as **interest and fines**.
+  </Accordion>
+
+  <Accordion title="What happens after expiration_date?">
+    After `expiration_date` the boleto becomes `expired` and can no longer be paid.
+  </Accordion>
+</AccordionGroup>
+
+## Changing the due date
+
+<AccordionGroup>
+  <Accordion title="Can I change a boleto's due date?">
+    Yes. Update the due date with [`PUT /v2/in/boletos/{id}`](/v2/api-reference/banking-api/receivables/boletos/update), sending the new `due_detail.due_date`:
+
+    ```http
+    PUT /v2/in/boletos/{id}
+    ```
+
+    The update returns `204 No Content`. Read the boleto back with [`GET /v2/in/boletos/{id}`](/v2/api-reference/banking-api/receivables/boletos/get) to see the new `due_detail`.
+
+    <Note>
+      **Coming from V1?** `PUT /banking/cashin/boletos/{id}` returned the updated boleto. On V2 the update returns no body.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Does the barcode change when I update the due date?">
+    No. Changing the due date updates `due_detail`, but the **barcode does not change**. The Pix QR code also stays the same.
+  </Accordion>
+
+  <Accordion title="Can I change the due date of an overdue boleto?">
+    Yes. A boleto that has passed its `due_date` but has not expired yet can have its due date updated.
+  </Accordion>
+
+  <Accordion title="Can I change a boleto that has already expired?">
+    No. A boleto with `expired` status cannot have its due date updated. If your operation allows renegotiation, make the update before the boleto reaches its `expiration_date`.
+  </Accordion>
+</AccordionGroup>
+
+## Refunds and returns
+
+<AccordionGroup>
+  <Accordion title="Can I use the refund endpoint for a boleto?">
+    It depends on how the boleto was paid. [`POST /v2/documents/in/{id}/refund`](/v2/api-reference/banking-api/receivables/refunds/post) is intended for transactions originated via **Pix**:
+
+    ```http
+    POST /v2/documents/in/{id}/refund
+    ```
+
+    So, if the boleto was paid using the **Pix QR code**, you can refund it with this endpoint.
+  </Accordion>
+
+  <Accordion title="How does a refund work when the boleto is paid via Pix?">
+    The flow is:
+
+    ```text
+    Boleto
+       ↓
+    Pix QR code
+       ↓
+    Pix payment
+       ↓
+    Pix transaction (in document)
+       ↓
+    POST /v2/documents/in/{id}/refund
+    ```
+
+    In this scenario the transaction originates from Pix, so the refund endpoint is available. The response returns the refund `id` in `data.in_refund_id`.
+  </Accordion>
+</AccordionGroup>
+
+## Boleto URL
+
+<AccordionGroup>
+  <Accordion title="Does the boleto URL require authentication?">
+    No. The `boleto_url` returned by the API is **public and does not require authentication** to access the document, so you can use the link directly in emails, checkouts, applications and order tracking pages. For example:
+
+    ```text
+    https://receipts.sandbox.trio.com.br/0195aa08-7f58-51b9-79c4-cc88e7a150b1/boleto/01a05e1b-dced-0fa7-f252-0c3530c5f0e9
+    ```
+
+    Store the `boleto_url` along with the boleto data to make it easier to access the document later.
+  </Accordion>
+</AccordionGroup>
+
+## Costs
+
+<AccordionGroup>
+  <Accordion title="Is there a charge for a boleto that was issued but not paid?">
+    Confirm pricing and billing conditions directly with **Trio's sales team**. This matters especially for operations with a high issuance volume or installment books (carnês), where several installments may be generated in advance.
+  </Accordion>
+</AccordionGroup>
+
+## Installment books (carnês) and batch issuance
+
+<AccordionGroup>
+  <Accordion title="Can I issue multiple boletos for the same purchase?">
+    Yes. There is no additional limit on the number of boletos issued; the main restriction is the **rate limit of the creation endpoint**. This lets you, for example, create every installment of a carnê for the same purchase.
+  </Accordion>
+
+  <Accordion title="What is the rate limit for creating boletos?">
+    The boleto creation endpoint has a standard rate limit of 60 requests per second. For batch issuance, organize your requests to respect this limit. See [Rate limit](/v2/developers/rate-limit).
+  </Accordion>
+
+  <Accordion title="Does each boleto in a carnê need a different external_id?">
+    Yes. Each new boleto must have a unique `external_id`. For example:
+
+    ```text
+    pedido-123-parcela-01
+    pedido-123-parcela-02
+    pedido-123-parcela-03
+    ```
+
+    This identifies each installment and avoids conflicts during reconciliation. Include a reference to the charge and to the installment in the `external_id`, so relating the boleto to the order in your system is simple.
+  </Accordion>
+</AccordionGroup>
+
+## Integration best practices
+
+<AccordionGroup>
+  <Accordion title="What information should I store after creating a boleto?">
+    Store, at minimum:
+
+    - the boleto `id` at Trio (the same `id` identifies its embedded QR code);
+    - `external_id`;
+    - `due_date`;
+    - `expiration_date`;
+    - `boleto_url`.
+
+    This information helps with **reconciliation, support, tracking and updating the charge**.
+  </Accordion>
+
+  <Accordion title="What should I consider when implementing boleto?">
+    In summary:
+
+    1. **Consider both payment methods:** typeable line/barcode and Pix.
+    2. **Treat `settled` as a paid boleto.**
+    3. **Treat `expired` as a boleto that can no longer be paid.**
+    4. **Do not confuse `due_date` with `expiration_date`.**
+    5. **Track due date and expiration in your system when you need to trigger specific actions.**
+    6. **Use a unique `external_id` for each boleto.**
+    7. **Respect the rate limit of 60 requests per second.**
+    8. **Reconcile using the identifiers received in webhooks.**
+    9. **Store the `boleto_url` to make it easier to access the document.**
+    10. **Identify payments with `type = pix_boleto` when the boleto is paid via Pix.**
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Create a boleto](/v2/guides/boleto/create-boleto): the full request, with due date, discounts, fine and interest.
+- [Boleto types](/v2/guides/boleto/boleto-types): every invoice type and wallet type value.
+- [Receivables](/v2/guides/receivables/overview): every way to receive money on Trio.
+- [Create boleto API reference](/v2/api-reference/banking-api/receivables/boletos/post): every field of the request and response.

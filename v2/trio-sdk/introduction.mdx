@@ -1,10 +1,36 @@
 ---
 title: "Trio SDK"
-description: "Trio Checkout SDK with the V2 API."
+description: "What Trio Checkout is, which flows it offers and where to start embedding it in your website or app."
 ---
 
-{/* v1 counterpart: trio-sdk/introduction.mdx. Start from it and change what differs in V2. */}
+Trio Checkout is Trio's SDK: a JavaScript module you embed in your website (or in a WebView inside your mobile app) that opens a hosted payment experience for your end users. It lets you offer the whole PayIn and PayOut processes of the Trio API with very little code, while Trio handles every stage of the consent and payment process: credential validation, authentication, error handling and the notifications of each flow, always with isolated end-to-end security when linking to banks and financial institutions.
+
+{/* TODO(v2): verify — the V1 introduction also listed Payment Initiation (open finance) among what the SDK offers. The Initiation API (checkout sessions, /itp documents and participants) has no V2 reference pages, so it stays as plain text here. */}
+
+The SDK also supports Payment Initiation, where the user authorizes the payment at their own bank through open finance.
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  The SDK is not tied to a banking API version. You create a checkout session in your back end with your usual `client_id` and `client_secret`, and the SDK takes it from there. Only the links on these pages changed to point at the V2 guides.
 </Note>
+
+## How it works
+
+1. Your back end creates a **checkout session** with the Checkout API, sending the transaction details and the type of flow (`options.session_type`).
+2. Your front end calls `Trio.create()` with the session `id` and the callbacks you want.
+3. `Trio.open()` opens the checkout for the user, who completes the payment in Trio's interface.
+4. Trio tells you what happened through the `onSuccess` and `onEvent` callbacks and through webhooks on the in document or out document that was created.
+
+Sessions are short-lived and expire on their own, and you can customize the checkout as a white label with your logo and colors.
+
+## Flows
+
+| Flow | `session_type` | Use it to |
+| --- | --- | --- |
+| [PayIn](/v2/trio-sdk/flows/payin) | `payin` | Receive money from a user with almost zero friction. |
+| [PayOut](/v2/trio-sdk/flows/payout) | `payout` | Let a user withdraw money to a Pix key of their own, up to a limit you set. |
+
+## Next steps
+
+- [Using the SDK](/v2/trio-sdk/using-the-sdk): embed the script, create a session and open the checkout, step by step.
+- [Local example](/v2/trio-sdk/local-example): run a complete back end and front end example on your machine.
+- [PayIn flow](/v2/trio-sdk/flows/payin) and [PayOut flow](/v2/trio-sdk/flows/payout): the session payload of each flow.

@@ -1,79 +1,68 @@
 ---
-title: "QR codes Types"
-description: "Static and Dynamic Pix QR Codes in V2, and how to generate a Dynamic QR Code"
+title: "QR code types"
+description: "Choose between static, dynamic and dynamic-with-due-date Pix QR codes, and generate a dynamic QR code."
 ---
 
-QR Codes in the Pix ecosystem provide a fast, secure, and efficient way to process payments and collections.
+Pix QR codes are the fastest way to collect a payment: the payer scans the code or pastes the BR code (the Pix copy-and-paste code) into their banking application. The V2 API offers three types; this guide explains when to use each and how to generate a dynamic QR code, the type most online merchants and payment service providers rely on. For the full cash-in picture, see the [Receivables overview](/v2/guides/receivables/overview).
 
-There are two primary categories of Pix QR Codes: **Static QR Codes** and **Dynamic QR Codes**.
+## Static QR code
 
-As most Trio customers are online merchants and PSPs, this guide focuses on the use of Dynamic QR Codes for automated integrations.
+A static QR code carries fixed payment information that does not change between transactions. Use it for recurring or standardized charges where the amount and payment details stay the same:
 
----
-
-## Static QR Code
-
-A Static QR Code contains fixed payment information that does not change between transactions.
-
-It is recommended for recurring or standardized payments where the amount and payment details remain the same.
-
-### Main Characteristics
-
-- Fixed and reusable payment information;
-- Suitable for recurring collections;
+- Fixed and reusable payment information.
+- Suitable for recurring collections.
 - Can be permanently displayed or printed.
 
-In V2, a Static QR Code is created with `POST /v2/in/pix/qrcodes/static`. Send `amount: 0` for an open-amount code, where the payer chooses the amount. See the [Static QR Code API reference](/v2/api-reference/banking-api/receivables/qrcode-static/post).
+Create one with [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post). Send `amount: 0` for an open-amount code, where the payer chooses the amount.
 
----
+## Dynamic QR code
 
-## Dynamic QR Code
+A dynamic QR code is generated for one transaction and carries that transaction's information. Use it for e-commerce platforms, payment service providers and automated payment flows:
 
-A Dynamic QR Code is uniquely generated for each transaction and contains transaction-specific information.
-
-It is recommended for e-commerce platforms, PSPs, and automated payment flows.
-
-### Main Characteristics
-
-- Unique transaction information for each payment;
-- Supports custom identifiers and metadata;
+- Unique transaction information for each payment.
+- Supports your own identifiers and metadata.
 - Enables automated reconciliation and tracking.
 
-<Note>
-V2 also adds two operations on Dynamic QR Codes:
+Create one with [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post), as shown [below](#generate-a-dynamic-qr-code). After creation, [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/update) updates the `amount`, `expiration_datetime` or `fee` of an existing dynamic QR code and returns `204 No Content`.
 
-- **Dynamic QR Code with due date** (`POST /v2/in/pix/qrcodes/with_due`): creates a dynamic Pix QR Code with a due date, allowing fine, interest, rebate and discount rules. See the [API reference](/v2/api-reference/banking-api/receivables/qrcode-with-due/post).
-- **Update a Dynamic QR Code** (`PUT /v2/in/pix/qrcodes/{id}`): updates the `amount`, `expiration_datetime` or `fee` of an existing Dynamic QR Code and returns `204 No Content`. See the [API reference](/v2/api-reference/banking-api/receivables/qrcode-dynamic/update).
-</Note>
+## Dynamic QR code with due date
 
----
+A dynamic QR code with due date is a dynamic QR code that carries a due date and the payment rules attached to it: fine, interest, rebate and discount. Use it when the charge behaves like an invoice. Create one with [`POST /v2/in/pix/qrcodes/with_due`](/v2/api-reference/banking-api/receivables/qrcode-with-due/post).
 
-# Generating a Dynamic QR Code
+## Which type to use
 
-To generate a Dynamic QR Code, you must provide the required transaction information, including:
+| Type | Create endpoint | Use it when |
+| --- | --- | --- |
+| Static QR code | `POST /v2/in/pix/qrcodes/static` | The same code is reused, for example on a counter or a printed flyer. |
+| Dynamic QR code | `POST /v2/in/pix/qrcodes` | Each charge is unique and you reconcile it automatically. |
+| Dynamic QR code with due date | `POST /v2/in/pix/qrcodes/with_due` | The charge has a due date with fine, interest, rebate or discount rules. |
 
-- `bank_account_id`: the bank account that will receive the funds;
-- `external_id`: your internal transaction reference;
-- `amount`: transaction amount in cents (example: `1200` = BRL 12.00);
-- `counterparty`: payer information, including `tax_number` and `name`;
-- `expiration_datetime`: QR Code expiration date in ISO 8601 format;
-- `options`: `allow_change_the_amount_on_payment` and `show_qrcode_image` are required in V2; `fee` is optional (see [Fees](/v2/guides/receivables/fees)).
+## Generate a dynamic QR code
+
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
+
+```http
+POST /v2/in/pix/qrcodes
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `bank_account_id` | Yes | Bank account that receives the funds. |
+| `counterparty` | No | Payer information. When sent, `tax_number` and `name` are required. |
+| `amount` | Yes | Amount in cents (BRL 100.00 = `10000`). |
+| `external_id` | No | Your internal transaction reference. |
+| `description` | No | Free-text description of the charge. |
+| `expiration_datetime` | No | When the QR code expires, in ISO 8601 format. |
+| `options.allow_change_the_amount_on_payment` | Yes | Whether the payer may change the amount when paying. |
+| `options.show_qrcode_image` | Yes | When `true`, the response also carries the QR code image in Base64. |
+| `options.fee` | No | Extra amount in cents charged on top of `amount`. See [Fees](/v2/guides/receivables/fees). |
+| `splits` | No | Distributes the amount among split recipients. See [Split payments](/v2/guides/receivables/split-payments). |
 
 {/* TODO(v2): verify — the default (1 day) and minimum (5 minutes) expiration times are not described in the V2 spec */}
 
 The default expiration time is 1 day, and the minimum allowed expiration time is 5 minutes.
 
----
-
-## Create QR Code Endpoint
-
-To generate a Dynamic QR Code, send a `POST` request to the endpoint below:
-
-```http
-POST https://api.sandbox.trio.com.br/v2/in/pix/qrcodes
-```
-
-Example request payload:
+Example request:
 
 ```json
 {
@@ -93,11 +82,9 @@ Example request payload:
 }
 ```
 
----
+### Response
 
-## Successful Response
-
-If the request is successfully processed, the API will return a `201 Created` response similar to the example below:
+On success the API returns `201 Created` with the QR code:
 
 ```json
 {
@@ -134,40 +121,39 @@ If the request is successfully processed, the API will return a `201 Created` re
 }
 ```
 
-Compared with V1, the response no longer carries `virtual_account_id`, `entity_id`, `pix_key_id` or `timestamp`: the payer is the nested `counterparty` object, the creator is the nested `origin` object, timestamps are `inserted_at` and `updated_at`, and `allow_change_the_amount_on_payment` lives inside `options`. `counterparty.bank_accounts` lists the bank accounts the payment must come from and is empty when any is accepted. `image` is returned only when `options.show_qrcode_image` is `true`.
+The payer is the nested `counterparty` object and the creator is the nested `origin` object. `counterparty.bank_accounts` lists the bank accounts the payment must come from and is empty when any account is accepted. `image` is returned only when `options.show_qrcode_image` is `true`.
 
----
+<Note>
+**Coming from V1?** The response no longer carries `virtual_account_id`, `entity_id`, `pix_key_id` or `timestamp`. Timestamps are `inserted_at` and `updated_at`, and `allow_change_the_amount_on_payment` lives inside `options`.
+</Note>
 
-# Payment Methods
+### Deliver the code to the payer
 
-After generating the QR Code, you can provide the payment information to the user using:
+- **BR code**: send the `hash` so the payer pastes it into their banking application.
+- **QR code image**: render the `hash` as a QR code image for the payer to scan. You can also ask the API for the image, either with `options.show_qrcode_image: true` on creation or later with [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image), which returns it in Base64.
 
-- **Pix Copy and Paste**: send the generated `hash` value so the user can paste it into their banking application;
-- **QR Code Image**: generate a QR Code image using the `hash` value so the user can scan it with their banking application. You can also ask the API for it, either with `options.show_qrcode_image: true` on creation or with [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image), which returns the image in Base64.
+## Follow the payment
 
----
-
-# Document Lifecycle
-
-The QR Code itself has a `status` of `created`, `settled` or `deleted`.
-
-Each QR Code transaction progresses through the following lifecycle stages:
+The QR code itself has a `status` of `created`, `settled` or `deleted`. Once paid, the deposit becomes an in document that you list with [`GET /v2/documents/in`](/v2/api-reference/banking-api/documents/receivables/list-receivables) and follow through [webhook events](/v2/webhooks/events/overview). Each transaction progresses through the following stages:
 
 {/* TODO(v2): verify — V1 listed a `registering` stage; the V2 spec has no such status. V2 in-document stages are created, confirmed, kyc, settled, failed and refund_link (see /v2/guides/pix/document-lifecycle). The V1 list is kept until the V2 mapping is confirmed. */}
 
-- `created`: transaction received and queued for processing;
-- `registering`: transaction is being processed;
-- `settled`: transaction successfully processed and settled (final state);
+- `created`: transaction received and queued for processing.
+- `registering`: transaction is being processed.
+- `settled`: transaction successfully processed and settled (final state).
 - `failed`: transaction refused due to validation or compliance rules (final state for cash out).
-
-Follow a diagram that represents the flow:
 
 {/* TODO(v2): verify — the diagram shows the V1 stages */}
 
 <Frame>
-  ![Image (29)](/images/image-\(29\).png)
+  ![Transaction flow](/images/image-\(29\).png)
 </Frame>
 
-See the [Document Lifecycle](/v2/guides/pix/document-lifecycle) guide for the full list of V2 statuses.
+See the [Document lifecycle](/v2/guides/pix/document-lifecycle) guide for the full list of V2 statuses.
 
----
+## Next steps
+
+- [Cash in](/v2/guides/receivables/cash-in): a step-by-step walk through your first dynamic QR code.
+- [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success): pay the code in the sandbox.
+- [Pix Automático](/v2/guides/receivables/using-pix-automatic): recurring charges authorized once by the payer.
+- [Create a boleto](/v2/guides/boleto/create-boleto): the same due-date rules on a boleto.

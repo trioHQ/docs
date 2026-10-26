@@ -1,35 +1,26 @@
 ---
 title: "Cash in"
-description: "Generate your first Dynamic QR Code with the V2 API and receive a deposit"
+description: "Create your first dynamic QR code with the V2 API and read the response."
 ---
 
-The term **Cash In** refers to all incoming transactions or deposits into an account — for example, when a Dynamic QR Code is generated and successfully paid.
+Cash-in transactions are the deposits that arrive in your bank accounts, for example a dynamic QR code that a payer scans and pays. This tutorial creates your first dynamic QR code in the sandbox and walks through the response. For the other ways to receive money, see the [Receivables overview](/v2/guides/receivables/overview).
 
-Now that you are familiar with the core concepts such as QR Codes, Entities, Organizations, and Bank Accounts, you can generate your first Dynamic QR Code using the Trio API.
+## Before you start
 
----
+You need:
 
-## Before You Start
+- An API credential. See [Creating your first API credential](/v2/guides/creating-your-first-api-credential).
+- The `id` of the bank account that receives the funds. List your accounts with [`GET /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts).
 
-With your API credentials already generated, we recommend reviewing the API Reference for Dynamic QR Code creation, where all request parameters, attributes, and behaviors are fully documented.
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
-Documentation:
+## Create the QR code
 
-[Create a new dynamic pix QRCode](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post)
-
-To help you get started faster, the example below demonstrates a real Dynamic QR Code creation request using the Sandbox API.
-
----
-
-## Endpoint
+Send a `POST` to the [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) endpoint:
 
 ```http
-POST https://api.sandbox.trio.com.br/v2/in/pix/qrcodes
+POST /v2/in/pix/qrcodes
 ```
-
----
-
-## Request Example
 
 ```json
 {
@@ -48,19 +39,21 @@ POST https://api.sandbox.trio.com.br/v2/in/pix/qrcodes
 }
 ```
 
-### Field Description
+| Field | Required | Description |
+| --- | --- | --- |
+| `bank_account_id` | Yes | Bank account that receives the funds. Use the `id` returned by `GET /v2/bank_accounts`. |
+| `counterparty` | No | Payer information. When sent, `tax_number` and `name` are required. |
+| `amount` | Yes | Amount in cents (BRL 100.00 = `10000`). |
+| `external_id` | No | Your own identifier for the transaction, used for reconciliation and to match webhook events. |
+| `description` | No | Free-text description of the charge. |
+| `options.allow_change_the_amount_on_payment` | Yes | Whether the payer may change the amount when paying. |
+| `options.show_qrcode_image` | Yes | When `true`, the response also carries the QR code image in Base64. |
 
-- `bank_account_id`: ID of the bank account that will receive the funds. Use the `id` returned by [`GET /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts);
-- `counterparty`: payer information, including tax number and name;
-- `amount`: transaction amount in cents (`10000` = BRL 100.00);
-- `external_id`: external transaction identifier used for reconciliation and webhook tracking;
-- `description`: transaction description;
-- `options.allow_change_the_amount_on_payment`: whether the payer may change the amount. Required in V2;
-- `options.show_qrcode_image`: when set to `true`, the API also returns the QR Code image in Base64 format. Required in V2.
+<Note>
+**Coming from V1?** `allow_change_the_amount_on_payment` and `show_qrcode_image` now live inside `options` and both are required. The response has no `stages`, `virtual_account_id` or `pix_key_id`.
+</Note>
 
----
-
-## Response Example
+## Read the response
 
 ```json
 {
@@ -97,20 +90,28 @@ POST https://api.sandbox.trio.com.br/v2/in/pix/qrcodes
 }
 ```
 
-Unlike V1, the V2 QR Code response has no `stages`, `virtual_account_id` or `pix_key_id`. Once the QR Code is paid, the deposit shows up as an in document, with its own `status` and `stages`, in [`GET /v2/documents/in`](/v2/api-reference/banking-api/documents/receivables/list-receivables); see the [Document Lifecycle](/v2/guides/pix/document-lifecycle) guide.
+The fields you use most:
 
----
+| Field | Description |
+| --- | --- |
+| `id` | Identifier of the QR code. Use it to read, update or fetch the image of the code. |
+| `status` | `created` on creation. The QR code moves to `settled` once paid. |
+| `hash` | The BR code (the Pix copy-and-paste code) to share with the payer. |
+| `amount`, `fee` | Money objects with the amount and the optional [fee](/v2/guides/receivables/fees) in cents. |
+| `counterparty.id` | Identifier Trio assigned to the payer. |
+| `origin` | Who created the QR code, here your API client. |
 
-## Using Pix Copy and Paste
+## Share the BR code
 
-If the QR Code image was not requested, you can use the `hash` field returned by the API.
+If you did not request the image, share the `hash` with the payer: it is the BR code they paste into their banking application. To render the image on your side, encode the `hash` as a QR code, or fetch it ready-made from [`GET /v2/in/pix/qrcodes/{id}/image`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/get-image), which returns it in Base64.
 
-This value represents the Pix “Copy and Paste” payload that can be shared directly with the payer.
+## What happens next
 
----
+Once the QR code is paid, the deposit shows up as an in document with its own `status` and `stages`. List deposits with [`GET /v2/documents/in`](/v2/api-reference/banking-api/documents/receivables/list-receivables) or read one with [`GET /v2/documents/in/{id}`](/v2/api-reference/banking-api/documents/receivables/get-receivable), and follow each status change through [webhook events](/v2/webhooks/events/overview). The [Document lifecycle](/v2/guides/pix/document-lifecycle) guide describes the statuses.
 
-## Learn More
+## Next steps
 
-For additional details about Dynamic QR Code creation, including all attributes, response structures, and error messages, refer to the API Reference:
-
-[Create a new dynamic pix QRCode](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post)
+- [QR code types](/v2/guides/pix/qr-codes): static, dynamic and dynamic-with-due-date codes.
+- [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success): pay your QR code in the sandbox.
+- [Fees](/v2/guides/receivables/fees) and [Split payments](/v2/guides/receivables/split-payments): charge extra or distribute the amount.
+- [Create a boleto](/v2/guides/boleto/create-boleto): receive by boleto instead of Pix.

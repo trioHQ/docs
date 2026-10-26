@@ -1,71 +1,66 @@
 ---
 title: "Welcome"
-description: "Trio is a complete banking solution for companies, designed to automate financial operations, move money at scale, and manage corporate treasury efficiently."
+description: "Trio V2 API documentation: what Trio does, what changed in V2 and where to start."
 icon: "star"
 ---
 
-We are authorized by the Central Bank of Brazil (No. 619 and ISPB 49931906) and offer a modern and secure infrastructure to integrate financial services directly into your system.
+Trio is a complete banking solution for companies, designed to automate financial operations, move money at scale and manage corporate treasury. Trio is authorized by the Central Bank of Brazil (No. 619, ISPB 49931906) and exposes its infrastructure through a REST API, so you can embed Pix, boleto, payments and corporate cards directly in your product.
 
-This documentation has been created to guide you through our concepts, best practices, and tutorials, as well as showing you how to interact with your account programmatically via our API.
+This is the documentation of the **V2 API**. It walks you from your first sandbox request to a production integration, and it is organized so that each section answers one kind of question.
 
-## **How to Navigate the Documentation**
+## Start here
 
-Trio’s documentation is organized into three main sections to support your integration journey — from your first API request to full production implementation.
+<CardGroup cols={2}>
+  <Card title="Plan your integration" icon="map" href="/v2/getting_started/plan-your-integration">
+    What an integration involves, how long it takes and the steps in order.
+  </Card>
+  <Card title="Sandbox account" icon="flask" href="/v2/guides/sandbox_account">
+    Create a free sandbox account and explore the Trio App.
+  </Card>
+  <Card title="First API credential" icon="key" href="/v2/guides/creating-your-first-api-credential">
+    Generate the client ID and secret every request authenticates with.
+  </Card>
+  <Card title="First webhook" icon="bell" href="/v2/guides/creating-your-first-webhook">
+    Receive events instead of polling the API.
+  </Card>
+</CardGroup>
 
-## **1. Getting Started**
+## How the documentation is organized
 
-### **Start here**
+- **Get Started** explains the basics every request depends on: environments, authentication, the core objects, error handling, pagination, dates and rate limits, plus how webhooks work.
+- **Guides** are task-oriented walkthroughs grouped by what you want to do: onboard customers, receive money (Pix, boleto, Pix Automático, fees, split payments), pay money, run operations and use the Trio SDK.
+- **API reference** is the complete catalog of V2 endpoints, generated from the OpenAPI specification, with request and response schemas and an interactive playground.
+- **FAQ** collects the questions integrators ask most, about the sandbox, credentials, webhooks and boletos.
 
-Follow our quick start guide and complete your first integration steps in just a few minutes.
+## What changed in V2
 
-This introductory section is designed for developers who are integrating with Trio for the first time.
+If you integrated with the V1 API, these are the differences you will meet first. Each guide also carries a short "Coming from V1?" note where it matters.
 
-Here you’ll learn how to:
+| Area | V1 | V2 |
+| --- | --- | --- |
+| Paths | `/banking/...`, `/webhooks` | Every path starts with `/v2` |
+| Accounts | Bank accounts and virtual accounts (`virtual_account_id`) | Bank accounts only. Every receivable and payment names its `bank_account_id` |
+| Transactions | Collecting and payment documents | In documents, out documents and transfer documents under `/v2/documents`, each with its refunds |
+| Response shapes | Flat ids and timestamps (`counterparty_id`, `origin_type`, `timestamp`) | Nested objects (`counterparty`, `origin`, `reference`, `fee`) and `inserted_at` / `updated_at`. Money is `{ "amount", "currency" }` |
+| Pix payouts | One endpoint with `reference` | An asynchronous endpoint with `reference`, or a check-then-pay flow with `check_id`. Payments to a bank account send a `counterparty` |
+| Boleto and Pix Automático | Flat discount, fine and interest fields | Structured `due_detail` rules with a `calculation_type` and percentages in basis points |
+| Split payments | `split` | `splits`, with the same items |
+| Updates and cancellations | Returned the object | Return `204 No Content`; read the resource back or wait for the webhook |
+| Validation errors | `400` | `422`, with the rule code in `error_code` |
+| Pagination | `has_next` | `has_more`, with `before` and `after` cursors |
+| Webhooks | One payload version | `api_version` chooses `v100` or `v200` payloads; webhooks can be limited to an entity or a group |
 
-- Understand the basic API concepts
-- Configure your environment
-- Generate API credentials
-- Authenticate requests
-- Make your first API calls
-- Error table
+Pix biometrics and virtual accounts have no V2 endpoints.
 
-It is the best place to begin before moving on to more advanced topics.
+## Environments
 
----
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://api.sandbox.trio.com.br` |
+| Production | `https://api.trio.com.br` |
 
-## **2. Guides**
+Every example in this documentation uses the sandbox. See [Environments](/v2/developers/environments) and [Authentication](/v2/developers/authentication) before your first request.
 
-### **Practical integration guides**
+## Need help?
 
-The **Guides** section contains practical and technical tutorials focused on integration scenarios.
-
-These guides are designed to help developers quickly implement and test the main Trio features during the first stages of integration.
-
-Here you’ll find:
-
-- Step-by-step implementation examples
-- Practical testing flows
-- Sandbox simulation guides
-- Authentication and webhook examples
-- Explanations transaction flows
-- Integration best practices
-
-This is the recommended section for developers actively building and validating their integration.
-
----
-
-## **3. API Reference**
-
-### **Complete API specification**
-
-The **API Reference** section is the complete technical catalog of all available endpoints.
-
-It provides detailed information about:
-
-- Request and response examples
-- Parameters and headers
-- Data structures
-- Authentication requirements
-- Status codes and error responses
-
-This section serves as a quick and reliable reference during development and troubleshooting.
+The [Support](/v2/getting_started/support) page lists the channels, their availability and what to include when you report an issue.

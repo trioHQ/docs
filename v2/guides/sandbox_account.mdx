@@ -1,59 +1,44 @@
 ---
-title: "Sandbox Account"
-description: "Create a free Sandbox account to test the Trio API and webhooks without financial risk."
+title: "Sandbox account"
+description: "Create a free sandbox account to test the Trio API and webhooks without financial risk."
 ---
 
-Before starting your integration with the Trio API, the first step is to create an account in the Sandbox environment — our secure and free testing environment.
+Before you integrate with the Trio API, create an account in the sandbox: Trio's free, isolated testing environment. Sign up at [app.sandbox.trio.com.br/signup](https://app.sandbox.trio.com.br/signup).
 
-Access:
+## What the sandbox is for
 
-[https://app.sandbox.trio.com.br/signup](https://app.sandbox.trio.com.br/signup)
+The sandbox replicates the behavior of the production API without touching real money or data. Use it to:
 
----
+- simulate transactions such as payments, withdrawals and refunds;
+- test validation and error handling, including failed and blocked transactions;
+- exercise every API operation and webhook event, so your integration is validated before it moves to production.
 
-## About the Sandbox Environment
+The sandbox and production have different base URLs: see [Environments](/v2/developers/environments).
 
-The Sandbox environment is an isolated environment that replicates the behavior of the production API, allowing you to:
+## Register your organization
 
-- Simulate transactions such as payments, withdrawals, and refunds;
-- Test validation and error-handling flows, including failure and blocked transaction scenarios;
-- Develop and validate your integration without financial risk.
-
----
-
-## Organization Registration
-
-When accessing the Sandbox environment, you will be required to register your organization.
-
-The registration process is fast, free, and available to any company interested in evaluating and validating Trio’s solution before moving to production.
-
-Use the Sandbox environment to test all API operations and webhook events.
-
-This ensures that your integration is fully validated and production-ready before migrating to the live environment.
+The first time you access the sandbox, you register your organization. Registration is fast, free and open to any company that wants to evaluate Trio before moving to production.
 
 <Frame>
-  ![Image (19)](/images/image-\(19\).png)
+  <img alt="Organization registration in the sandbox Trio App" src="/images/image-(19).png" />
 </Frame>
 
-The Trio Sandbox App is the testing version of our internet banking platform, designed to mirror the production environment.
+## Explore the Trio App
 
-It allows you to explore the platform features, validate operational flows, and prepare your API integration in a secure and isolated environment.
+The sandbox Trio App is the testing version of Trio's internet banking and mirrors production. Use it to explore the platform, validate operational flows and prepare your API integration. In the App you can:
 
----
-
-## Exploring the Trio App
+- manage accounts and balances;
+- perform transactions and monitor account activity;
+- access settings and operational reports;
+- configure and validate API credentials and webhooks.
 
 <Frame>
-  ![Image (20)](/images/image-\(20\).png)
+  <img alt="Home screen of the sandbox Trio App" src="/images/image-(20).png" />
 </Frame>
 
-For a complete overview of the platform features and capabilities, access the Trio App practical guide:
+For a complete tour of the platform, see the [Trio App user manual](https://suporte.trio.com.br/manual-de-uso-trio) (in Portuguese).
 
-[https://suporte.trio.com.br/manual-de-uso-trio](https://suporte.trio.com.br/manual-de-uso-trio)
+## Next steps
 
-Within the App, you can:
-
-- Manage accounts and balances;
-- Perform transactions and monitor account activity;
-- Access settings and operational reports;
-- Configure and validate API and webhook integrations.
+- [Create your first API credential](/v2/guides/creating-your-first-api-credential) in the sandbox Trio App.
+- Read [Environments](/v2/developers/environments) for the sandbox and production base URLs.

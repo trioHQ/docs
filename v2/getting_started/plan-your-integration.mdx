@@ -1,51 +1,49 @@
 ---
-title: "Plan your Integration"
+title: "Plan your integration"
 description: "What a Trio integration involves, how long it usually takes and where to start on the V2 API."
 ---
 
-Integrating with Trio allows you to accept payments, receive payouts, and seamlessly reconcile your accounts. With **Trio Checkout**, you can easily create a payment flow—either embedding it directly on your website or hosting it on Trio’s platform.
+A Trio integration lets you receive and make payments in Brazil and reconcile your bank accounts through the V2 API. This page explains what you integrate with, what drives the timeline and the order in which to read the rest of the getting started pages.
 
-Our APIs provide a **secure and efficient** way to process payments in Brazil, while the **Trio Dashboard (internet banking)** centralizes reporting, giving you **real-time visibility** into charges, fees, refunds, and transfers.
+## What you integrate with
 
-To get started, simply [**log in**](https://app.trio.com.br/) or [**register**](https://onboarding.trio.com.br/) for a Trio account.
+- **The V2 API**: every path starts with `/v2`, and the [API reference](/v2/api-reference/banking-api/entities/list) documents each endpoint, request and response.
+- **Webhooks**: Trio notifies your application when an event occurs, so you do not need to poll. See [Webhooks](/v2/webhooks/introduction).
+- **The Trio App**: the web console (internet banking) where you manage accounts, create API credentials and webhooks, and follow charges, fees, refunds and transfers in real time.
 
-### **Get started**
+{/* TODO(v2): verify — "Trio Checkout" is kept from the V1 copy; confirm it is offered alongside the V2 API. */}
+With **Trio Checkout** you can also offer a payment flow without building it yourself, either embedded on your website or hosted by Trio.
 
-While a Trio integration can be completed in as little as **one week**, the timeline may vary depending on the complexity of your internal systems.
+You develop and test in the sandbox first. When you are ready to go live, [register](https://onboarding.trio.com.br/) for a Trio account, or [log in](https://app.trio.com.br/) if you already have one.
 
-For businesses with additional integration requirements, the process can take anywhere from **less than a week to up to three months**. Key factors influencing this timeline include:
+## How long it takes
 
-- **Engineering resources** available for development and testing;
-- **Integration with internal systems** such as ERP or accounting platforms;
-- **Change management** across impacted teams.
+A Trio integration can be completed in as little as one week. For businesses with additional integration requirements, the process takes anywhere from less than a week to three months, depending on:
 
-Understanding these dependencies will help you plan a smooth and efficient integration.
+- the engineering resources available for development and testing;
+- the integration with internal systems such as ERP or accounting platforms;
+- the change management across the teams the integration affects.
 
-### **Suggested Schedule**
+Knowing these dependencies up front helps you plan a smooth integration.
+
+## Suggested schedule
 
 <Frame>
   <img
-    alt="Image"
-    title="Image"
-    lightAlt="Image"
-    darkAlt="Image"
+    alt="Suggested integration schedule"
     src="/images/iShot_2026-05-27_17.45.27.png"
     className="dark:hidden"
   />
   <img
-    alt="Image"
-    title="Image"
-    lightAlt="Image"
-    darkAlt="Image"
+    alt="Suggested integration schedule"
     src="/images/iShot_2026-05-27_17.43.22-1.png"
     className="hidden dark:block"
   />
 </Frame>
 
-### **Next steps**
+## Next steps
 
-1. [Create a sandbox account](/v2/guides/sandbox_account) and explore the Trio App;
-2. [Generate your first API credential](/v2/guides/creating-your-first-api-credential) and read the [authentication](/v2/developers/authentication) page;
-3. [Register your first webhook](/v2/guides/creating-your-first-webhook) to receive events without polling;
-4. Follow the guides for your use case: [Receivables](/v2/guides/receivables/overview), [Payments](/v2/guides/payments/overview), [Boleto](/v2/guides/boleto/overview) and [Pix](/v2/guides/pix/overview);
-5. Keep the [API reference](/v2/api-reference/banking-api/entities/list) at hand for every endpoint, request and response.
+1. [Create a sandbox account](/v2/guides/sandbox_account) and explore the Trio App.
+2. [Create your first API credential](/v2/guides/creating-your-first-api-credential) and read [Authentication](/v2/developers/authentication).
+3. [Register your first webhook](/v2/guides/creating-your-first-webhook) to receive events without polling.
+4. Follow the guide for your use case: [Receivables](/v2/guides/receivables/overview) or [Payments](/v2/guides/payments/overview).

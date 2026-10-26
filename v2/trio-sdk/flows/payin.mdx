@@ -1,0 +1,141 @@
+---
+title: "PayIn flow"
+description: "Create a payin checkout session so your users can cash in money through Trio Checkout with almost zero friction."
+---
+
+Use the PayIn flow whenever you want users to cash in money with almost zero friction. To generate a PayIn through the Checkout SDK you create a checkout session with `options.session_type` set to `payin`; the session carries the transaction, the receiving account and the look of the checkout.
+
+{/* TODO(v2): verify — the checkout session endpoint (POST /checkout/sessions) belongs to the Initiation API, which has no V2 reference pages and still names the receiving account `receiver.virtual_account_id`. The V2 banking API has no virtual accounts; confirm which identifier the Checkout API expects. */}
+
+## Session parameters
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `transaction.tax_number` | Yes | The tax number (CPF or CNPJ) of the person you intend to receive money from. |
+| `transaction.phone_number` | No | Additional information about the person you intend to receive money from. |
+| `transaction.email` | No | Additional information about the person you intend to receive money from. |
+| `transaction.name` | No | Customer name. |
+| `transaction.amount` | Yes | Value of the deposit, in cents (BRL 100.00 = `10000`). |
+| `transaction.external_id` | No | Reference for your system. |
+| `transaction.description` | No | Additional information about the transaction. |
+| `transaction.redirect_url` | No | URL the user is redirected to after completing an open finance transaction. Defaults to a Trio confirmation URL. |
+| `receiver.virtual_account_id` | Yes | Unique identifier of the account that receives the money. |
+| `options.session_type` | Yes | Session type, in this case `payin`. |
+| `options.expiration_in_seconds` | No | Integer. If set, the checkout session only remains active for this long; otherwise it lasts 300 seconds (5 minutes). |
+| `options.theme` | No | White label customization, described below. |
+
+### White label
+
+You can customize your end user's experience by using the checkout as a white label, through the `options.theme` object:
+
+| Field | Description |
+| --- | --- |
+| `colors.backdrop_color` | Hex color of the background. Accepts any color. |
+| `colors.button_color` | Hex color of the primary action button. Accepts any color. |
+| `colors.button_label_color` | Hex color of the primary action text. Accepts only `#000000` or `#ffffff`. |
+| `colors.link_color` | Hex color of links. Accepts any color. |
+| `colors.navbar_action_color` | Hex color of the navbar actions. Accepts only `#000000` or `#ffffff`. |
+| `colors.navbar_color` | Hex color of the top navbar background. Accepts any color. |
+| `logo_url` | URL of the logo added to the flow. |
+
+This is what a fully customized checkout looks like:
+
+![](/images/image.jpeg)
+
+## Create the session
+
+Make a `POST` request to `/checkout/sessions` with the following payload:
+
+{/* TODO(v2): verify — the V1 example sends `options.expiration_in_seconds` as the string "86400" although the field is described as an integer. */}
+
+```json
+{
+  "transaction": {
+    "tax_number": "23725474028",
+    "phone_number": "+5541999999999",
+    "email": "user@trio.com.br",
+    "name": "John Doe",
+    "amount": 1,
+    "external_id": "01H7DKA58YDWPA7ZBCCAVWFM5E",
+    "description": "Paid to example.com",
+    "redirect_url": "http://your.url.here"
+  },
+  "receiver": {
+    "virtual_account_id": "018a66ca-0451-9cd7-1cfa-8dca325db29f"
+  },
+  "options": {
+    "session_type": "payin",
+    "expiration_in_seconds": "86400",
+    "theme": {
+      "colors": {
+        "backdrop_color": "#ffffff",
+        "button_color": "#f6df69",
+        "button_label_color": "#000000",
+        "link_color": "#426b55",
+        "navbar_action_color": "#ffffff",
+        "navbar_color": "#426b55"
+      },
+      "logo_url": "https://linktologo.com/link.png"
+    }
+  }
+}
+```
+
+With the correct parameters you receive an `HTTP 200` response like this one. Save `data.id`: it is the `session` you pass to `Trio.create()`.
+
+```json
+{
+  "data": {
+    "company_id": "018da8cb-17da-5287-40c4-724ed90e2a0e",
+    "expiration_timestamp": "2024-05-04T19:44:11.960965Z",
+    "id": "018f4002-6d38-7d42-7c5f-c2dd50842d51",
+    "options": {
+      "allow_other_pix_key": null,
+      "session_type": "payin",
+      "theme": {
+        "colors": {
+          "backdrop_color": "#888888",
+          "button_color": "#15294B",
+          "button_label_color": "#FFFFFF",
+          "link_color": "#15294B",
+          "navbar_action_color": "#000000",
+          "navbar_color": "#FFFFFF"
+        },
+        "logo_url": "https://www.trio.com.br/_next/static/media/Logo.341273f5.svg"
+      }
+    },
+    "participants": null,
+    "receiver": {
+      "virtual_account_id": "018e3df6-d70f-9489-2c7e-ca880a25ea46"
+    },
+    "timestamp": "2024-05-03T19:50:51.960965Z",
+    "transaction": {
+      "amount": {
+        "amount": 1,
+        "currency": "BRL"
+      },
+      "available_withdraw_amount": null,
+      "description": "Paid to example.com",
+      "email": "user@trio.com.br",
+      "expiration_in_seconds": 86000,
+      "external_id": "Sessão de Teste",
+      "name": "John Doe",
+      "phone_number": "+5541999999999",
+      "redirect_url": "http://your.url.here",
+      "tax_number": "23725474028"
+    }
+  }
+}
+```
+
+## What the user sees
+
+When the checkout opens, the user goes through these screens:
+
+![](/images/image-\(17\).png)
+
+## Next steps
+
+- [Using the SDK](/v2/trio-sdk/using-the-sdk): pass the session to `Trio.create()` and open the checkout.
+- [Receivables](/v2/guides/receivables/overview): what happens to the money once the in document settles.
+- [Webhooks](/v2/webhooks/introduction): be notified when the payment settles.

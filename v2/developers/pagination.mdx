@@ -3,21 +3,17 @@ title: "Pagination"
 description: "How V2 list endpoints paginate with before and after cursors, limit and has_more."
 ---
 
-In order to enhance the performance of our API and to ensure the scalability and stability of our services, we use cursor-based pagination for navigating large data sets. This document will guide you through the process of understanding and implementing cursor-based pagination for our API.
+List endpoints return one page at a time and use cursor-based pagination: instead of numbered pages, each page carries an opaque pointer (a cursor) to the item where the next or previous page starts. This lets you walk large data sets without duplicating or missing results, and keeps the API fast and stable.
 
-### **Cursor-based Pagination**
+## How it works
 
-Cursor-based pagination allows for efficient traversal through large data sets by using a pointer (a.k.a. cursor) to a specific item in the data set. Instead of relying on numbered pages, cursor-based pagination focuses on a unique identifier for each item, making it possible to fetch subsequent items without duplicating or missing any results.
+Every paginated response carries a `metadata` object with two cursors and one flag:
 
-### **How It Works**
+- `after`: points to the next page; `null` on the last page.
+- `before`: points to the previous page; `null` on the first page.
+- `has_more`: whether a next page exists.
 
-When making a request to an API endpoint that supports pagination, the API will return a set of results along with two cursor values and one helper variable:
-
-- `after`: A value that points to the next page of the data set, `null` on the last page.
-- `before`: A value that points to the previous page of the data set, `null` on the first page.
-- `has_more`: Whether a next page exists.
-
-These cursor values can then be passed as query parameters in the subsequent API requests to fetch the next or previous set of results. They are mutually exclusive, meaning that only one of them can be set at the time to iterate through the results.
+Pass `after` or `before` as a query parameter of the next request to move forward or backward. They are mutually exclusive: send only one of them per request.
 
 Endpoints that accept a `limit` query parameter return 50 records per page by default and at most 100.
 
@@ -25,25 +21,34 @@ Endpoints that accept a `limit` query parameter return 50 records per page by de
 
 Document listings are also bounded in time: `GET /v2/documents/in`, `GET /v2/documents/out` and the refund listings require `from_datetime` and `to_datetime`, so a page is always taken from the period you ask for.
 
-```text
-curl "https://api.sandbox.trio.com.br/v2/documents/in?from_datetime=2026-10-01T00:00:00Z&to_datetime=2026-10-31T23:59:59Z&after=g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw==" \
-  -H "Content-Type: application/json" \
-  -u {client_id}:{client_secret}
-```
+## Example
 
-The cursor values are encapsulated at `metadata` object on responses that supports pagination. The `metadata` will look like this:
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br`. The `metadata` of a paginated response looks like this:
 
 ```json
 {
   "data": [],
   "metadata": {
     "before": null,
-    "after": "g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw==",
+    "after": "g3QAAAACZAACaWRt...",
     "has_more": true
   }
 }
 ```
 
+To fetch the next page, repeat the request with the `after` cursor:
+
+```bash
+curl "https://api.sandbox.trio.com.br/v2/documents/in?from_datetime=2026-10-01T00:00:00Z&to_datetime=2026-10-31T23:59:59Z&after=g3QAAAACZAACaWRt..." \
+  -H "Content-Type: application/json" \
+  -u {client_id}:{client_secret}
+```
+
 <Note>
-  V1 named the helper `has_next`. On V2 it is `has_more`.
+  **Coming from V1?** V1 named the flag `has_next`. On V2 it is `has_more`.
 </Note>
+
+## Next steps
+
+- [Date and time](/v2/developers/date-and-time): the format of `from_datetime` and `to_datetime`.
+- [List receivables](/v2/api-reference/banking-api/documents/receivables/list-receivables): a paginated endpoint in the API reference.

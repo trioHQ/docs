@@ -1,18 +1,14 @@
 ---
-title: "Error table"
+title: "Error handling"
 description: "HTTP status codes, the error body and the error codes returned by the V2 API."
 ---
 
-We try to handle the errors and mistakes beautifully as possible. So we use HTTP codes convention to group the errors:
+The V2 API groups outcomes by HTTP status code: `2xx` means the request worked as expected, `4xx` means it failed because of invalid information or a validation error, and `5xx` means something went wrong on Trio's side. Every error also returns a JSON body that tells you what went wrong, so you can handle it during the integration.
 
-* `2xx` status codes confirm that your request worked as expected
-* `4xx` status codes indicate that the request failed due some invalid information or a validation error
-* `5xx` status codes are use when something went wrong at Trio servers and systems.
+## Error body
 
-To better error handling during the integration, we always return the errors in the response body using the following fields:
-
-- `error.error_code`: stable `UPPER_SNAKE` identifier of the error, for programs and logs. Branch on this, not on the message;
-- `error.error_message`: human readable explanation of the error;
+- `error.error_code`: stable `UPPER_SNAKE` identifier of the error, for programs and logs. Branch on this, not on the message.
+- `error.error_message`: human-readable explanation of the error.
 - `error.errors`: only on `INVALID_PARAMETER` for a request outside the operation's schema, one entry per offending field, with a JSON pointer in `field` and what is wrong with it in `message`.
 
 ```json
@@ -30,7 +26,7 @@ To better error handling during the integration, we always return the errors in 
 }
 ```
 
-### HTTP status codes summary
+## HTTP status codes
 
 | Code | Type | Description |
 | --- | --- | --- |
@@ -42,13 +38,13 @@ To better error handling during the integration, we always return the errors in 
 | 403 | Forbidden | The API key may not do this, for instance a `Trio-Target-Org-Id` it has no access to, or a write through a read-only access. |
 | 404 | Not Found | No resource with this ID. |
 | 422 | Unprocessable | Invalid input: a field that fails validation, a missing required field, or a business rule the request breaks. |
-| 429 | Too Many Requests | Too many requests, see [Rate limit](/v2/developers/rate-limit). |
+| 429 | Too Many Requests | Too many requests, see [Rate limits](/v2/developers/rate-limit). |
 | 500 | Server Error | Something went wrong in Trio's infrastructure. |
 | 503 | Service Unavailable | A service needed to answer is unavailable. |
 
 {/* TODO(v2): verify — 429 and 500 are kept from V1; the V2 spec documents 400, 401, 403, 404, 422 and 503 only. */}
 
-### Error codes
+## Error codes
 
 | Code | Status | Description |
 | --- | --- | --- |
@@ -61,10 +57,16 @@ To better error handling during the integration, we always return the errors in 
 | REQUIRED_PARAMETER | 422 | A required field is missing. |
 | TRIO_SERVICE_UNAVAILABLE | 503 | A service needed to answer is unavailable. |
 
-### Business rules
+## Business rules
 
 When a request is well formed but breaks a business rule, the API answers `422` and `error_code` carries the code of the rule the request breaks. The rule codes below are the ones documented for V1; V2 answers them with `422` instead of the `400` or `404` shown by V1.
 
 {/* TODO(v2): verify — the V2 spec says 422 carries "the code of the rule the request breaks" but lists no rule codes; the table below is the V1 list, without the virtual account rule, and its messages are the V1 Portuguese messages. */}
 
 <table><thead><tr><th width="293.9296875">Code</th><th>Message</th></tr></thead><tbody><tr><td>ALREADY_EXISTS_RESOURCE</td><td>Já existe um {recurso} para a referência informada.</td></tr><tr><td>INVALID_RESOURCE</td><td>{recurso} é inválido.</td></tr><tr><td>ENTITY_IN_ANALYSIS</td><td>Entidade está em análise, aguarde a aprovação. Referência: #{id}.</td></tr><tr><td>ENTITY_INVALID_CURRENCY</td><td>Moeda da transação diferente da informada na entidade. Utilize a moeda #{currency}.</td></tr><tr><td>ENTITY_INVALID_ADDRESS</td><td>Entidade não possui endereço válido. Referência: #{id}.</td></tr><tr><td>BANK_ACCOUNT_IN_ANALYSIS</td><td>Conta bancária está em análise, aguarde a aprovação. Referência: #{id}.</td></tr><tr><td>BANK_ACCOUNT_DAILY_TRANS_LIMIT_REACHED</td><td>Limite diário de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_DAILY_AMOUNT_LIMIT_REACHED</td><td>Limite diário de valor de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_OVERNIGHT_TRANS_LIMIT_REACHED</td><td>Limite noturno de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_OVERNIGHT_AMOUNT_LIMIT_REACHED</td><td>Limite noturno de valor de transações atingido.</td></tr><tr><td>BANK_ACCOUNT_MIN_SINGLE_TRANS_AMOUNT_REACHED</td><td>Limite mínimo do valor da transação não foi atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_SINGLE_TRANS_AMOUNT_REACHED</td><td>Limite máximo do valor da transação atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_COUNTERPARTY_TRANS_REACHED</td><td>Limite diário de transações para uma contrapartida atingido.</td></tr><tr><td>BANK_ACCOUNT_MAX_COUNTERPARTY_AMOUNT_REACHED</td><td>Limite diário de valor de transações para uma contrapartida atingido.</td></tr><tr><td>PIX_KEY_CANCELED</td><td>Chave Pix está cancelada. Referência: #{id}.</td></tr><tr><td>PIX_KEY_CONFIRMED</td><td>Chave Pix já foi confirmada. Referência: #{id}.</td></tr><tr><td>PIX_KEY_ALREADY_EXISTS</td><td>Já existe uma chave Pix criada ou confirmada. Referência: #{key}.</td></tr><tr><td>PIX_KEY_INVALID_KEY</td><td>--</td></tr><tr><td>PIX_KEY_REQUIRED</td><td>A chave deve ser informada quando o tipo é 'random_key'.</td></tr><tr><td>PIX_KEY_INVALID_TYPE</td><td>O tipo deve ser: 'tax_number', 'email', 'phone' ou 'random_key'.</td></tr><tr><td>PIX_KEY_CONFIRMATION_TYPE_INVALID</td><td>Confirmação com código deve ser executada somente para chaves Pix do tipo: 'email' ou 'phone'.</td></tr><tr><td>PIX_KEY_PENDING</td><td>Chave Pix não foi confirmada. Referência: #{id}.</td></tr><tr><td>COLLECTING_DOCUMENT_NOT_SETTLED</td><td>Documento de recebimento não está liquidado. Referência: #{id}.</td></tr><tr><td>COLLECTING_DOCUMENT_WITHOUT_BALANCE</td><td>Valor da devolução #{amount}, maior que o saldo #{balance} do documento de recebimento.</td></tr><tr><td>PAYMENT_BRCODE_ALREADY_USED</td><td>Brcode #{id}, já possui um documento vinculado #{id}.</td></tr><tr><td>PAYMENT_AMOUNT_ERROR</td><td>Valor de pagamento #{amount} deve ser igual ao valor do brcode #{id}, valor #{amount}.</td></tr><tr><td>PAYMENT_ACCOUNT_WITHOUT_BALANCE</td><td>Saldo insuficiente para executar o pagamento. Saldo atual #{amount}.</td></tr><tr><td>QUERY_LIMIT_REACHED</td><td>Limite de consultas atingido. Tente novamente em 1 minuto.</td></tr><tr><td>KEY_NOT_FOUND</td><td>Chave Pix não foi encontrada. Referência: {key}.</td></tr><tr><td>BRCODE_NOT_FOUND</td><td>Brcode não foi encontrado. Referência: {brcode}.</td></tr><tr><td>KEY_NOT_FOUND_MULTI_ATTEMPTS</td><td>Chave Pix não foi encontrada. Crie a chave e tente novamente em 1 hora. Referência: {key}.</td></tr></tbody></table>
+
+## Next steps
+
+- [Rate limits](/v2/developers/rate-limit): what a `429` means and how to back off.
+- [Request identification](/v2/developers/request-identification): the `X-Request-Id` to quote when you report an error.
+- [Support](/v2/getting_started/support): channels and what to include in a report.

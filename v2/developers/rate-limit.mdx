@@ -1,28 +1,24 @@
 ---
-title: "Rate limit"
+title: "Rate limits"
 description: "Rate limits per environment and how to back off when the API answers 429."
 ---
 
-There are some rate limiting policies implemented in our API to ensure fair usage and prevent abuse. It is important to understand and respect these rate limits when interacting with our API to avoid disruptions in service.
+The API enforces rate limits to ensure fair usage and prevent abuse. Respect them to avoid disruptions to your integration.
 
-### **Default Rate Limits**
+## Default limits
 
-Our API enforces the following default rate limits:
+| Environment | Limit |
+| --- | --- |
+| `production` | 60 requests per second |
+| `sandbox` | 5 requests per second |
 
-- Production environment: 60 requests per second
-- Sandbox environment: 5 requests per second
-
-These limits apply to each individual account and **to each endpoint**, and are enforced on a per-second basis.
+The limits apply to each individual account and **to each endpoint**, and are enforced per second.
 
 {/* TODO(v2): verify — the rate limits, the 429 status and its body below are kept from V1; the V2 spec does not document rate limiting. */}
 
-### **Rate Limit Exceeded**
+## When you exceed a limit
 
-When an account exceeds the allowed rate limit, our API will respond with a `429` status code, indicating that the rate limit has been reached. This response will be accompanied by a message in the body, providing more information about the exceeded rate limit.
-
-#### **Example**
-
-A sample response when the rate limit has been exceeded:
+The API answers `429 Too Many Requests` with a body that describes the exceeded limit:
 
 ```text
 HTTP/1.1 429 Too Many Requests
@@ -34,16 +30,19 @@ Content-Type: application/json
 }
 ```
 
-### **Handling Rate Limit Exceeded Errors**
+## Back off and retry
 
-When receiving a `429` status code in response to an API request, it is crucial to implement a back-off strategy in your application. This may include:
+When you receive a `429`, back off before retrying:
 
-- Retrying the request after a short delay
-- Implementing an exponential back-off algorithm to gradually increase the delay between retries
-- Using a queue system to manage requests and distribute them evenly over time
+- retry the request after a short delay;
+- use exponential back-off to increase the delay between retries;
+- queue requests and spread them evenly over time.
 
-By implementing a back-off strategy, you can ensure that your application gracefully handles rate limit exceeded errors and continues to function correctly.
+## Higher limits
 
-### **Upgrading Rate Limits**
+If your application needs a higher rate limit, you may be eligible for an upgrade. Contact [support](/v2/getting_started/support) to discuss your requirements.
 
-If your application requires a higher rate limit, you may be eligible for an upgrade. Please contact our [support team](/v2/getting_started/support) to discuss your requirements and explore the available options for increasing your account's rate limits.
+## Next steps
+
+- [Error handling](/v2/developers/error-table): every status code and error code.
+- [Environments](/v2/developers/environments): sandbox and production base URLs.

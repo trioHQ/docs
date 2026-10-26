@@ -1,36 +1,33 @@
 ---
-title: "Date & Time"
+title: "Date and time"
 description: "Date and time formats used by the V2 API: UTC timestamps and plain dates."
 ---
 
-All dates and times managed and returned by our API are represented in the Coordinated Universal Time (UTC) timezone and adhere to the ISO 8601 format. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) is an internationally recognized standard for representing date and time in a human-readable and machine-parsable manner.
+All dates and times the API accepts and returns are in Coordinated Universal Time (UTC) and follow [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601), a standard that is both human-readable and machine-parsable. Timestamps carry a time component; some fields are calendar dates without one.
 
-### **Format**
+## Timestamps
 
-The ISO 8601 format for date and time representation follows this pattern:
+Timestamps follow the pattern `YYYY-MM-DDTHH:mm:ss.ffffffZ`:
 
-`YYYY-MM-DDTHH:mm:ss.ffffffZ`
+| Part | Meaning |
+| --- | --- |
+| `YYYY` | 4-digit year |
+| `MM` | 2-digit month (01-12) |
+| `DD` | 2-digit day of the month (01-31) |
+| `T` | Separator between the date and time components |
+| `HH` | 2-digit hour (00-23) |
+| `mm` | 2-digit minute (00-59) |
+| `ss` | 2-digit second (00-59) |
+| `ffffff` | Fraction of a second, returned with microsecond precision and optional in what you send |
+| `Z` | The date and time are in UTC |
 
-Where:
+For example, `inserted_at` and `updated_at` come back as `2026-10-07T20:16:02.471297Z`: October 7, 2026 at 20:16:02.471297 UTC. Query filters such as `from_datetime` and `to_datetime` take the same format, for instance `2026-10-01T00:00:00Z`.
 
-- YYYY represents the 4-digit year
-- MM represents the 2-digit month (01-12)
-- DD represents the 2-digit day of the month (01-31)
-- T is the separator between the date and time components
-- HH represents the 2-digit hour (00-23)
-- mm represents the 2-digit minute (00-59)
-- ss represents the 2-digit second (00-59)
-- ffffff represents the fraction of a second, returned with microsecond precision and optional in what you send
-- Z indicates that the date and time are in the Coordinated Universal Time (UTC)
+## Dates without time
 
-#### **Example**
+Some fields are calendar dates with no time component and follow the pattern `YYYY-MM-DD`, for example `2026-10-25`. They are the business dates of a receivable or a payment:
 
-An example of a date and time represented in the ISO 8601 format, as returned in `inserted_at` and `updated_at`:
-
-`2026-10-07T20:16:02.471297Z`
-
-This represents the date and time: October 7, 2026, 20:16:02.471297 (UTC). Query filters such as `from_datetime` and `to_datetime` take the same format: `2026-10-01T00:00:00Z`.
-
-### **Dates without time**
-
-Some fields are calendar dates with no time component and follow the pattern `YYYY-MM-DD`, for example `2026-10-25`. They are the business dates of a receivable or a payment, such as the `due_date` of a boleto or of the first payment of a recurrence, the `start_date` and `end_date` of a recurrence, the `expiration_date` and `issue_date` of a boleto, and the `date` of each discount in `due_detail.discount.fixed_until_due.amounts`.
+- the `due_date` of a boleto or of the first payment of a recurrence;
+- the `start_date` and `end_date` of a recurrence;
+- the `expiration_date` and `issue_date` of a boleto;
+- the `date` of each discount in `due_detail.discount.fixed_until_due.amounts`.

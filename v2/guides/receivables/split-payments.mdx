@@ -1,29 +1,23 @@
 ---
-title: "Split Payments"
-description: "Distribute a receivable among split recipients on QR Codes and boletos"
+title: "Split payments"
+description: "Distribute the amount of a receivable among split recipients on QR codes and boletos."
 ---
 
-A split distributes the amount received by a receivable among one or more **split recipients**. It is configured the same way across **Dynamic QR Codes**, **Static QR Codes**, and **Boletos**.
-
-> All examples use fictitious data.
-
----
+A split distributes the amount received by a receivable among one or more split recipients. It is configured the same way on dynamic QR codes, static QR codes and boletos. All examples use fictitious data and the sandbox base URL `https://api.sandbox.trio.com.br`.
 
 ## Where it applies
 
 | Receivable | Create endpoint |
-| ------------------ | --------------------------------------- |
-| Dynamic QR Code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) |
-| Static QR Code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post) |
+| --- | --- |
+| Dynamic QR code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) |
+| Static QR code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post) |
 | Boleto | [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post) |
 
-Splits are optional. When the `splits` array is omitted, the receivable is created without any split.
+Splits are optional. When you omit the `splits` array, the receivable is created without any split.
 
----
+## Configure a split
 
-# Split configurations
-
-A split is configured with the top-level `splits` array (named `split` in V1).
+Send the top-level `splits` array in the create request:
 
 ```json
 "splits": [
@@ -40,57 +34,50 @@ A split is configured with the top-level `splits` array (named `split` in V1).
 ]
 ```
 
-Each item in the array describes one portion of the split:
+Each item describes one portion of the split:
 
-| Field | What it represents |
-| --------------------------- | ------------------------------------------------------------ |
-| `type` | How `value` is interpreted: `percentage` or `fixed` |
-| `value` | Percentage (`0`–`100`) when `type` is `percentage`, or a fixed amount in **cents** when `type` is `fixed` |
-| `counterparty_recipient_id` | UUID of the split recipient that receives this portion |
+| Field | Required | Description |
+| --- | --- | --- |
+| `type` | Yes | How `value` is interpreted: `percentage` or `fixed`. |
+| `value` | Yes | Percentage (`0` to `100`) when `type` is `percentage`, or a fixed amount in cents (BRL 100.00 = `10000`) when `type` is `fixed`. |
+| `counterparty_recipient_id` | Yes | UUID of the split recipient that receives this portion. See [Create a split recipient](#create-a-split-recipient). |
 
-## Split type
-
-```text
-percentage → value is a percentage of the received amount (0–100)
-fixed      → value is a fixed monetary amount, in cents
-```
-
-For a **R$ 100.00** received amount:
+For a received amount of BRL 100.00:
 
 ```text
 ┌──────────────────────────────────────────────┐
-│ Received amount              R$ 100.00         │
+│ Received amount              BRL 100.00        │
 ├──────────────────────────────────────────────┤
-│ Recipient A   percentage 70  → R$ 70.00        │
-│ Recipient B   percentage 30  → R$ 30.00        │
+│ Recipient A   percentage 70  → BRL 70.00       │
+│ Recipient B   percentage 30  → BRL 30.00       │
 └──────────────────────────────────────────────┘
 ```
 
----
+<Note>
+**Coming from V1?** The array is named `splits` in V2; V1 called it `split`.
+</Note>
 
-# Split recipients
+## Create a split recipient
 
-A split entry always references a `counterparty_recipient_id`. This ID identifies a **split recipient** that you create beforehand.
-
-Create a recipient with:
+A split entry always references a `counterparty_recipient_id`: the identifier of a split recipient that you create beforehand with [`POST /v2/counterparty_recipients`](/v2/api-reference/banking-api/counterparties/create-counterparty-recipient).
 
 ```http
 POST /v2/counterparty_recipients
 ```
 
-The recipient carries the counterparty identity (`tax_number`, `name`) and a reference, selected with `ref_type`. The reference fields are sent **at the top level** of the body — which ones are required depends on `ref_type`.
+The recipient carries the counterparty identity (`tax_number`, `name`) and a reference selected by `ref_type`. Send the reference fields at the top level of the body; which ones are required depends on `ref_type`.
 
-| Field | Required | What it represents |
-| ------------ | --------------------------------- | ---------------------------------------------- |
-| `tax_number` | always | Counterparty CPF or CNPJ |
-| `name` | always | Counterparty name |
-| `ref_type` | always | `pix_key` or `bank_account_detailed` |
-| `pix_key` | when `ref_type` is `pix_key` | Pix key |
-| `ispb` | when `ref_type` is `bank_account_detailed` | Bank ISPB |
-| `branch` | when `ref_type` is `bank_account_detailed` | Branch |
-| `number` | when `ref_type` is `bank_account_detailed` | Account number |
-| `digit` | when `ref_type` is `bank_account_detailed` | Account digit |
-| `type` | when `ref_type` is `bank_account_detailed` | Account type: `checking`, `payment`, `salary`, or `savings` |
+| Field | Required | Description |
+| --- | --- | --- |
+| `tax_number` | Always | Counterparty CPF or CNPJ. |
+| `name` | Always | Counterparty name. |
+| `ref_type` | Always | `pix_key` or `bank_account_detailed`. |
+| `pix_key` | When `ref_type` is `pix_key` | Pix key of the recipient. |
+| `ispb` | When `ref_type` is `bank_account_detailed` | Bank ISPB. |
+| `branch` | When `ref_type` is `bank_account_detailed` | Branch. |
+| `number` | When `ref_type` is `bank_account_detailed` | Account number. |
+| `digit` | When `ref_type` is `bank_account_detailed` | Account digit. |
+| `type` | When `ref_type` is `bank_account_detailed` | Account type: `checking`, `payment`, `salary` or `savings`. |
 
 ### Pix key recipient
 
@@ -118,7 +105,9 @@ The recipient carries the counterparty identity (`tax_number`, `name`) and a ref
 }
 ```
 
-The response returns the recipient `id`. Use that `id` as the `counterparty_recipient_id` in your split configurations.
+### Response
+
+The response returns the recipient `id`. Use it as `counterparty_recipient_id` in your split configurations.
 
 ```json
 {
@@ -136,20 +125,9 @@ The response returns the recipient `id`. Use that `id` as the `counterparty_reci
 }
 ```
 
-```text
-Create recipient
-        │
-        ▼
-   recipient.id ──────────► splits[].counterparty_recipient_id
-```
+## Register the merchant
 
-See the [Create counterparty recipient](/v2/api-reference/banking-api/counterparties/create-counterparty-recipient) API reference.
-
----
-
-# Merchant
-
-When a receivable is split, you can optionally register the merchant that owns the split with the `merchant` object.
+When a receivable is split, you can also register the merchant that owns the split with the `merchant` object. When sent, it is saved as the organization's split merchant.
 
 ```json
 "merchant": {
@@ -158,18 +136,14 @@ When a receivable is split, you can optionally register the merchant that owns t
 }
 ```
 
-| Field | What it represents |
-| ------------ | ----------------------------------- |
-| `name` | Merchant name |
-| `tax_number` | Merchant CPF or CNPJ |
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | Yes | Merchant name. |
+| `tax_number` | Yes | Merchant CPF or CNPJ. |
 
-When `merchant` is sent, it is saved as the org split merchant.
+## Complete examples
 
----
-
-# Complete examples
-
-## Dynamic QR Code with split
+### Dynamic QR code with split
 
 ```json
 {
@@ -204,7 +178,7 @@ When `merchant` is sent, it is saved as the org split merchant.
 }
 ```
 
-## Boleto with split
+### Boleto with split
 
 ```json
 {
@@ -245,5 +219,11 @@ When `merchant` is sent, it is saved as the org split merchant.
 }
 ```
 
-For the remaining boleto fields (discounts, fine, interest, boleto type), see the
-[Create Boleto](/v2/guides/boleto/create-boleto) guide.
+For the remaining boleto fields (discounts, fine, interest, boleto type), see the [Create a boleto](/v2/guides/boleto/create-boleto) guide.
+
+## Next steps
+
+- [Fees](/v2/guides/receivables/fees): charge an extra amount on top of the receivable; it works together with splits.
+- [Cash in](/v2/guides/receivables/cash-in): create your first dynamic QR code.
+- [Create a boleto](/v2/guides/boleto/create-boleto): the full boleto request body.
+- [Receivables overview](/v2/guides/receivables/overview): all cash-in guides.

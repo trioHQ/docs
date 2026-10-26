@@ -1,10 +1,918 @@
 ---
 title: "Events"
-description: "Catalog of V2 webhook events. Add one page per event category."
+description: "Every event category Trio can send to a V2 webhook, with the types of each category and an example payload."
 ---
 
-{/* v1 counterpart: webhooks/events/. Start from it and change what differs in V2. */}
+Each notification carries a `category` and a `type` in the envelope described in [Content and structure](/v2/webhooks/content-and-structure). Use the same names in `event_categories_allowed` when you [register a webhook](/v2/webhooks/introduction#choose-which-events-you-receive) to receive only the events you need.
+
+## Categories and types
+
+{/* TODO(v2): verify — the V2 spec does not list the event categories; the table below is the V1 list and its names may differ in V2 (the spec example uses `boleto`, not `collecting_document`) */}
+
+| Category | Types | Meaning |
+| --- | --- | --- |
+| `boleto` | `created`, `settled` | A boleto you issued was created or paid. The only category the V2 spec names, in its webhook example. |
+| `collecting_document` | `settled`, `failed` | A cash-in document (a payment you received) was registered or refused. |
+| `collecting_document_refund` | `created`, `settled`, `failed` | A refund of a payment you received was created, settled or failed. |
+| `payment_document` | `created`, `settled`, `failed` | A cash-out document (a payment you sent) was created, confirmed or declined. |
+| `payment_document_refund` | `settled` | A refund of a payment you sent was settled. |
+| `transfer_document` | `settled` | A transfer between your bank accounts was settled. |
+| `recurrence` | `created`, `approved`, `rejected`, `expired`, `cancelled` | A Pix Automático recurrence changed state. |
+| `recurrence_collection` | `created`, `active`, `settled`, `expired`, `rejected`, `cancelled` | A collection of a Pix Automático recurrence changed state. |
+| `recurrence_collection_attempt` | `requested`, `scheduled`, `settled`, `cancelled`, `rejected`, `expired`, `failed` | An attempt to settle a collection changed state. |
+| `initiation_document` | `created`, `awaiting_consent`, `awaiting_payment`, `settled`, `rejected`, `failed` | A payment initiated through Pix biometrics moved along its lifecycle. |
+| `entity` | `in_review`, `approved`, `rejected` | The compliance status of an entity created through onboarding changed. |
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  V1 also documented a `pix_biometrics_enrollment` category. The V2 API has no Pix biometrics enrollment endpoints, so that category is not part of the V2 documentation.
 </Note>
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+<Note>
+  Coming from V1? The payloads on this page are the V1 examples and still carry `virtual_account_id`. V2 payloads carry `bank_account_id` instead: V2 calls the account a bank account.
+</Note>
+
+## Boleto
+
+Category `boleto`, with the types `created` and `settled`. It is the category the V2 spec uses in its [Create webhook](/v2/api-reference/banking-api/developers/webhooks/create-webhook) example. See [Create a boleto](/v2/guides/boleto/create-boleto) for the flow that produces these events.
+
+{/* TODO(v2): verify — the V2 spec names the boleto category only in the webhook example; its payload is not documented */}
+
+## Collecting document
+
+Category `collecting_document`: a cash-in document, a payment you received. See [Cash-in](/v2/guides/receivables/cash-in) and [Document lifecycle](/v2/guides/pix/document-lifecycle).
+
+| Type | Meaning |
+| --- | --- |
+| `settled` | A collecting document (cash-in) was successfully received and registered in the system. |
+| `failed` | A collecting document (cash-in) was received but could not be processed and was refused. |
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "5",
+      "id": "29b6d0bc-7226-5af3-c274-d4242429236f",
+      "ispb": "49931906",
+      "number": "47919554",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311822NX1S6J7KaOm",
+    "external_id": null,
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "reconciliation_id": "0194bd99-65cd-b51d-4f8f-78735341777b",
+    "ref_id": "0194bd96-9e39-2a47-9420-1e047cb762b3",
+    "ref_type": "pix_qrcode",
+    "transaction_date": "2025-01-31T18:22:14.510717Z",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:22:14.477163Z",
+  "type": "settled",
+  "category": "collecting_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41"
+}
+```
+
+### Failed
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "5",
+      "id": "29b6d0bc-7226-5af3-c274-d4242429236f",
+      "ispb": "49931906",
+      "number": "47919554",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311825zSQGRMknozm",
+    "error_code": "BE17",
+    "error_message": "Brcode possui contrapartida diferente",
+    "external_id": "1",
+    "id": "0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+    "reconciliation_id": "0194bd9c-90b4-7202-dd06-65685ce89efb",
+    "ref_id": "0194bd9b-d0c1-8201-f41c-15d69a2d5e6b",
+    "ref_type": "pix_qrcode",
+    "rule": "pix_qrcode_different_tax_number",
+    "transaction_date": null,
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:25:42.068091Z",
+  "type": "failed",
+  "category": "collecting_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "ref_id": "0194bd9c-90b4-b8b2-12e9-675fe55340a8",
+  "context_type": "internet_banking"
+}
+```
+
+## Collecting document refund
+
+Category `collecting_document_refund`: a refund of a payment you received. See [Create a refund](/v2/api-reference/banking-api/receivables/refunds/post) and [Get receivable refund](/v2/api-reference/banking-api/documents/receivables-refunds/get-receivable-refund).
+
+| Type | Meaning |
+| --- | --- |
+| `created` | A collecting document refund was created. |
+| `settled` | A collecting document refund was successfully settled and registered. |
+| `failed` | A collecting document refund has failed due to an error. |
+
+### Created
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "collecting_document_id": "0194cbda-ccda-c86b-b7c3-464c5344109c",
+    "description": "Devolução manual feita por Jessica Barcellos",
+    "end_to_end_id": "D49931906202502031257bAqO8f0YhUH",
+    "external_id": null,
+    "id": "0194cbe3-6145-abc7-d309-b56da0381cd4",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in_refund/0194cbe3-6145-abc7-d309-b56da0381cd4",
+    "reconciliation_id": "0194cbe3-6145-8baa-226c-4eaa75c5ed8a",
+    "rule": "manual",
+    "transaction_date": null,
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-02-03T12:57:44.005471Z",
+  "type": "created",
+  "category": "collecting_document_refund",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe3-6145-abc7-d309-b56da0381cd4"
+}
+```
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "collecting_document_id": "0194cbda-ccda-c86b-b7c3-464c5344109c",
+    "description": "Devolução manual feita por Jessica Barcellos",
+    "end_to_end_id": "D49931906202502031257bAqO8f0YhUH",
+    "external_id": null,
+    "id": "0194cbe3-6145-abc7-d309-b56da0381cd4",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in_refund/0194cbe3-6145-abc7-d309-b56da0381cd4",
+    "reconciliation_id": "0194cbe3-6145-8baa-226c-4eaa75c5ed8a",
+    "rule": "manual",
+    "transaction_date": "2025-02-03T12:57:44.574180Z",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-02-03T12:57:44.005471Z",
+  "type": "settled",
+  "category": "collecting_document_refund",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe3-6145-abc7-d309-b56da0381cd4"
+}
+```
+
+## Payment document
+
+Category `payment_document`: a cash-out document, a payment you sent. See [Cash-out](/v2/guides/payments/cash-out).
+
+| Type | Meaning |
+| --- | --- |
+| `created` | A payment document has been created. |
+| `settled` | A payment document was confirmed and successfully registered. |
+| `failed` | A payment document was sent and not processed due to invalid information or declined by the bank. |
+
+### Created
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "0",
+      "id": "29b6d0bc-7226-22d9-d45f-71d7d25e2d4c",
+      "ispb": "49931906",
+      "number": "54455708",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "origin_id": null,
+    "origin_type": "none",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "reconciliation_id": "0194cbda-a2ca-e301-d18f-6775388a2c8f",
+    "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "ref_type": "pix_qrcode",
+    "transaction_date": null,
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "created",
+  "category": "payment_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "counterparty_bank_account": {
+      "branch": "0001",
+      "digit": "0",
+      "id": "29b6d0bc-7226-22d9-d45f-71d7d25e2d4c",
+      "ispb": "49931906",
+      "number": "54455708",
+      "type": "checking"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "origin_id": null,
+    "origin_type": "none",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "reconciliation_id": "0194cbda-a2ca-e301-d18f-6775388a2c8f",
+    "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "ref_type": "pix_qrcode",
+    "transaction_date": "2025-02-03T12:48:21.405797Z",
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "settled",
+  "category": "payment_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
+
+## Payment document refund
+
+Category `payment_document_refund`: a refund of a payment you sent, returned by the counterparty. See [Get payment refund](/v2/api-reference/banking-api/documents/payments-refunds/get-payment-refund).
+
+| Type | Meaning |
+| --- | --- |
+| `settled` | A refund payment document was successfully settled. |
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "description": null,
+    "end_to_end_id": "D49931906202502031257bAqO8f0YhUH",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbe3-63ea-e00f-3749-044a4e1b673c",
+    "origin_id": null,
+    "origin_type": "none",
+    "payment_document_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out_refund/0194cbe3-63ea-e00f-3749-044a4e1b673c",
+    "reconciliation_id": "0194cbe3-63ea-c748-90b0-7ddb1a193acb",
+    "rule": "manual",
+    "transaction_date": "2025-02-03T12:57:44.787470Z",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:57:44.682219Z",
+  "type": "settled",
+  "category": "payment_document_refund",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe3-63ea-e00f-3749-044a4e1b673c"
+}
+```
+
+## Transfer document
+
+Category `transfer_document`: a transfer between two of your bank accounts. See [Transfer](/v2/api-reference/banking-api/transfers/transfer) and [Get transfer](/v2/api-reference/banking-api/documents/transfers/get-transfer).
+
+| Type | Meaning |
+| --- | --- |
+| `settled` | A transfer document was confirmed and successfully registered. |
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 1000,
+      "currency": "BRL"
+    },
+    "description": "Transferência interna",
+    "external_id": "Transferência interna - Console 0194cbe1-5b88-9057-b3d6-315c1451a699",
+    "from_virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48",
+    "id": "0194cbe1-a7bf-e03f-6fa7-79c432da1481",
+    "origin_id": "8180b04e-e436-44e5-bd24-f6ed79dffe08",
+    "origin_type": "console_user",
+    "reconciliation_id": "0194cbe1-a7bf-73dd-e543-ac26409707bf",
+    "to_virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666",
+    "transaction_date": "2025-02-03T12:55:51.178153Z"
+  },
+  "timestamp": "2025-02-03T12:55:50.975833Z",
+  "type": "settled",
+  "category": "transfer_document",
+  "context_id": "91978496-c904-40d0-9322-5f2838efb542",
+  "context_type": "internet_banking",
+  "ref_id": "0194cbe1-a7bf-e03f-6fa7-79c432da1481"
+}
+```
+
+## Recurrence
+
+Category `recurrence`: a Pix Automático recurrence, the authorization a payer gives you to collect from their account on a schedule. See [Using Pix Automático](/v2/guides/receivables/using-pix-automatic) and [Generate recurrence](/v2/api-reference/banking-api/receivables/recurrences/generate-recurrence).
+
+| Type | Meaning |
+| --- | --- |
+| `created` | A recurrence was created. |
+| `approved` | A recurrence was approved. |
+| `rejected` | A recurrence was rejected. |
+| `expired` | A recurrence was expired. |
+| `cancelled` | A recurrence was cancelled. |
+
+### Approved
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+{/* TODO(v2): verify — the V1 Pix Automático examples wrap the notification in an "event" object, unlike the other categories */}
+
+```json
+{
+  "event": {
+    "data": {
+      "retry_policy": "3r_7d",
+      "stages": "[{\"id\":\"0199d478-de39-e970-7b2b-d643b148340d\",\"status\":\"created\",\"timestamp\":\"2025-10-11T18:11:55.065746Z\",\"request_id\":null,\"error_code\":null,\"error_message\":null,\"inserted_at\":\"2025-10-11T18:11:55.079001Z\",\"updated_at\":\"2025-10-11T18:11:55.079001Z\",\"request_timestamp\":null,\"recurrence_id\":\"0199d478-de39-fcf3-87a9-e8bded7db468\",\"bank_account_id\":null,\"reference_type\":\"qrdn\",\"reference_id\":null,\"collection_id\":null,\"collection_timestamp\":null,\"cancelation_code\":null,\"cancelation_description\":null,\"cancelation_origin\":null,\"rejection_code\":null,\"rejection_description\":null,\"journey\":\"aut3\"},{\"id\":\"0199d478-de39-957a-43b6-19c19f5f7620\",\"status\":\"approved\",\"timestamp\":\"2025-10-11T18:11:55.065746Z\",\"request_id\":null,\"error_code\":null,\"error_message\":null,\"inserted_at\":\"2025-10-11T18:13:28.874345Z\",\"updated_at\":\"2025-10-11T18:13:28.874345Z\",\"request_timestamp\":null,\"recurrence_id\":\"0199d478-de39-fcf3-87a9-e8bded7db468\",\"bank_account_id\":null,\"reference_type\":\"qrdn\",\"reference_id\":null,\"collection_id\":null,\"collection_timestamp\":null,\"cancelation_code\":null,\"cancelation_description\":null,\"cancelation_origin\":null,\"rejection_code\":null,\"rejection_description\":null,\"journey\":\"aut3\"}]",
+      "end_date": null,
+      "number_of_collections": null,
+      "contract_number": "565d00c968754605b41e122e7679d260",
+      "type": "in",
+      "reference_type": "qrdn",
+      "authorization_date": "2025-10-11T18:13:27.000000Z",
+      "org_id": "34713ca3-0b83-47d8-a173-cdc26609edbc",
+      "description": "Obrigado por sua doação",
+      "next_working_day": false,
+      "id": "0199d478-de39-fcf3-87a9-e8bded7db468",
+      "periodicity": "mnth",
+      "txid": "01K7A7HQHSZKSRFAF8QQPQVD38",
+      "version": 3,
+      "timestamp": "2025-10-11T18:11:55.065746Z",
+      "bank_account_id": "019953b0-535d-e973-4334-aa0f29ac9441",
+      "automated_collecting": false,
+      "counterparty_seq": 11,
+      "reference_id": null,
+      "start_date": "2025-11-11T18:11:54.433341Z",
+      "status": "approved",
+      "maximum_amount": null,
+      "external_id": "565d00c968754605b41e122e7679d260",
+      "origin_id": "01985b9a-2a0b-e7ca-954b-acfe68553971",
+      "counterparty_id": "0002b135-5463-763d-55a8-7ad885f521d7",
+      "origin_type": "api_client",
+      "company_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+      "journey": "aut3",
+      "updated_at": "2025-10-11T18:13:28.887893Z",
+      "first_payment_amount": null,
+      "first_payment_date": "2025-11-11T15:00:00.000000Z",
+      "counterparty_bank_account_id": "0002b135-5463-379f-c7ea-941f1f02841f",
+      "update_date": "2025-10-11T18:13:26.000000Z",
+      "fixed_amount": 2000,
+      "inserted_at": "2025-10-11T18:11:55.070544Z",
+      "id_rec": "RR4993190620251011181155657BH",
+      "minimum_amount": null,
+      "entity_id": "019953ad-1738-b094-097c-7941a0c642a5",
+      "sign": null,
+      "counterparty_info_id": "0002b135-5463-e469-ce49-dc8f22ba6b0c",
+      "group_id": "019953b0-5338-8673-88a4-cdee1b24de3c",
+      "ispb": "49931906"
+    },
+    "timestamp": "2025-10-11T18:11:55.065746Z",
+    "type": "approved",
+    "category": "recurrence",
+    "inserted_at": "2025-10-11T18:13:29.350461Z",
+    "origin_type": null,
+    "ref_stage_id": null,
+    "ref_id": "0199d478-de39-fcf3-87a9-e8bded7db468",
+    "context_type": "bacen",
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0"
+  }
+}
+```
+
+## Recurrence collection
+
+Category `recurrence_collection`: one collection of a Pix Automático recurrence, the amount due on one date of the schedule. See [Schedule collection](/v2/api-reference/banking-api/receivables/recurrences/schedule-collection) and [Get collection](/v2/api-reference/banking-api/receivables/recurrences/get-collection).
+
+| Type | Meaning |
+| --- | --- |
+| `created` | A recurrence collection was created. |
+| `active` | A recurrence collection is active. |
+| `settled` | A recurrence collection was settled. |
+| `expired` | A recurrence collection expired. |
+| `rejected` | A recurrence collection was rejected. |
+| `cancelled` | A recurrence collection was cancelled. |
+
+### Active
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+{/* TODO(v2): verify — the V1 Pix Automático examples wrap the notification in an "event" object, unlike the other categories */}
+
+```json
+{
+  "event": {
+    "data": {
+      "id": "019a0222-6580-e104-fce2-957756930115",
+      "status": "active",
+      "timestamp": "2025-10-20T15:00:00.000000Z",
+      "version": 2,
+      "sign": null,
+      "amount": 1000,
+      "group_id": "0198af49-717e-6f67-19d4-2e6cc84f498d",
+      "inserted_at": "2025-10-09T00:15:01.773766Z",
+      "updated_at": "2025-10-11T03:15:01.397667Z",
+      "stages": "[]",
+      "transaction_date": null,
+      "company_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+      "org_id": "e370408d-9a0e-490b-92b1-8c4a0055dec2",
+      "entity_id": "0198af47-e620-1507-295a-d96017946693",
+      "recurrence_id": "0199c598-fee6-4c6b-5d6b-6cc86f2b0677",
+      "bank_account_id": "0198af49-718a-a5e3-6c22-f1baabc1698c",
+      "txid": "01K8124SC0W42FSRMNEXB9608N",
+      "counterparty_info_id": "00016a74-c182-75ab-8d51-de42181733a3",
+      "next_working_day": false,
+      "aditional_info": null,
+      "final_date": null,
+      "recurrence_timestamp": "2025-10-08T20:52:42.342331Z",
+      "attempts": "[]"
+    },
+    "timestamp": "2025-10-20T15:00:00.000000Z",
+    "type": "active",
+    "category": "recurrence_collection",
+    "inserted_at": "2025-10-11T03:15:07.680130Z",
+    "origin_type": null,
+    "ref_stage_id": null,
+    "ref_id": "019a0222-6580-e104-fce2-957756930115",
+    "context_type": "bacen",
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0"
+  }
+}
+```
+
+## Recurrence collection attempt
+
+Category `recurrence_collection_attempt`: one attempt to settle a collection. A collection can be attempted more than once, following the retry policy of the recurrence. See [Get collection attempt](/v2/api-reference/banking-api/receivables/recurrences/get-collection-attempt).
+
+| Type | Meaning |
+| --- | --- |
+| `requested` | A collection attempt was created. |
+| `scheduled` | A collection attempt was scheduled. |
+| `settled` | A collection attempt was settled. |
+| `cancelled` | A collection attempt was cancelled. |
+| `rejected` | A collection attempt was rejected. |
+| `expired` | A collection attempt expired. |
+| `failed` | A collection attempt failed. |
+
+### Scheduled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+{/* TODO(v2): verify — the V1 Pix Automático examples wrap the notification in an "event" object, unlike the other categories */}
+
+```json
+{
+  "event": {
+    "data": {
+      "id": "019a0222-6580-a64a-cfca-408b51642e22",
+      "status": "scheduled",
+      "timestamp": "2025-10-20T15:00:00.000000Z",
+      "type": "AGND",
+      "version": 2,
+      "sign": null,
+      "inserted_at": "2025-10-11T03:15:01.370394Z",
+      "updated_at": "2025-10-11T03:15:07.623385Z",
+      "external_id": "external_id",
+      "stages": "[]",
+      "end_to_end_id": "E49931906202510201500ReKBJaYDKWA",
+      "transaction_date": null,
+      "txid": "01K8124SC0MS5CZJJ0HD8P8BH2",
+      "out_document_id": null,
+      "out_document_timestamp": null,
+      "due_date": "2025-10-20T15:00:00.000000Z",
+      "collection_id": "019a0222-6580-e104-fce2-957756930115",
+      "collection_timestamp": "2025-10-20T15:00:00.000000Z"
+    },
+    "timestamp": "2025-10-20T15:00:00.000000Z",
+    "type": "scheduled",
+    "category": "recurrence_collection_attempt",
+    "inserted_at": "2025-10-11T03:15:07.680443Z",
+    "origin_type": null,
+    "context_id": "019489e6-f64f-5cfe-770b-79b671ec66f0",
+    "ref_stage_id": null,
+    "ref_id": "019a0222-6580-a64a-cfca-408b51642e22",
+    "context_type": "bacen"
+  }
+}
+```
+
+## Initiation document
+
+Category `initiation_document`: a payment initiated through Pix biometrics. Every status update carries the full payment document in `data`.
+
+{/* TODO(v2): verify — the V2 API has no Pix biometrics endpoints; initiation_document appears in the V2 spec only as a document ref_type. Confirm this category is still sent to V2 webhooks */}
+
+| Type | Meaning |
+| --- | --- |
+| `created` | A biometrics payment has been created. |
+| `awaiting_consent` | The payment is waiting for the customer to authorize via biometrics (WebAuthn). |
+| `awaiting_payment` | Biometric authorization completed, the bank is processing the payment. |
+| `settled` | The payment was completed successfully. |
+| `rejected` | The payment was rejected by the participant. |
+| `failed` | The payment failed due to an error. |
+
+### Created
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "created",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:38.800558Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "created",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+### Awaiting consent
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_consent",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:38.800558Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_consent",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+### Awaiting payment
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "awaiting_payment",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:10:44.587366Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": null
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "awaiting_payment",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+### Settled
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+    "status": "settled",
+    "amount": {
+      "currency": "BRL",
+      "amount": 1000
+    },
+    "session_id": null,
+    "inserted_at": "2026-07-27T02:10:38.800558Z",
+    "updated_at": "2026-07-27T02:12:40.102228Z",
+    "external_id": "my-external-ref-001",
+    "end_to_end_id": "E12345678202607270210vcUjWGmFBGo",
+    "transaction_date": "2026-07-27T02:10:38.689111Z",
+    "virtual_account_id": "01991648-0f53-cd50-b24f-0003b45b45f9",
+    "redirect_url": null,
+    "origin_id": "019f9b20-65fd-c516-da43-95843e4d0881",
+    "origin_type": "api_client",
+    "ref_id": "000e2ac2-840c-f37c-80a8-48bfa57d2338",
+    "entity_id": "01991647-e564-c2eb-bd8c-07682cfa7d13",
+    "ref_type": "enrollment",
+    "counterparty_id": "000e2ac2-840c-fd63-9b04-c43e6c6ed4e2",
+    "reconciliation_id": "019fa156-a7e1-8dd8-9ff7-5fa03bd7af72",
+    "integration_id": "019fa156-a7e1-cfb2-4b48-327f88bf55b2",
+    "participant_id": "019f9bca-a3e0-3fba-a997-f31ae2c0c40b",
+    "consent_id": "019fa158-8065-eb54-986e-6aa7c8f9609e"
+  },
+  "timestamp": "2026-07-27T02:10:38.689043Z",
+  "type": "settled",
+  "category": "initiation_document",
+  "ref_id": "019fa156-a7e1-35f9-670b-acc72e2eaeff",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+## Entity
+
+Category `entity`: sent whenever the compliance status of an entity created through [onboarding](/v2/api-reference/banking-api/onboarding/create) changes. See the [Onboarding guide](/v2/guides/onboarding-guide).
+
+| Type | Meaning |
+| --- | --- |
+| `in_review` | The entity is under compliance analysis. When applicable, each representative includes a `liveness_link` for the required biometric/liveness check. |
+| `approved` | The entity has been approved by compliance and is ready to operate. |
+| `rejected` | The entity has been rejected by compliance. The `reason` field describes why. |
+
+### In review
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "in_review",
+    "reason": null,
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T07:05:00.000Z",
+    "contact": {
+      "phone_number": "+5541999990000",
+      "email": "contact@gcorp.com"
+    },
+    "business_infos": {
+      "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "name": "Entity Test",
+      "legal_name": "Entity Test LTDA",
+      "legal_nature": null,
+      "annual_revenue_amount": { "amount": 500000, "currency": "BRL" },
+      "average_ticket_amount": { "amount": 10000000, "currency": "BRL" },
+      "company_activity": null,
+      "company_secondary_activity": null
+    },
+    "consent": {
+      "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "entity_representative_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+      "ip_address": "8.8.8.8",
+      "consent_at": "2026-08-25T07:00:00.000Z",
+      "inserted_at": "2026-08-25T07:00:00.000Z",
+      "updated_at": "2026-08-25T07:00:00.000Z"
+    },
+    "representatives": [
+      {
+        "id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+        "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+        "status": "in_review",
+        "tax_number_linked": "11144477735",
+        "name_linked": "John",
+        "email": "john@gcorp.com",
+        "liveness_link": "https://liveness.link/example?123",
+        "inserted_at": "2026-08-25T07:00:00.000Z",
+        "updated_at": "2026-08-25T07:00:00.000Z"
+      }
+    ]
+  },
+  "timestamp": "2026-08-25T07:05:00.000Z",
+  "type": "in_review",
+  "category": "entity",
+  "inserted_at": "2026-08-25T07:05:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+### Approved
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "approved",
+    "reason": null,
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T09:30:00.000Z"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "approved",
+  "category": "entity",
+  "inserted_at": "2026-08-25T09:30:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+### Rejected
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload */}
+
+```json
+{
+  "data": {
+    "entity_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "company_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "org_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "status": "rejected",
+    "reason": "Documentation could not be validated.",
+    "external_id": "12345ET",
+    "counterparty_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+    "tax_number": "37335118000180",
+    "inserted_at": "2026-08-25T07:00:00.000Z",
+    "updated_at": "2026-08-25T09:30:00.000Z"
+  },
+  "timestamp": "2026-08-25T09:30:00.000Z",
+  "type": "rejected",
+  "category": "entity",
+  "inserted_at": "2026-08-25T09:30:00.000Z",
+  "ref_id": "0191148f-b189-8e42-27a5-1368cc00dea8",
+  "context_type": "internet_banking",
+  "context_id": "926b0dac-b5e9-43cd-ae79-ba55c33e124a"
+}
+```
+
+## Next steps
+
+- [Webhooks](/v2/webhooks/introduction): register a webhook and choose the categories it receives.
+- [Content and structure](/v2/webhooks/content-and-structure): the envelope shared by every payload above.
+- [Webhook authentication](/v2/webhooks/authentication): verify a notification before you act on it.

@@ -1,10 +1,78 @@
 ---
-title: "Authentication"
-description: "How to verify that a V2 webhook came from Trio."
+title: "Webhook authentication"
+description: "Choose how Trio authenticates to your notification URL and verify that each notification was sent by Trio and not altered in transit."
 ---
 
-{/* v1 counterpart: webhooks/authentication.mdx. Start from it and change what differs in V2. */}
+A V2 webhook has two layers of authentication. `authentication_method` chooses how Trio identifies itself to your notification URL: with a shared secret (`url_secret`) or with an OAuth token (`oauth`). On top of that, Trio signs every notification with the webhook's `notification_key`, so you can check that the body came from Trio and was not changed on the way.
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  Coming from V1? The **Secret** you type in the Trio App is the `notification_secret` of the V2 API, and the webhook key shown in the webhook details is the `notification_key`.
 </Note>
+
+## Authentication method
+
+Set `authentication_method` when you [register the webhook](/v2/webhooks/introduction#register-a-webhook). The method decides which other fields the webhook needs.
+
+### Shared secret
+
+A `url_secret` webhook needs `notification_url` and `notification_secret`. Trio sends the secret with every event, so your endpoint compares it with the value you stored and rejects the request when it differs.
+
+{/* TODO(v2): verify — the x-webhook-secret header is not described in the V2 spec; this is the V1 behaviour */}
+
+The secret travels in the HTTP header `x-webhook-secret`.
+
+### OAuth
+
+An `oauth` webhook needs `oauth_client_id`, `oauth_client_secret`, `oauth_url` and `oauth_scope` instead of `notification_secret`. Trio obtains an access token from `oauth_url` with those credentials and uses it to authenticate its requests to `notification_url`.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `oauth_client_id` | Yes | OAuth client ID. |
+| `oauth_client_secret` | Yes | OAuth client secret. |
+| `oauth_url` | Yes | OAuth token URL Trio requests the token from. |
+| `oauth_scope` | Yes | OAuth scope Trio requests. |
+
+{/* TODO(v2): verify — the V2 spec does not state the OAuth grant type nor how Trio presents the token to the notification URL */}
+
+## Signature
+
+Every notification is signed with the webhook's `notification_key`, the key Trio generates when the webhook is created. The key is returned by [Create webhook](/v2/api-reference/banking-api/developers/webhooks/create-webhook) and [Get webhook](/v2/api-reference/banking-api/developers/webhooks/get-webhook), and shown in the webhook details of the Trio App.
+
+{/* TODO(v2): verify — the x-webhook-signature header and HMAC-SHA-256 signing are not described in the V2 spec; this is the V1 behaviour */}
+
+The signature travels in the HTTP header `x-webhook-signature`. To verify it:
+
+1. Compute the HMAC-SHA-256 of the request body with `notification_key` as the key.
+2. Encode the result as uppercase hexadecimal.
+3. Compare it with the header value using a constant-time comparison.
+
+```javascript
+import { createHmac, timingSafeEqual } from "crypto"
+
+const expectedSignature = req.headers["x-webhook-signature"]
+const algorithm = "sha256"
+const signatureKey = "your_signature_key"
+const message = JSON.stringify(req.body)
+
+const computedSignature = createHmac(algorithm, signatureKey)
+	.update(message)
+	.digest("hex")
+	.toUpperCase()
+
+const isValid = timingSafeEqual(
+	Buffer.from(expectedSignature),
+	Buffer.from(computedSignature)
+)
+```
+
+<Tip>
+  Compute the HMAC over the body exactly as Trio sent it. If your framework parses the JSON before your handler runs, make sure `JSON.stringify(req.body)` reproduces the original bytes, or keep a copy of the raw body.
+</Tip>
+
+If your `notification_key` is accidentally made public, [contact support](/v2/getting_started/support). Trio rotates the key and coordinates the change with you.
+
+## Next steps
+
+- [Content and structure](/v2/webhooks/content-and-structure): what is inside the body you just verified.
+- [Events](/v2/webhooks/events/overview): every category and type Trio sends.
+- [Creating your first webhook](/v2/guides/creating-your-first-webhook): where the secret and the key appear in the Trio App.

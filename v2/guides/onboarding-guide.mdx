@@ -1,121 +1,132 @@
 ---
-title: "Customer Onboarding Guide"
-description: "Understand how customer onboarding works, organization creation, compliance analysis, and tracking via webhooks."
+title: "Customer onboarding"
+description: "Open an organization for a customer through the onboarding API, follow its compliance analysis through webhooks and operate on the customer's behalf once it is approved."
 ---
-<Note>
-**IMPORTANT:** This feature is only available after a distribution channel has been created for your organization.
 
-To request the creation of a distribution channel, contact Trio Support or your Trio Account Manager.
-</Note>
+This guide is for an organization that acts as a **distributor**: it opens accounts for its customers, follows the compliance analysis of each one through webhooks and, once a customer is approved, operates on the customer's behalf with its own credentials. The guide explains the flow and the concepts; the [Onboard entity](/v2/api-reference/banking-api/onboarding/create) API reference lists every field, type and response.
 
-This guide explains the onboarding flow for an integration in which an organization acts as an **distributor** for its customers' organizations.
-
-The process allows the distributor organization to submit the data required to open the customer's account, track the Compliance analysis through webhooks and, once approved, perform operations on behalf of the customer's organization.
-
-> **Important:** this guide explains the flow and the concepts involved. To check all available fields, types, and responses, see the [onboarding creation API reference](/v2/api-reference/banking-api/onboarding/create).
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
 ## 1. How the organization model works
 
-In this model, there are two main parties:
+Two organizations take part in the flow:
 
-- **Distributor organization:** the organization that holds the API credentials and controls the flow for its customers.
-- **Customer organization:** the organization created during onboarding, which will be used for the customer's transactions.
+- **Distributor organization**: holds the API credentials and drives the flow for its customers.
+- **Customer organization**: created by the onboarding and used for the customer's transactions.
 
-The flow can be summarized as follows:
+One request creates the customer organization, its entity and its representatives. Trio then analyzes the customer, tells you the result through webhooks and, after approval, lets you operate on the customer organization by sending its `org_id` in the `Trio-Target-Org-Id` header. Your credentials never change: the header only changes which organization the request acts on.
 
+{/* TODO(v2): verify — whether entity.in_review is sent before or after the required documents are uploaded is not stated in the V2 spec; the diagram places the upload right after creation because it needs the identifiers from the response. */}
 ```text
-Distributor organization
+1. Customer asks to open an account
+              |
+              v
+2. Distributor collects the data
+              |
+              v
+3. POST /v2/onboarding
+              |
+              v
+4. Trio creates the organization, the entity
+   and the representatives
+              |
+              v
+5. API returns org_id and entity_id
+              |
+              v
+6. Distributor uploads the required documents
+              |
+              v
+7. Webhook: entity.in_review
+              |
+              v
+8. Representative completes liveness
+              |
+              v
+9. Compliance analyzes the data
+              |
+        +-----+-----+
+        |           |
+        v           v
+   approved      rejected
+        |           |
+        v           v
+10. Organization  Handle the
+    ready         rejection
         |
-        | POST /v2/onboarding
         v
-Customer creation
-        |
-        +--> Organization
-        |
-        +--> Entity
-        |
-        +--> Representative data
-        |
-        v
-Compliance analysis
-        |
-        +--> in_review
-        |
-        +--> approved
-        |
-        └--> rejected
-        |
-        v
-Approved organization
-        |
-        v
-Operations via API using
-Trio-Target-Org-Id
+11. API calls with Trio-Target-Org-Id
+    on the customer organization
 ```
 
-The distributor organization continues to use its own credentials. To perform an operation on a customer's organization, simply provide the target organization's identifier in the `Trio-Target-Org-Id` header.
-
 {/* TODO(v2): verify — the anchor assumes the V2 authentication page keeps the "Acting on another organization" heading from V1. */}
-Also see [Acting on another organization](/v2/developers/authentication#acting-on-another-organization).
+See [Acting on another organization](/v2/developers/authentication#acting-on-another-organization) for how the header is validated.
 
-## 2. Creating the onboarding
+## 2. What you need
 
-Onboarding is created through the endpoint:
+<Note>
+Onboarding is only available after Trio has created a **distribution channel** for your organization. To request one, contact Trio Support or your Trio Account Manager.
+</Note>
+
+Before you call the API, have at hand:
+
+- Your distributor organization's `client_id` and `client_secret`. Every request in this guide uses [Basic Authentication](/v2/developers/authentication) with these credentials.
+- The customer's company data: tax ID (CNPJ), name, annual revenue and average ticket.
+- The data of each company representative: name, tax ID (CPF), phone number and email.
+- The consent of the legal representative who authorizes opening the account: that representative's CPF, the IP address and the date and time of the authorization.
+- The PDF documents your distribution channel requires for the company and for each representative. Step 5 explains which ones.
+
+## 3. Create the onboarding
+
+Send the company data, its representatives and the consent in one request:
 
 ```http
 POST /v2/onboarding
 ```
-
-In Sandbox:
-
-```text
-https://api.sandbox.trio.com.br/v2/onboarding
-```
-
-Authentication uses **Basic Authentication**, with the distributor organization's `client_id` and `client_secret`.
 
 ```http
 Authorization: Basic <encoded-value>
 Content-Type: application/json
 ```
 
-### Required data
+### Request fields
 
-To start onboarding, send the company's data, the representative's data, and the consent data.
+| Field | Required | Description |
+| --- | --- | --- |
+| `tax_number` | Yes | Tax ID (CNPJ) of the company being registered |
+| `name` | Yes | Entity name |
+| `external_id` | No | Your own reference for the customer, such as `customer_12345` or `company_98765`. Pick a value that lets you find the customer in your application |
+| `business_infos` | Yes | Company business information, see below |
+| `representatives` | Yes | Company representatives, see below |
+| `consent` | Yes | Consent for opening the account, see below |
 
-| Field | Description |
-| --- | --- |
-| `tax_number` | Tax ID (CNPJ) of the company being registered |
-| `name` | Entity name |
-| `external_id` | External identifier used by your system (optional) |
-| `business_infos` | Company business information |
-| `representatives` | Company representative data |
-| `consent` | Consent data for opening the account |
+`business_infos` holds two monetary objects. Amounts are in cents (BRL 100.00 = `10000`), so `{"amount": 500000, "currency": "BRL"}` is BRL 5,000.00.
 
-Within `business_infos`, both fields are required and sent as monetary objects:
+| Field | Required | Description |
+| --- | --- | --- |
+| `annual_revenue` | Yes | Annual revenue, as `amount` and `currency` |
+| `average_ticket` | Yes | Average ticket, as `amount` and `currency` |
 
-- `annual_revenue`: annual revenue;
-- `average_ticket`: average ticket.
+Each item of `representatives` describes one representative. The two compliance flags default to `false` when omitted.
 
-The representative must have:
+| Field | Required | Description |
+| --- | --- | --- |
+| `tax_number` | Yes | Tax ID (CPF) |
+| `email` | Yes | Email address |
+| `phone` | Yes | Phone number in E.164 format |
+| `name` | Yes | Representative name |
+| `is_pep` | No | Whether the representative is a politically exposed person (PEP) |
+| `is_us_person` | No | Whether the representative is a US person for tax purposes |
 
-- `name`;
-- `tax_number`: tax ID (CPF);
-- `phone`: phone number in E.164 format;
-- `email`.
+`consent` records who authorized the account opening and when:
 
-Each representative can also include two optional compliance flags. Both default to `false` when omitted:
+| Field | Required | Description |
+| --- | --- | --- |
+| `tax_number` | Yes | Tax ID (CPF) of the legal representative responsible for the consent |
+| `ip_address` | Yes | IP address of the authorization (IPv4 or IPv6) |
+| `consent_at` | Yes | Date and time of the authorization |
 
-- `is_pep`: whether the representative is a politically exposed person (PEP);
-- `is_us_person`: whether the representative is a US person for tax purposes.
-
-The consent must have:
-
-- `tax_number`: the tax ID (CPF) of the legal representative responsible for the consent;
-- `ip_address`: IP address (IPv4 or IPv6);
-- `consent_at`: date and time of the authorization.
-
-## 3. Creation example
+### Example request
 
 ```bash
 curl --request POST \
@@ -154,33 +165,22 @@ curl --request POST \
   }'
 ```
 
-Monetary values are sent in cents. For example:
+## 4. Read the response
 
-```json
-{
-  "amount": 500000,
-  "currency": "BRL"
-}
-```
+Onboarding creation is synchronous: the response returns the identifiers of everything that was created, and echoes the `business_infos`, `consent` and `representatives` you sent.
 
-represents R$ 5,000.00.
-
-## 4. What happens after creation
-
-Onboarding creation is synchronous.
-
-After the request is processed, the API returns the main identifiers of the structure that was created, including:
-
-- `entity_id`;
-- `org_id`;
-- `external_id`;
-- `tax_number`;
-- `name`;
-- `status`.
-
-The response also echoes the data sent in the request (`business_infos`, `consent`, `representatives`), adding the `id`, `status`, and `required_documents` of each representative.
-
-Example:
+| Field | Description |
+| --- | --- |
+| `entity_id` | ID of the customer's entity |
+| `org_id` | ID of the customer organization. You send it in `Trio-Target-Org-Id` to operate on the customer's behalf |
+| `external_id` | The reference you sent |
+| `tax_number` | Tax ID (CNPJ) of the company |
+| `name` | Entity name |
+| `status` | Onboarding status (`in_validation` in the example below) |
+| `representatives[].id` | ID of the representative. You need it to upload the representative's documents |
+| `representatives[].status` | Status of the representative |
+| `representatives[].required_documents` | Documents the representative must provide |
+| `required_documents` | Documents the company must provide |
 
 ```json
 {
@@ -224,49 +224,43 @@ Example:
 }
 ```
 
-> **Best practice:** save the `org_id`, `entity_id`, and `external_id` in your system. The `org_id` will be used later to perform operations on the customer's organization.
+<Tip>
+Store `org_id`, `entity_id`, `external_id`, `tax_number` and the current status in your system. You need `org_id` for every call on the customer's behalf, and the full set makes it easy to reconcile your records with Trio.
+</Tip>
 
 ### Required documents
 
-The response includes a `required_documents` field in **two places**, based on the documents configured for your distribution channel:
+`required_documents` appears in two places, based on the documents configured for your distribution channel:
 
-- at the **entity** level (`data.required_documents`): the documents the company must provide, such as `company_contract`, `power_of_attorney`, and `financial_statement`;
-- inside **each representative** (`data.representatives[].required_documents`): the documents that representative must provide, typically `identification`.
+- `data.required_documents`: documents the company must provide, such as `company_contract`, `power_of_attorney` and `financial_statement`.
+- `data.representatives[].required_documents`: documents each representative must provide, typically `identification`.
 
 {/* TODO(v2): verify — the V2 spec declares both required_documents fields as arrays without marking them nullable; confirm whether V2 returns null or an empty array when no document is required. */}
-Both fields are `null` when no document is required. Use them to know exactly which documents to upload in the next step.
+Both fields are `null` when no document is required. They tell you exactly what to upload in the next step.
 
-## 5. Uploading entity and representative documents
+## 5. Upload the required documents
 
-Depending on the distribution channel configuration, Compliance may require supporting documents to be uploaded for the entity and/or its representatives. Documents are sent **after** the onboarding is created, using the identifiers returned by `POST /v2/onboarding`.
-
-Each document is uploaded individually through:
+Depending on your distribution channel, compliance may ask for supporting documents for the entity, for its representatives or for both. Upload them after the onboarding is created, using the identifiers from the response:
 
 ```http
 POST /v2/onboarding/documents
 ```
 
-The request uses `multipart/form-data` and the same **Basic Authentication** as the onboarding creation. Only **PDF** files are accepted.
+The request is `multipart/form-data` with the same Basic Authentication as the onboarding creation. Only PDF files are accepted. Each request uploads one document, so repeat the call for every required document of the entity and of each representative. See the [Upload onboarding document](/v2/api-reference/banking-api/onboarding/create-document) API reference.
 
-### Fields
+| Field | Required | Description |
+| --- | --- | --- |
+| `reference_type` | Yes | `entity` or `entity_representative` |
+| `reference_id` | Yes | The `entity_id` for an entity, or the representative `id` for a representative |
+| `document_type` | Yes | Document classification, by reference type (see below) |
+| `file` | Yes | The PDF file |
 
-| Field | Description |
-| --- | --- |
-| `reference_type` | `entity` or `entity_representative` |
-| `reference_id` | The `entity_id` (for `entity`) or the representative `id` (for `entity_representative`) |
-| `document_type` | Document classification (see below) |
-| `file` | The PDF file |
+| `reference_type` | `reference_id` | Accepted `document_type` |
+| --- | --- | --- |
+| `entity` | `entity_id` | `company_contract`, `power_of_attorney`, `financial_statement` |
+| `entity_representative` | representative `id` | `identification` |
 
-Document types by reference:
-
-- **Entity** (`reference_type: entity`): `company_contract`, `power_of_attorney`, `financial_statement`;
-- **Representative** (`reference_type: entity_representative`): `identification`.
-
-The `entity_id` and the representative `id` are both returned in the `POST /v2/onboarding` response.
-
-### Upload example
-
-Uploading a financial statement for the entity:
+### Upload a financial statement for the entity
 
 ```bash
 curl --request POST \
@@ -279,7 +273,7 @@ curl --request POST \
   --form 'file=@./financial_statement.pdf'
 ```
 
-Uploading an identification document for a representative:
+### Upload an identification document for a representative
 
 ```bash
 curl --request POST \
@@ -307,15 +301,9 @@ curl --request POST \
 }
 ```
 
-> **Tip:** upload one document per request. Repeat the call for each required document of the entity and of each representative. See the [upload document API reference](/v2/api-reference/banking-api/onboarding/create-document).
+## 6. Complete the liveness check
 
-## 6. Liveness step
-
-After creation, onboarding moves on to the validation process.
-
-The representative needs to complete the facial recognition (**liveness**) check required to open the account.
-
-Example:
+After creation, the onboarding enters validation. Each representative must complete a facial recognition (**liveness**) check before the account can be opened. Trio provides the link for it as the representative's `liveness_link`; send the link to the representative, who completes the check through it.
 
 {/* TODO(v2): verify — the V2 onboarding response no longer returns liveness_link (nor name_linked/tax_number_linked, renamed to name/tax_number); the link is expected in the entity.in_review webhook, whose v200 payload is not in the V2 spec. V1 example kept. */}
 ```json
@@ -333,35 +321,27 @@ Example:
 }
 ```
 
-The customer must use this link to complete the facial recognition step.
-
 ## 7. Compliance analysis
 
-Once liveness is completed, the customer's information moves on to Compliance analysis.
-
-The distributor organization **does not need to keep polling the API** to find out whether the analysis has finished.
-
-Tracking should be done through entity webhooks.
-
-Events in the `entity` category are sent whenever the Compliance status of an entity created through onboarding changes.
-
-See the [Entity events reference](/v2/webhooks/events/overview).
+Once the liveness check is done, the customer's information goes to compliance analysis. You do not need to poll the API for the result: Trio sends an event in the `entity` category whenever the compliance status of an entity created through onboarding changes. The next step describes these events; the [webhook events](/v2/webhooks/events/overview) catalog lists all of them.
 
 ## 8. Onboarding webhooks
 
-The main events related to onboarding are:
+Three events track the analysis:
 
-| Event | Status | Description |
+| Event | Status | Meaning |
 | --- | --- | --- |
-| `entity.in_review` | `in_review` | The entity is under Compliance analysis |
-| `entity.approved` | `approved` | The entity has been approved and is ready to operate |
-| `entity.rejected` | `rejected` | The entity was rejected by Compliance analysis |
+| `entity.in_review` | `in_review` | The entity is under compliance analysis |
+| `entity.approved` | `approved` | The entity was approved and is ready to operate |
+| `entity.rejected` | `rejected` | The entity was rejected by compliance analysis |
 
-### `entity.in_review`
+<Tip>
+Keep the customer in an onboarding state until you receive `entity.approved`, then enable the operations your integration supports. On `entity.rejected`, store the `reason` from the payload so the customer's case can be handled.
+</Tip>
 
-Indicates that the entity has entered the analysis stage.
+### Entity in review
 
-When applicable, the event also contains the representative's `liveness_link`.
+`entity.in_review` tells you the entity entered the analysis stage. When applicable, it also carries the representative's `liveness_link`.
 
 {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec */}
 ```json
@@ -386,9 +366,9 @@ When applicable, the event also contains the representative's `liveness_link`.
 }
 ```
 
-### `entity.approved`
+### Entity approved
 
-Indicates that the entity was approved by Compliance and is ready to operate.
+`entity.approved` tells you compliance approved the entity. From this event on, your application can treat the customer organization as ready for the operations supported by the product.
 
 {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec */}
 ```json
@@ -407,13 +387,9 @@ Indicates that the entity was approved by Compliance and is ready to operate.
 }
 ```
 
-From this event onward, your application can consider the customer's organization ready for the operations supported by the product.
+### Entity rejected
 
-### `entity.rejected`
-
-Indicates that the entity was rejected by Compliance.
-
-In this case, the event contains a `reason` field describing the reason for the rejection.
+`entity.rejected` tells you compliance rejected the entity. The `reason` field describes why.
 
 {/* TODO(v2): verify — v200 event payload structure is not in the V2 spec */}
 ```json
@@ -433,17 +409,15 @@ In this case, the event contains a `reason` field describing the reason for the 
 }
 ```
 
-## 9. Using the customer's organization
+## 9. Operate on the customer's organization
 
-Once onboarding has been approved, the distributor organization can make calls on behalf of the customer's organization.
-
-To do this, use the same credentials as the distributor organization and provide the customer's `org_id` in the header:
+Once the entity is approved, make calls on the customer's behalf with your own credentials and the customer's `org_id` in the header:
 
 ```http
 Trio-Target-Org-Id: {target_org_id}
 ```
 
-Example:
+For example, to [list the entities](/v2/api-reference/banking-api/entities/list) of the customer organization:
 
 ```bash
 curl https://api.sandbox.trio.com.br/v2/entities \
@@ -452,148 +426,24 @@ curl https://api.sandbox.trio.com.br/v2/entities \
   -u {client_id}:{client_secret}
 ```
 
-In this scenario:
+Trio validates the access on every request: if your organization has no access to the target organization, the API returns `403`. Access is configured at the organization level and must be enabled for your integration.
 
-```text
-Credentials used
-        |
-        v
-Distributor organization
-        |
-        | Trio-Target-Org-Id
-        v
-Customer organization
-        |
-        v
-Requested operation
-```
-
-Access is validated by Trio on every request. If the distributor organization does not have access to the specified organization, the API returns `403`.
-
-> **Important:** access to the organization is configured at the organization level and must be enabled for the integration.
-
-## 10. Complete flow
-
-The complete flow can be understood as follows:
-
-```text
-1. Customer requests account opening
-              |
-              v
-2. Distributor collects the data
-              |
-              v
-3. POST /v2/onboarding
-              |
-              v
-4. Trio creates the organization and entity
-              |
-              v
-5. API returns the identifiers
-   - org_id
-   - entity_id
-              |
-              v
-6. Webhook: entity.in_review
-              |
-              v
-7. Representative completes liveness
-              |
-              v
-8. Compliance analyzes the data
-              |
-        +-----+-----+
-        |           |
-        v           v
-   approved      rejected
-        |           |
-        v           v
-9. Organization   Handling
-   ready           flow
-        |
-        v
-10. API with
-    Trio-Target-Org-Id
-        |
-        v
-11. Operations on the
-    customer's organization
-```
-
-## 11. Integration recommendations
-
-### Save the identifiers
-
-After `POST /v2/onboarding`, store at least the following in your system:
-
-- `external_id`;
-- `org_id`;
-- `entity_id`;
-- `tax_number`;
-- current status.
-
-This makes it easier to reconcile your system with Trio.
-
-### Use `external_id` as your system's reference
-
-The `external_id` should be a reference that lets you easily identify the customer within your application.
-
-Example:
-
-```text
-customer_12345
-```
-
-or:
-
-```text
-company_98765
-```
-
-### Only enable operations after approval
-
-Keep the customer in an onboarding state while Compliance is analyzing the entity.
-
-After receiving:
-
-```text
-entity.approved
-```
-
-the customer can move on to the operations supported by the integration.
-
-### Handle rejections
-
-When you receive:
-
-```text
-entity.rejected
-```
-
-store the `reason` returned by the webhook so the customer's case can be handled appropriately.
-
-
-## References
-
-- [Create onboarding](/v2/api-reference/banking-api/onboarding/create)
-- [Upload onboarding document](/v2/api-reference/banking-api/onboarding/create-document)
-- [Entity webhooks](/v2/webhooks/events/overview)
-- [Authentication](/v2/developers/authentication)
-- [Acting on another organization](/v2/developers/authentication#acting-on-another-organization)
-
----
-
-## Retrieving the bank account after approval
+### Retrieve the customer's bank account
 
 {/* TODO(v2): verify — the "available within a few minutes" timing is a business rule not described in the V2 spec. The V1 section pointed to virtual accounts, which have no V2 equivalent; it now points to GET /v2/bank_accounts. */}
-Once the entity is approved (`entity.approved`), the customer's bank account is typically made available within a few minutes. It is not created at the exact same instant as the approval event, so you should not assume the account identifier is available immediately.
+After `entity.approved`, the customer's bank account is typically available within a few minutes. It is not created at the same instant as the approval event, so do not assume the account ID is available right away.
 
-To retrieve it, call the [list bank accounts](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts) endpoint, passing the customer's `org_id` in the header:
+To get it, call [List bank accounts](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts) with the customer's `org_id` in `Trio-Target-Org-Id`:
 
 ```http
-Trio-Target-Org-Id: {org_id}
+GET /v2/bank_accounts
 ```
 
-Use this call to list the bank accounts created for the customer's organization and collect the bank account `id` you'll need (as `bank_account_id`) in order to perform transactions on their behalf.
+Collect the bank account `id` from the response: it is the `bank_account_id` you send when creating receivables and payments on the customer's behalf.
 
-This guide is also available in Portuguese: [/v2/guides/onboarding-guide-pt-br](/v2/guides/onboarding-guide-pt-br).
+## Next steps
+
+- [Acting on another organization](/v2/developers/authentication#acting-on-another-organization): how access is granted, read-only access and mTLS.
+- [Webhook events](/v2/webhooks/events/overview): the full event catalog, including the `entity` category.
+- [Receivables](/v2/guides/receivables/overview): receive payments on the customer's bank account.
+- [Onboard entity](/v2/api-reference/banking-api/onboarding/create): every field, type and response of the onboarding endpoint.

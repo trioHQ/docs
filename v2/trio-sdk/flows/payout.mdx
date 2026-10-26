@@ -1,0 +1,143 @@
+---
+title: "PayOut flow"
+description: "Create a payout checkout session so your users can withdraw money to a Pix key of their own through Trio Checkout."
+---
+
+Use the PayOut flow whenever you want users to cash out money. To generate a PayOut through the Checkout SDK you create a checkout session with `options.session_type` set to `payout`; the session carries the transaction, the paying account, the withdrawal limit and the look of the checkout.
+
+{/* TODO(v2): verify — the checkout session endpoint (POST /checkout/sessions) belongs to the Initiation API, which has no V2 reference pages and still names the account `receiver.virtual_account_id`. The V2 banking API has no virtual accounts; confirm which identifier the Checkout API expects. */}
+
+## Session parameters
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `transaction.tax_number` | Yes | The tax number (CPF or CNPJ) of the person you intend to pay. |
+| `transaction.phone_number` | No | A Pix key in the format of a phone number that you want to let the user select. |
+| `transaction.email` | No | A Pix key in the format of an email that you want to let the user select. |
+| `transaction.name` | No | Customer name. |
+| `transaction.available_withdraw_amount` | Yes | The maximum amount you allow your client to withdraw in this transaction, in cents (BRL 100.00 = `10000`). The user can choose to withdraw less. |
+| `transaction.amount` | No | The value pre-set in the user's input field. If it is larger than `available_withdraw_amount`, the session is created with `available_withdraw_amount` as the amount. |
+| `transaction.external_id` | No | Reference for your system. |
+| `transaction.description` | No | Additional information about the transaction. |
+| `receiver.virtual_account_id` | Yes | Unique identifier of the account the money leaves from. |
+| `options.session_type` | Yes | Session type, in this case `payout`. |
+| `options.expiration_in_seconds` | No | Integer. If set, the checkout session only remains active for this long; otherwise it lasts 300 seconds (5 minutes). |
+| `options.allow_other_pix_key` | No | Boolean. If `true`, the checkout lets the user enter a Pix key other than the ones informed in the session. At the cash-out step the key is verified and the payment only succeeds if it belongs to the `tax_number` initially provided; otherwise the payment fails. |
+| `options.theme` | No | White label customization, described below. |
+
+### White label
+
+You can customize your end user's experience by using the checkout as a white label, through the `options.theme` object:
+
+| Field | Description |
+| --- | --- |
+| `colors.backdrop_color` | Hex color of the background. Accepts any color. |
+| `colors.button_color` | Hex color of the primary action button. Accepts any color. |
+| `colors.button_label_color` | Hex color of the primary action text. Accepts only `#000000` or `#ffffff`. |
+| `colors.link_color` | Hex color of links. Accepts any color. |
+| `colors.navbar_action_color` | Hex color of the navbar actions. Accepts only `#000000` or `#ffffff`. |
+| `colors.navbar_color` | Hex color of the top navbar background. Accepts any color. |
+| `logo_url` | URL of the logo added to the flow. |
+
+This is what a fully customized checkout looks like:
+
+![](/images/image-\(1\).jpeg)
+
+## Create the session
+
+Make a `POST` request to `/checkout/sessions` with the following payload:
+
+{/* TODO(v2): verify — the V1 example sends `options.expiration_in_seconds` as the string "86400" although the field is described as an integer. */}
+
+```json
+{
+  "transaction": {
+    "tax_number": "23725474028",
+    "phone_number": "+5541999999999",
+    "email": "user@trio.com.br",
+    "name": "John Doe",
+    "available_withdraw_amount": 100,
+    "amount": 1,
+    "external_id": "01H7DKA58YDWPA7ZBCCAVWFM5E",
+    "description": "Paid to example.com"
+  },
+  "receiver": {
+    "virtual_account_id": "018a66ca-0451-9cd7-1cfa-8dca325db29f"
+  },
+  "options": {
+    "session_type": "payout",
+    "allow_other_pix_key": false,
+    "expiration_in_seconds": "86400",
+    "theme": {
+      "colors": {
+        "backdrop_color": "#ffffff",
+        "button_color": "#f6df69",
+        "button_label_color": "#000000",
+        "link_color": "#426b55",
+        "navbar_action_color": "#ffffff",
+        "navbar_color": "#426b55"
+      },
+      "logo_url": "https://linktologo.com/link.png"
+    }
+  }
+}
+```
+
+With the correct parameters you receive an `HTTP 200` response like this one. Save `data.id`: it is the `session` you pass to `Trio.create()`.
+
+```json
+{
+  "data": {
+    "company_id": "018da8cb-17da-5287-40c4-724ed90e2a0e",
+    "expiration_timestamp": "2024-05-04T19:44:11.960965Z",
+    "id": "018f4002-6d38-7d42-7c5f-c2dd50842d51",
+    "options": {
+      "allow_other_pix_key": false,
+      "session_type": "payout",
+      "theme": {
+        "colors": {
+          "backdrop_color": "#888888",
+          "button_color": "#15294B",
+          "button_label_color": "#FFFFFF",
+          "link_color": "#15294B",
+          "navbar_action_color": "#000000",
+          "navbar_color": "#FFFFFF"
+        },
+        "logo_url": "https://www.trio.com.br/_next/static/media/Logo.341273f5.svg"
+      }
+    },
+    "participants": null,
+    "receiver": {
+      "virtual_account_id": "018e3df6-d70f-9489-2c7e-ca880a25ea46"
+    },
+    "timestamp": "2024-05-03T19:50:51.960965Z",
+    "transaction": {
+      "amount": {
+        "amount": 1,
+        "currency": "BRL"
+      },
+      "available_withdraw_amount": 100,
+      "description": "Paid to example.com",
+      "email": null,
+      "expiration_in_seconds": 86000,
+      "external_id": "Sessão de Teste",
+      "name": null,
+      "phone_number": null,
+      "redirect_url": "http://your.url.here",
+      "tax_number": null
+    }
+  }
+}
+```
+
+## What the user sees
+
+When the checkout opens, the user goes through these screens:
+
+![](/images/image-\(18\).png)
+
+## Next steps
+
+- [Using the SDK](/v2/trio-sdk/using-the-sdk): pass the session to `Trio.create()` and open the checkout.
+- [Payments](/v2/guides/payments/overview): what happens to the out document the withdrawal creates.
+- [Closed-loop reconciliation](/v2/operations/closed-loop): the payout compliance rules that can refuse a withdrawal.

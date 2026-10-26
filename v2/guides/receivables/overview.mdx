@@ -1,33 +1,65 @@
 ---
 title: "Receivables"
-description: "Cash-in guides for V2: receiving payments, fees, split payments, Pix Automático and sandbox simulations."
+description: "How to receive money on Trio: Pix QR codes, boletos, Pix Automático, fees, split payments and sandbox simulations."
 ---
 
-**Receivables**, or cash-in, are the payments that arrive in your bank accounts: a dynamic QR code that gets paid, a boleto settled by a customer or a Pix Automático collection debited on its due date. On the V2 API every receivable is created against a `bank_account_id` and produces an **in document** once it is paid.
+A **receivable** is money that arrives in one of your bank accounts: a dynamic QR code your customer pays, a boleto settled at any bank, or a Pix Automático collection debited on its due date. On V2 every receivable is created against a `bank_account_id`, the account that receives the funds, and becomes an **in document** once it is paid.
+
+## Choose how to get paid
+
+| You want to | Use | Guide |
+| --- | --- | --- |
+| Charge a known amount right now | Dynamic QR code | [Cash in](/v2/guides/receivables/cash-in) |
+| Let customers pay any amount, repeatedly | Static QR code | [QR code types](/v2/guides/pix/qr-codes) |
+| Charge with a due date, discount, fine or interest | Dynamic QR code with due date, or a boleto | [QR code types](/v2/guides/pix/qr-codes), [Create a boleto](/v2/guides/boleto/create-boleto) |
+| Issue a bank slip that also carries a Pix QR code | Boleto | [Create a boleto](/v2/guides/boleto/create-boleto) |
+| Charge a subscription without asking each time | Pix Automático | [Pix Automático](/v2/guides/receivables/using-pix-automatic) |
+
+## Guides
 
 <CardGroup cols={2}>
-  <Card title="Cash in" href="/v2/guides/receivables/cash-in">
-    Generate your first dynamic QR code and read the response.
+  <Card title="Cash in" icon="qrcode" href="/v2/guides/receivables/cash-in">
+    Create your first dynamic QR code and read the response.
   </Card>
-  <Card title="Fees" href="/v2/guides/receivables/fees">
-    Charge a fee on the payment of a receivable and keep the margin above your Trio cost.
+  <Card title="QR code types" icon="shapes" href="/v2/guides/pix/qr-codes">
+    Static, dynamic and dynamic-with-due-date QR codes, and what each returns.
   </Card>
-  <Card title="Split payments" href="/v2/guides/receivables/split-payments">
-    Distribute a receivable among split recipients on QR codes and boletos.
-  </Card>
-  <Card title="Using Pix Automático" href="/v2/guides/receivables/using-pix-automatic">
+  <Card title="Pix Automático" icon="rotate" href="/v2/guides/receivables/using-pix-automatic">
     Recurrences, collections and attempts, from authorization to settlement.
   </Card>
-  <Card title="Usando o Pix Automático (PT-BR)" href="/v2/guides/receivables/using-pix-automatic-pt-br">
-    A versão em português do guia de Pix Automático.
+  <Card title="Create a boleto" icon="file-invoice" href="/v2/guides/boleto/create-boleto">
+    The full request: charge, payer, due date, discounts, fine and interest.
   </Card>
-  <Card title="Simulating deposit success" href="/v2/guides/receivables/simulating-deposit-success">
+  <Card title="Boleto types" icon="list" href="/v2/guides/boleto/boleto-types">
+    Every invoice type and wallet type value.
+  </Card>
+  <Card title="Boleto best practices" icon="lightbulb" href="/v2/guides/boleto/best-practices">
+    Hybrid boleto and Pix, payer data, lifecycle and due date versus expiration.
+  </Card>
+  <Card title="Fees" icon="percent" href="/v2/guides/receivables/fees">
+    Charge a fee on a receivable and keep the margin above your Trio cost.
+  </Card>
+  <Card title="Split payments" icon="arrows-split-up-and-left" href="/v2/guides/receivables/split-payments">
+    Distribute a receivable among split recipients.
+  </Card>
+  <Card title="Document lifecycle" icon="timeline" href="/v2/guides/pix/document-lifecycle">
+    The statuses an in document goes through after the payment.
+  </Card>
+  <Card title="Simulate a successful deposit" icon="circle-check" href="/v2/guides/receivables/simulating-deposit-success">
     Pay a QR code in the sandbox and watch the document settle.
   </Card>
-  <Card title="Simulating deposit failures" href="/v2/guides/receivables/simulating-deposit-failures">
-    Configure a sandbox account to refuse deposits and test your error handling.
+  <Card title="Simulate deposit failures" icon="circle-xmark" href="/v2/guides/receivables/simulating-deposit-failures">
+    Make a sandbox account refuse deposits to test your error handling.
   </Card>
-  <Card title="API reference" href="/v2/api-reference/banking-api/documents/receivables/list-receivables">
+  <Card title="API reference" icon="book" href="/v2/api-reference/banking-api/documents/receivables/list-receivables">
     List, read and search in documents and their refunds.
   </Card>
 </CardGroup>
+
+<Note>
+  Pix biometrics, the web enrollment and payment authorization flow, has no endpoints on the V2 API.
+</Note>
+
+## What happens after the payment
+
+Trio records the payment as an in document, sends the webhook events you subscribed to, and credits the bank account. Read the [Document lifecycle](/v2/guides/pix/document-lifecycle) for the statuses, and [Webhooks](/v2/webhooks/introduction) for the events.

@@ -1,0 +1,48 @@
+---
+title: "Closed-loop reconciliation"
+description: "The compliance rules Trio applies to deposits and payouts on a bank account, so every transaction is either received or refused with an event you can act on."
+---
+
+When you send or receive money, Trio keeps a closed loop: no transaction goes missing, and every one of them is either completed or refused with an event your system can handle. This page lists the compliance rules behind that control, which you configure per bank account in the [Trio App](https://app.sandbox.trio.com.br).
+
+<Note>
+  **Coming from V1?** These rules were configured per virtual account. On V2 they apply to the bank account that receives or pays, the one you name in `bank_account_id`.
+</Note>
+
+## Deposits
+
+For incoming money, compliance rules decide whether a single transaction is received or not. Whenever a transaction infringes a rule, Trio receives the money and automatically refunds it to the sender's account. A refused transaction generates a `failed` event, so you can show your users what happened; see [Integration best practices](/v2/operations/best-practices) for how `failed` behaves on a cash in.
+
+These are the cash-in compliance rules you can enable for a bank account:
+
+| Compliance rule | Editable? | Situation |
+| --- | --- | --- |
+| Unidentified deposits | Yes | A payment is made directly to the bank account or to its Pix key. Trio blocks it so you always know exactly who the money came from. |
+| Deposits from duplicated QR code payments | Yes | A payment is made twice to the same QR code. Trio blocks the second one, so each payment is received separately and without confusion. |
+| Deposits with value different from dynamic QR code | Yes | A payment is made with an amount different from the one stated in the QR code. Useful for controlling the exact amount of each transaction without creating two QR codes for the same purchase. Trio recommends keeping this rule on. |
+| Deposits with tax number different from dynamic QR code | Yes | A payment is made by an individual whose tax number differs from the `counterparty.tax_number` set when the QR code was created. |
+| Deposits with bank accounts different from dynamic QR code | Yes | A payment is made from a bank account other than the `counterparty.bank_accounts` set when the QR code was created. |
+| Deposits from legal entities | Yes | A payment is made not by an individual with a natural person tax number (CPF in Brazil) but by a legal entity with a legal tax number (CNPJ in Brazil). |
+| Deposits from unauthorized participants | Yes | A payment is made by an institution that is not authorized by the Central Bank of Brazil. |
+
+The payer restrictions come from the `counterparty` object you send to [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post). The [Cash in](/v2/guides/receivables/cash-in) guide walks through the whole flow.
+
+## Payouts
+
+For outgoing money, Trio also applies compliance rules that decide whether a payment is transferred, as a way of protecting its client base.
+
+These are the cash-out compliance rules enabled for a bank account:
+
+| Compliance rule | Editable? | Situation |
+| --- | --- | --- |
+| Block payouts to legal entities | Yes | You attempt to pay an account that belongs to a legal entity, represented by a legal tax number (CNPJ in Brazil). |
+| Block payouts to different tax number | Yes | You attempt to pay an account that does not belong to the tax number you sent in `counterparty.tax_number`. |
+| Block payouts to different bank accounts | Yes | You attempt to pay an account that is not among the ones you sent in `counterparty.bank_accounts`. |
+
+On V2 you state the expected receiver in the `counterparty` object of [`POST /v2/out/pix/async`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async): the payment is refused if the Pix key or BR code belongs to another tax number, or to none of the bank accounts listed. The [Cash out](/v2/guides/payments/cash-out) guide shows the full request.
+
+## Next steps
+
+- [Integration best practices](/v2/operations/best-practices): identifiers, statuses, timeouts and idempotency.
+- [Simulate deposit failures](/v2/guides/receivables/simulating-deposit-failures): make a sandbox account refuse deposits to test your handling.
+- [Document lifecycle](/v2/guides/pix/document-lifecycle): the statuses an in document goes through.

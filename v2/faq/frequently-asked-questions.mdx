@@ -1,10 +1,173 @@
 ---
-title: "FAQ"
-description: "Frequently asked questions about the V2 API."
+title: "Frequently asked questions"
+description: "Answers to the most common questions about the sandbox, API credentials, bank accounts, webhooks, Pix testing, rate limits, compliance rules and going to production."
 ---
 
-{/* v1 counterpart: faq/frequently_asked_questions.mdx. Start from it and change what differs in V2. */}
+This page collects the questions integrators ask most about the Trio V2 API: sandbox setup, API credentials, bank account IDs, webhooks, Pix cash-in testing, rate limits, compliance rules and production onboarding.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+<Tip>
+  Before you start, read [Plan your integration](/v2/getting_started/plan-your-integration) and the [Integration best practices](/v2/operations/best-practices).
+</Tip>
+
+## Sandbox
+
+<AccordionGroup>
+  <Accordion title="How do I get the sandbox client_id and client_secret?">
+    Your team creates the sandbox API credentials directly in the sandbox [Trio App](https://app.sandbox.trio.com.br). Trio does not generate or provide these credentials manually. Your team needs to:
+
+    1. Create an organization in the sandbox.
+    2. Access the sandbox Trio App.
+    3. Create the API credentials.
+    4. Use the generated credentials to authenticate your API requests.
+
+    See [Sandbox account](/v2/guides/sandbox_account), [Creating your first API credential](/v2/guides/creating-your-first-api-credential) and [Authentication](/v2/developers/authentication).
+  </Accordion>
+
+  <Accordion title="Where can I find the sandbox bank account ID?">
+    The `bank_account_id` is available in the sandbox Trio App. After creating your organization:
+
+    1. Go to **Accounts**.
+    2. Select the bank account you want to use.
+    3. Open the account details.
+    4. Copy the account identifier: that is the `bank_account_id`.
+
+    You can also list your accounts with [`GET /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts). This ID is required for operations such as Pix cash-in testing: every receivable and payment names the bank account it uses.
+
+    <Note>
+      **Coming from V1?** The virtual account ID (`virtual_account_id`) no longer exists. Send `bank_account_id` instead.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Webhooks
+
+<AccordionGroup>
+  <Accordion title="How do I create and configure a sandbox webhook?">
+    The complete process is in [Creating your first webhook](/v2/guides/creating-your-first-webhook). The same concepts apply to the sandbox and to production, but you configure each environment separately.
+  </Accordion>
+
+  <Accordion title="Where can I get the webhook secret?">
+    The webhook secret is generated when you create the webhook in the Trio App. Your system uses it to validate the authenticity of the webhook requests it receives. See [Webhook authentication](/v2/webhooks/authentication) for the details of authentication and signatures.
+  </Accordion>
+
+  <Accordion title="Does my webhook endpoint require IP allowlisting?">
+    Yes. When creating your API credentials, you must register your server's IP address.
+
+    If your infrastructure also requires Trio's IP addresses in your allowlist, use the following:
+
+    | Environment | Trio IP |
+    | --- | --- |
+    | Production | Shared after contract |
+    | Sandbox | `34.194.173.207` |
+  </Accordion>
+
+  <Accordion title="What is the webhook retry policy?">
+    Trio retries failed webhook deliveries up to **5 times**, and the interval grows after each failure:
+
+    | Retry | Delay |
+    | --- | ---: |
+    | 1st retry | 16 seconds |
+    | 2nd retry | 32 seconds |
+    | 3rd retry | 104 seconds |
+    | 4th retry | 208 seconds |
+    | Additional retries | According to the retry policy |
+
+    Design your webhook endpoint to handle **duplicate events** safely: make your processing idempotent so the same event is never processed more than once. See [Webhooks](/v2/webhooks/introduction) for the delivery model.
+  </Accordion>
+</AccordionGroup>
+
+## Pix cash-in testing
+
+<AccordionGroup>
+  <Accordion title="How can I simulate a successful Pix payment in the sandbox?">
+    Follow [Simulate a successful deposit](/v2/guides/receivables/simulating-deposit-success).
+  </Accordion>
+
+  <Accordion title="How can I simulate a failed Pix payment in the sandbox?">
+    Follow [Simulate deposit failures](/v2/guides/receivables/simulating-deposit-failures).
+  </Accordion>
+
+  <Accordion title="Where can I understand the Pix transaction status flow?">
+    Understanding the document lifecycle matters when you implement Pix cash in and the other transaction flows. Read [Document lifecycle](/v2/guides/pix/document-lifecycle) and follow the [summary of the integration best practices](/v2/operations/best-practices#summary).
+  </Accordion>
+</AccordionGroup>
+
+## API rate limits
+
+<AccordionGroup>
+  <Accordion title="What are the API rate limits?">
+    | Environment | Rate limit |
+    | --- | ---: |
+    | Production | `60 requests/second` |
+    | Sandbox | `5 requests/second` |
+
+    These limits apply to **each individual account and each endpoint** and are enforced per second. See [Rate limit](/v2/developers/rate-limit).
+  </Accordion>
+
+  <Accordion title="What should I do when I reach the API rate limit?">
+    Implement a **retry and backoff strategy**. Avoid retrying continuously without waiting between attempts: a backoff reduces unnecessary requests and prevents repeated rate-limit errors.
+  </Accordion>
+</AccordionGroup>
+
+## Pix cash-in compliance
+
+<AccordionGroup>
+  <Accordion title="Which Pix cash-in compliance rules can be configured?">
+    You configure the following rules directly in the Trio App, according to the requirements of each bank account:
+
+    - Block unidentified deposits.
+    - Block deposits from duplicate QR codes.
+    - Block deposits with an amount different from the amount issued in the dynamic QR code.
+    - Block deposits from legal entities.
+    - Block deposits with a CPF/CNPJ different from the dynamic QR code.
+    - Block deposits from unauthorized participants.
+    - Block deposits from a bank account belonging to a different counterparty than the dynamic QR code.
+    - Automatically return deposits from minors.
+    - Automatically return deposits from deceased individuals.
+    - Automatically return deposits from individuals with an irregular and/or invalid CPF/CNPJ.
+    - Block cash-out transactions to legal entities (CNPJ).
+
+    [Closed-loop reconciliation](/v2/operations/closed-loop) explains what each rule blocks.
+  </Accordion>
+</AccordionGroup>
+
+## Production
+
+<AccordionGroup>
+  <Accordion title="How do I get production credentials and bank account IDs?">
+    Production access is provided after the contract is signed with the **Trio commercial team**. After receiving access to the production Trio App, your team can:
+
+    - Create the production API credentials.
+    - Create and manage bank accounts.
+    - Obtain the corresponding `bank_account_id` of each account.
+    - Configure production webhooks.
+
+    Production credentials and sandbox credentials are managed separately.
+  </Accordion>
+
+  <Accordion title="Are production and sandbox webhook secrets different?">
+    Yes. **Sandbox and production are completely separate environments.** You configure your webhooks separately in each environment, and each has its own webhook configuration and secret. Never use a sandbox webhook secret in production.
+  </Accordion>
+
+  <Accordion title="Is there a production certification or go-live checklist?">
+    After the contract is signed and the Trio team completes the compliance validation, your engineering team validates the complete integration flow before going live. At minimum, validate:
+
+    - Pix cash in.
+    - Cash out.
+    - Webhook delivery.
+    - Webhook signature validation.
+    - Transaction status updates.
+    - Document lifecycle handling.
+    - Error handling.
+    - Retry and idempotency behavior.
+
+    See [Integration best practices](/v2/operations/best-practices) for the recommended approach.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+- [Receivables](/v2/guides/receivables/overview) and [Payments](/v2/guides/payments/overview): step-by-step guides for the common integration scenarios.
+- [Integration best practices](/v2/operations/best-practices): build and maintain a reliable integration.
+- [Welcome](/): the complete documentation, from getting started to the API reference and webhooks.
+- [Support](/v2/getting_started/support): channels, availability and what to include when you report an issue.

@@ -1,77 +1,83 @@
 ---
-title: "Simulating deposit success"
-description: "Settle a sandbox deposit end to end using two bank accounts"
+title: "Simulate a successful deposit"
+description: "Settle a sandbox deposit end to end by paying your own QR code from a second bank account."
 ---
 
-Next, we present a step-by-step approach for you to complete (**settle**) your deposits. To simulate a complete transaction flow, you'll need two accounts: one to create payments and another to process them.
+To watch a deposit settle end to end in the sandbox you need two bank accounts: one that creates the QR code and receives the funds, and one that pays it. This guide creates the second account, generates a QR code on it and pays the code from the first account in the [Trio App](https://app.sandbox.trio.com.br). It builds on the [Cash in](/v2/guides/receivables/cash-in) tutorial.
 
-{/* TODO(v2): verify — V1 created the secondary account as a Virtual Account in the console (Account > Virtual Accounts). V2 has no virtual accounts; the console steps and screenshots below are from V1 and need to be confirmed for V2. */}
+All examples use the sandbox base URL `https://api.sandbox.trio.com.br`.
 
-First, you need to create a secondary virtual account. Access the menu and click on **Account \> Virtual Accounts**. In the listing page, at the top right, click on **Create Virtual Account.**
+<Steps>
+  <Step title="Create a second bank account">
+    {/* TODO(v2): verify — V1 created the secondary account as a Virtual Account in the console (Account > Virtual Accounts). V2 has no virtual accounts; the console steps and screenshots below are from V1 and need to be confirmed for V2. */}
 
-![](/images/image-\(30\).png)
+    In the Trio App, open the menu and go to **Account > Virtual Accounts**. At the top right of the list, click **Create Virtual Account**.
 
-Select your real bank account (typically there will be only one) and provide a simple description for this account.
+    ![](/images/image-\(30\).png)
 
-![](/images/image-\(31\).png)
+    Select your real bank account (typically there is only one) and give the new account a short description.
 
-Once created, this new account will appear in the listing interface, with its own ID and balance. By default, your first account starts with 1,000,000 BRL, while the new account starts with 0 BRL.
+    ![](/images/image-\(31\).png)
 
-Through the API, the secondary account is created with [`POST /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/create-bank-account) (`group_id` and `description`), and both accounts are listed, with their ids and balances, by [`GET /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts).
+    The new account appears in the list with its own `id` and balance. Your first account starts with BRL 1,000,000.00; the new one starts with BRL 0.00.
 
-### **Paying a Deposit**
+    Through the API, create the second account with [`POST /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/create-bank-account) (`group_id` and `description`) and list both, with their ids and balances, with [`GET /v2/bank_accounts`](/v2/api-reference/banking-api/bank-accounts/list-bank-accounts).
+  </Step>
 
-1. Create a new payment with QR code pointing to the new account. In the request body, specify the newly created account ID in the `bank_account_id`, as shown below.
-   - POST [https://api.sandbox.trio.com.br/v2/in/pix/qrcodes](https://api.sandbox.trio.com.br/v2/in/pix/qrcodes)
-   ```json
-   {
-       "bank_account_id": "0196102e-f67b-d5f9-300c-f587094bfc5a",
-       "counterparty": {
-           "tax_number": "41.491.440/0000-11",
-           "name": "My Test Company"
-       },
-       "amount": 5000,
-       "external_id": "{{$randomUUID}}",
-       "description": "Test Payment in Sandbox",
-       "options": {
-           "allow_change_the_amount_on_payment": false,
-           "show_qrcode_image": false
-       }
-   }
-   ```
-2. The account with a 0.00 BRL balance will receive a deposit of 50 BRL. To pay this deposit, you'll use your first account that has the full balance. To do this, go to **Move your account \> Pix**.
+  <Step title="Create a QR code that points to the new account">
+    Send a `POST` to [Create a dynamic QR code](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) with the new account's `id` in `bank_account_id`. The amount is in cents (BRL 100.00 = `10000`), so `5000` is a BRL 50.00 deposit.
 
-![](/images/image-\(32\).png)
+    ```http
+    POST /v2/in/pix/qrcodes
+    ```
 
-3. Select the origin account, which should be the first one, with full balance.
+    ```json
+    {
+        "bank_account_id": "0196102e-f67b-d5f9-300c-f587094bfc5a",
+        "counterparty": {
+            "tax_number": "41.491.440/0000-11",
+            "name": "My Test Company"
+        },
+        "amount": 5000,
+        "external_id": "{{$randomUUID}}",
+        "description": "Test Payment in Sandbox",
+        "options": {
+            "allow_change_the_amount_on_payment": false,
+            "show_qrcode_image": false
+        }
+    }
+    ```
 
-<img
-  src="/images/image-(33).png"
-  className="dark:hidden"
-/>
-<img
-  src="/images/image-(33).png"
-  className="hidden dark:block"
-/>
+    Keep the `hash` from the response: it is the BR code (the Pix copy-and-paste code) you pay in the next steps.
+  </Step>
 
-4. Paste the hash code created in your Deposit Request, via API.
+  <Step title="Open Pix in the Trio App">
+    The account with BRL 0.00 receives the deposit; your first account, which holds the balance, pays it. Go to **Move your account > Pix**.
 
-<img
-  src="/images/image-(34).png"
-  className="dark:hidden"
-/>
-<img
-  src="/images/image-(34).png"
-  className="hidden dark:block"
-/>
+    ![](/images/image-\(32\).png)
+  </Step>
 
-5. Follow a few completion steps, and you will have your deposit Completed, with webhook sent and the transaction listed in your transactions list.
+  <Step title="Select the origin account">
+    Choose the first account, the one with the full balance.
 
-<img
-  src="/images/image-(35).png"
-  className="dark:hidden"
-/>
-<img
-  src="/images/image-(35).png"
-  className="hidden dark:block"
-/>
+    ![](/images/image-\(33\).png)
+  </Step>
+
+  <Step title="Paste the BR code">
+    Paste the `hash` returned by the API.
+
+    ![](/images/image-\(34\).png)
+  </Step>
+
+  <Step title="Confirm the payment">
+    Follow the remaining confirmation screens. The deposit settles, Trio sends the [webhook event](/v2/webhooks/events/overview), and the transaction appears in your transaction list and in [`GET /v2/documents/in`](/v2/api-reference/banking-api/documents/receivables/list-receivables).
+
+    ![](/images/image-\(35\).png)
+  </Step>
+</Steps>
+
+## Next steps
+
+- [Simulate deposit failures](/v2/guides/receivables/simulating-deposit-failures): reproduce rejected and refunded deposits with the same two accounts.
+- [Document lifecycle](/v2/guides/pix/document-lifecycle): the statuses the settled in document went through.
+- [Creating your first webhook](/v2/guides/creating-your-first-webhook): receive the settlement event in your system.
