@@ -1,0 +1,210 @@
+---
+title: "Cash out"
+description: "Pay a Pix key, a Copy and Paste code or a bank account from one of your bank accounts through the Trio API."
+---
+
+Cash Out operations represent outgoing transfers from your bank account, allowing you to perform payments and withdrawals directly through the Trio API.
+
+Compared to QR Code generation, Cash Out operations are simpler and require fewer parameters, making them ideal for automated payouts and transfers.
+
+The most important requirement is informing the `bank_account_id` of the bank account that will be debited during the transaction.
+
+V2 offers two ways to pay a Pix:
+
+- **Asynchronous** (`POST /v2/out/pix/async`): send the Pix Key or the Copy and Paste code as `reference` and Trio checks it while processing the payment. This is the direct equivalent of the V1 Cash Out request.
+- **Synchronous** (`POST /v2/out/pix`): check the Pix Key or the Copy and Paste code first, then pay using the `check_id` returned by the check. This endpoint also pays directly to a bank account (`type: bank_account`).
+
+---
+
+## Documentation
+
+For complete details about Cash Out operations, refer to the official API Reference:
+
+- [Generate a Pix Payment (async)](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment-async)
+- [Generate a Pix Payment](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment)
+- [Check Pix Key](/v2/api-reference/banking-api/payments/transfer-pix/check-key)
+- [Check Pix BR Code](/v2/api-reference/banking-api/payments/brcode/check-brcode)
+
+## Cash Out Example
+
+The example below demonstrates an asynchronous Cash Out request using the Sandbox environment.
+
+### Endpoint
+
+```http
+POST https://api.sandbox.trio.com.br/v2/out/pix/async
+```
+
+---
+
+## Request Body
+
+```json
+{
+  "bank_account_id": "{{bank_account_id_out}}",
+  "type": "key",
+  "reference": "*5541900000000",
+  "external_id": "{{$randomUUID}}",
+  "amount": 50000,
+  "description": "Withdrawal test"
+}
+```
+
+### Field Description
+
+- `bank_account_id`: ID of the bank account that pays the Pix;
+- `type`: destination payment type:
+  - `key` → Pix Key payment;
+  - `brcode` → Pix Copy and Paste payment;
+- `reference`: destination Pix Key, such as CPF, CNPJ, email, phone number, or random key, or the Copy and Paste code of the brcode;
+- `external_id`: external transaction identifier used for reconciliation and webhook tracking;
+- `amount`: transaction amount in cents (`10000` = BRL 100.00);
+- `description`: transaction description stored for history and reporting purposes;
+- `counterparty` (optional): the receiver you expect. When given, the payment is refused if the key or brcode belongs to another `tax_number`, or to none of the `bank_accounts` listed (up to 10, each with `ispb` and `number`, optionally `branch`, `digit` and `type`).
+
+To assert the expected receiver, add the `counterparty` object to the request above:
+
+```json
+{
+  "bank_account_id": "{{bank_account_id_out}}",
+  "type": "key",
+  "reference": "*5541900000000",
+  "external_id": "{{$randomUUID}}",
+  "amount": 50000,
+  "description": "Withdrawal test",
+  "counterparty": {
+    "tax_number": "52998224725",
+    "bank_accounts": [
+      {
+        "ispb": "12345678",
+        "branch": "0001",
+        "number": "123456",
+        "digit": "1",
+        "type": "checking"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Successful Response
+
+After the request is processed, the API immediately returns a transaction identifier (`out_document_id`).
+
+This identifier can be used to track the transaction status through webhooks or by querying the payment endpoint directly.
+
+```json
+{
+  "data": {
+    "out_document_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
+    "approval_request_id": null
+  }
+}
+```
+
+When the payment needs approval, `approval_request_id` carries the ID of the approval request.
+
+---
+
+## Synchronous Cash Out: check, then pay
+
+`POST /v2/out/pix` processes the payment synchronously. For `type` `key` or `brcode`, the Pix Key or the Copy and Paste code must be checked first, and the `id` returned by the check is sent as `check_id`.
+
+### 1. Check the Pix Key
+
+```http
+POST https://api.sandbox.trio.com.br/v2/out/pix/keys/check
+```
+
+```json
+{
+  "entity_id": "41234d60-f6a9-4c9c-8cc3-5769ce9bbea2",
+  "key": "john.doe@example.com"
+}
+```
+
+- `entity_id`: entity that will pay the Pix;
+- `key`: Pix Key: a CPF, a CNPJ, an email, a phone number (`+5511999999999`) or a random key.
+
+The response identifies the receiver and returns the check `id`. A CPF `tax_number` is masked, and the `branch`, `number`, `digit` and `type` of the bank account are `null` for a CPF.
+
+```json
+{
+  "data": {
+    "id": "019500b0-71d2-ac32-3712-e8ba5e06e0f7",
+    "key": "john.doe@example.com",
+    "type": "email",
+    "counterparty": {
+      "id": "0008d49c-e6d5-4d86-232a-a6f4b9138f10",
+      "name": "John Doe",
+      "tax_number": "***982247**",
+      "bank_account": {
+        "id": "0008d49c-e6d5-a58e-a742-449e9b38f795",
+        "ispb": "12345678",
+        "branch": null,
+        "number": null,
+        "digit": null,
+        "type": null
+      }
+    },
+    "inserted_at": "2026-02-13T19:01:58.354481Z",
+    "updated_at": "2026-02-13T19:01:58.354481Z"
+  }
+}
+```
+
+A Copy and Paste code is checked the same way with `POST /v2/out/pix/brcodes/check` ([Check Pix BR Code](/v2/api-reference/banking-api/payments/brcode/check-brcode)).
+
+### 2. Pay with the `check_id`
+
+```http
+POST https://api.sandbox.trio.com.br/v2/out/pix
+```
+
+```json
+{
+  "bank_account_id": "{{bank_account_id_out}}",
+  "type": "key",
+  "check_id": "019500b0-71d2-ac32-3712-e8ba5e06e0f7",
+  "external_id": "{{$randomUUID}}",
+  "amount": 50000,
+  "description": "Withdrawal test"
+}
+```
+
+- `type`: what the Pix pays: a checked `key`, a checked `brcode` or a `bank_account`;
+- `check_id`: ID of the check from `POST /v2/out/pix/keys/check` (type `key`) or `POST /v2/out/pix/brcodes/check` (type `brcode`). Required for those types;
+- `counterparty`: receiver of the Pix, required when `type` is `bank_account`: `name`, `tax_number` and `bank_account` with `ispb`, `branch`, `number`, `digit` and `type` (`checking`, `payment`, `salary` or `savings`).
+
+The response has the same shape as the asynchronous one: `out_document_id` and, when the payment needs approval, `approval_request_id`.
+
+### Paying a bank account directly
+
+A `bank_account` payment needs no prior check. The receiver is sent in `counterparty`:
+
+```json
+{
+  "bank_account_id": "1a760495-cb95-4023-96e8-0cff5776b010",
+  "type": "bank_account",
+  "counterparty": {
+    "name": "John Doe",
+    "tax_number": "52998224725",
+    "bank_account": {
+      "ispb": "12345678",
+      "branch": "0001",
+      "number": "123456",
+      "digit": "1",
+      "type": "checking"
+    }
+  },
+  "external_id": "external_id 1",
+  "amount": 100,
+  "description": "description"
+}
+```
+
+---
+
+After creation, the transaction status can be monitored through webhook notifications or direct payment status queries using the returned `out_document_id` with `GET /v2/documents/out/{id}` ([Get Payment](/v2/api-reference/banking-api/documents/payments/get-payment)).

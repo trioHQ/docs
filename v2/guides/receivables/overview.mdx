@@ -1,10 +1,33 @@
 ---
 title: "Receivables"
-description: "Cash-in guides for V2, including sandbox simulations."
+description: "Cash-in guides for V2: receiving payments, fees, split payments, Pix Automático and sandbox simulations."
 ---
 
-{/* v1 counterpart: guides/cash-in.mdx, guides/using-pix-automatic.mdx, guides/simulating-deposit-success.mdx, guides/simulating-deposit-failures.mdx. Start from it and change what differs in V2. */}
+**Receivables**, or cash-in, are the payments that arrive in your bank accounts: a dynamic QR code that gets paid, a boleto settled by a customer or a Pix Automático collection debited on its due date. On the V2 API every receivable is created against a `bank_account_id` and produces an **in document** once it is paid.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+<CardGroup cols={2}>
+  <Card title="Cash in" href="/v2/guides/receivables/cash-in">
+    Generate your first dynamic QR code and read the response.
+  </Card>
+  <Card title="Fees" href="/v2/guides/receivables/fees">
+    Charge a fee on the payment of a receivable and keep the margin above your Trio cost.
+  </Card>
+  <Card title="Split payments" href="/v2/guides/receivables/split-payments">
+    Distribute a receivable among split recipients on QR codes and boletos.
+  </Card>
+  <Card title="Using Pix Automático" href="/v2/guides/receivables/using-pix-automatic">
+    Recurrences, collections and attempts, from authorization to settlement.
+  </Card>
+  <Card title="Usando o Pix Automático (PT-BR)" href="/v2/guides/receivables/using-pix-automatic-pt-br">
+    A versão em português do guia de Pix Automático.
+  </Card>
+  <Card title="Simulating deposit success" href="/v2/guides/receivables/simulating-deposit-success">
+    Pay a QR code in the sandbox and watch the document settle.
+  </Card>
+  <Card title="Simulating deposit failures" href="/v2/guides/receivables/simulating-deposit-failures">
+    Configure a sandbox account to refuse deposits and test your error handling.
+  </Card>
+  <Card title="API reference" href="/v2/api-reference/banking-api/documents/receivables/list-receivables">
+    List, read and search in documents and their refunds.
+  </Card>
+</CardGroup>

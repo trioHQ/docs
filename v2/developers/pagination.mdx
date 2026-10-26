@@ -1,10 +1,49 @@
 ---
 title: "Pagination"
-description: "How list endpoints paginate in V2."
+description: "How V2 list endpoints paginate with before and after cursors, limit and has_more."
 ---
 
-{/* v1 counterpart: developers/pagination.mdx. Start from it and change what differs in V2. */}
+In order to enhance the performance of our API and to ensure the scalability and stability of our services, we use cursor-based pagination for navigating large data sets. This document will guide you through the process of understanding and implementing cursor-based pagination for our API.
+
+### **Cursor-based Pagination**
+
+Cursor-based pagination allows for efficient traversal through large data sets by using a pointer (a.k.a. cursor) to a specific item in the data set. Instead of relying on numbered pages, cursor-based pagination focuses on a unique identifier for each item, making it possible to fetch subsequent items without duplicating or missing any results.
+
+### **How It Works**
+
+When making a request to an API endpoint that supports pagination, the API will return a set of results along with two cursor values and one helper variable:
+
+- `after`: A value that points to the next page of the data set, `null` on the last page.
+- `before`: A value that points to the previous page of the data set, `null` on the first page.
+- `has_more`: Whether a next page exists.
+
+These cursor values can then be passed as query parameters in the subsequent API requests to fetch the next or previous set of results. They are mutually exclusive, meaning that only one of them can be set at the time to iterate through the results.
+
+Endpoints that accept a `limit` query parameter return 50 records per page by default and at most 100.
+
+{/* TODO(v2): verify — the default of 50 and maximum of 100 come from one endpoint's description of `limit`; the other list endpoints do not state theirs. */}
+
+Document listings are also bounded in time: `GET /v2/documents/in`, `GET /v2/documents/out` and the refund listings require `from_datetime` and `to_datetime`, so a page is always taken from the period you ask for.
+
+```text
+curl "https://api.sandbox.trio.com.br/v2/documents/in?from_datetime=2026-10-01T00:00:00Z&to_datetime=2026-10-31T23:59:59Z&after=g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw==" \
+  -H "Content-Type: application/json" \
+  -u {client_id}:{client_secret}
+```
+
+The cursor values are encapsulated at `metadata` object on responses that supports pagination. The `metadata` will look like this:
+
+```json
+{
+  "data": [],
+  "metadata": {
+    "before": null,
+    "after": "g3QAAAACZAACaWRtAAAAJGQyNmE3YTVmLTVlOTAtNDdkZS1hNmM5LWQyNzM1NDA4OTNmOGQAEHRyYW5zYWN0aW9uX2RhdGV0AAAADWQACl9fc3RydWN0X19kAA9FbGl4aXIuRGF0ZVRpbWVkAAhjYWxlbmRhcmQAE0VsaXhpci5DYWxlbmRhci5JU09kAANkYXlhCmQABGhvdXJhDGQAC21pY3Jvc2Vjb25kaAJhAGEGZAAGbWludXRlYThkAAVtb250aGEKZAAGc2Vjb25kYTpkAApzdGRfb2Zmc2V0YQBkAAl0aW1lX3pvbmVtAAAAB0V0Yy9VVENkAAp1dGNfb2Zmc2V0YQBkAAR5ZWFyYgAAB-ZkAAl6b25lX2FiYnJtAAAAA1VUQw==",
+    "has_more": true
+  }
+}
+```
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  V1 named the helper `has_next`. On V2 it is `has_more`.
 </Note>

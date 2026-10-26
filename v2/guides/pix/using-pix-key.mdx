@@ -1,0 +1,20 @@
+---
+title: "Pix key Regex"
+description: "Pix key types accepted by the V2 API and the regular expressions used to validate them"
+---
+
+Considering that a Pix key represents a bank account within the Pix ecosystem, this is the most straightforward way to complete a payout using Pix.
+
+The only information required from the customer is their Pix key. Currently, we support 5 different key types, and we use **RegEx** validation to verify the format.
+
+> **Note:** As of July 01, 2026, the **CNPJ** may contain alphanumeric characters. Our validation supports both the legacy numeric format and the new alphanumeric format defined by the Brazilian Federal Revenue Service.
+
+| Type | Regex | Example | V2 `type` |
+| --- | --- | --- | --- |
+| Email | `^[a-z0-9.!#$%&'*+/=?^_{}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*$` | `johndoe@example.com` | `email` |
+| Phone Number | `^\+[1-9][0-9]\d{1,14}$` | `+5510998765432` | `phone` |
+| CPF (Tax Number) | `^[0-9]{11}$` | `12345678901` | `tax_number` |
+| CNPJ (Tax Number) | `^[A-Z0-9]{12}[0-9]{2}$` | `AB12CD3400EF95` *(also accepts `12345678901234`)* | `tax_number` |
+| Random Key | `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$` | `123e4567-e89b-12d3-a456-426655440000` | `random_key` |
+
+In V2, check the key before paying it with [`POST /v2/out/pix/keys/check`](/v2/api-reference/banking-api/payments/transfer-pix/check-key), sending the `entity_id` that will pay and the `key`. The response returns the key `type` (`tax_number`, `phone`, `email` or `random_key`), the resolved `counterparty` and the check `id`, which [`POST /v2/out/pix`](/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment) takes as `check_id`. See the [Cash out](/v2/guides/payments/cash-out) guide.

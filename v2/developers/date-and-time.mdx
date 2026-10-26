@@ -1,10 +1,36 @@
 ---
-title: "Date and time"
-description: "Date and time formats used by the V2 API."
+title: "Date & Time"
+description: "Date and time formats used by the V2 API: UTC timestamps and plain dates."
 ---
 
-{/* v1 counterpart: developers/date-and-time.mdx. Start from it and change what differs in V2. */}
+All dates and times managed and returned by our API are represented in the Coordinated Universal Time (UTC) timezone and adhere to the ISO 8601 format. [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) is an internationally recognized standard for representing date and time in a human-readable and machine-parsable manner.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+### **Format**
+
+The ISO 8601 format for date and time representation follows this pattern:
+
+`YYYY-MM-DDTHH:mm:ss.ffffffZ`
+
+Where:
+
+- YYYY represents the 4-digit year
+- MM represents the 2-digit month (01-12)
+- DD represents the 2-digit day of the month (01-31)
+- T is the separator between the date and time components
+- HH represents the 2-digit hour (00-23)
+- mm represents the 2-digit minute (00-59)
+- ss represents the 2-digit second (00-59)
+- ffffff represents the fraction of a second, returned with microsecond precision and optional in what you send
+- Z indicates that the date and time are in the Coordinated Universal Time (UTC)
+
+#### **Example**
+
+An example of a date and time represented in the ISO 8601 format, as returned in `inserted_at` and `updated_at`:
+
+`2026-10-07T20:16:02.471297Z`
+
+This represents the date and time: October 7, 2026, 20:16:02.471297 (UTC). Query filters such as `from_datetime` and `to_datetime` take the same format: `2026-10-01T00:00:00Z`.
+
+### **Dates without time**
+
+Some fields are calendar dates with no time component and follow the pattern `YYYY-MM-DD`, for example `2026-10-25`. They are the business dates of a receivable or a payment, such as the `due_date` of a boleto or of the first payment of a recurrence, the `start_date` and `end_date` of a recurrence, the `expiration_date` and `issue_date` of a boleto, and the `date` of each discount in `due_detail.discount.fixed_until_due.amounts`.

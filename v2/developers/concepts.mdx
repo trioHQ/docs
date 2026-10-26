@@ -1,10 +1,43 @@
 ---
 title: "Concepts"
-description: "Core objects of the V2 API."
+description: "Core objects of the V2 API: company, entity, group, bank account, counterparty and documents."
 ---
 
-{/* v1 counterpart: developers/concepts.mdx. Start from it and change what differs in V2. */}
+Before we get into on how to programmatically move money, it's important that you learn some core concepts and aspects of our API and how your business could fit within our solution.
+
+### **Company**
+
+A company object represents a top-level structure from your business and can be composed by one or more legal entities. As a company, you are able to add multiple users with varying permissions, monitor API logs and so on.
+
+### **Entity**
+
+The entity object represents a legal entity from your company, it represents a Brazilian entity with their own CNPJ. Each entity may hold one or more bank accounts. An entity goes through compliance before it can operate: its `status` moves through `created`, `in_validation`, `in_review` and `approved`, or ends in `rejected`, `onhold` or `canceled`.
+
+### **Group**
+
+A group organizes the bank accounts of an entity. A bank account is created inside a group (`group_id` on [Create Bank Account](/v2/api-reference/banking-api/bank-accounts/create-bank-account)), and listings and webhooks can be limited to one group.
+
+### **Bank account**
+
+A bank account is a valid account that holds and moves money. Throughout our bank accounts, it is possible to look at balances, transactions and movement in real time. Every bank account reports its own `balances`, `limits` by transaction type and `parameters` (what it blocks or refunds automatically), and carries a `category`: `linked`, `owner`, `transactional` or `operational`.
+
+{/* TODO(v2): verify — the V2 spec names the four bank account categories but does not describe what each one means. */}
 
 <Note>
-  This page belongs to the V2 documentation and has not been written yet.
+  V2 has no virtual accounts. Every account you receive into or pay from is a bank account, identified by its `bank_account_id`, and accounts you create through the API are created with [Create Bank Account](/v2/api-reference/banking-api/bank-accounts/create-bank-account).
 </Note>
+
+### **Counterparty**
+
+A counterparty is the other party of a transaction: the payer of a receivable or the receiver of a payment, with its tax number, name and bank accounts. Trio registers a counterparty the first time it sees one, and every document carries the counterparty it was paid from or to. A counterparty can also be registered as a **split recipient** to receive part of a receivable.
+
+### **Documents**
+
+A document can be interpreted as a transaction inside Trio. Every time that there is money movement in your account, this transaction will have a document representing it:
+
+- an **in document** is money received, such as a paid QR code or boleto. Its `bank_account_id` is the account that received it;
+- an **out document** is money paid, such as a Pix transfer or a boleto you paid. Its `bank_account_id` is the account that paid it;
+- a **transfer document** moves money between two of your bank accounts, `from_bank_account_id` and `to_bank_account_id`;
+- an **in document refund** returns a received payment, and an **out document refund** is a payment returned to you.
+
+Documents are listed, read and searched under `/v2/documents`: see [Receivables](/v2/api-reference/banking-api/documents/receivables/list-receivables), [Payments](/v2/api-reference/banking-api/documents/payments/list-payments) and [Transfers](/v2/api-reference/banking-api/documents/transfers/list-transfers).

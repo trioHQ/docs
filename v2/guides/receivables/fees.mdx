@@ -1,0 +1,97 @@
+---
+title: "Fees"
+description: "Charge a fee on the payment of a receivable and keep the margin above your Trio cost"
+---
+
+A **fee** is an extra value charged on the payment of a receivable. It is added on top of the receivable amount, so the payer settles both the amount and the fee when paying the Dynamic QR Code, Static QR Code, or boleto.
+
+> All examples use fictitious data.
+
+---
+
+## How it is configured
+
+The fee is set **inside the `options` object** of the create request, as an integer in **cents**.
+
+```json
+"options": {
+  "fee": 150
+}
+```
+
+```text
+0    → no fee
+150  → R$ 1.50
+1000 → R$ 10.00
+```
+
+It applies the same way across:
+
+| Receivable | Create endpoint |
+| ------------------ | ----------------------------------------- |
+| Dynamic QR Code | [`POST /v2/in/pix/qrcodes`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/post) |
+| Static QR Code | [`POST /v2/in/pix/qrcodes/static`](/v2/api-reference/banking-api/receivables/qrcode-static/post) |
+| Boleto | [`POST /v2/in/boletos`](/v2/api-reference/banking-api/receivables/boletos/post) |
+
+The three responses return the configured fee as a money object:
+
+```json
+"fee": {
+  "amount": 150,
+  "currency": "BRL"
+}
+```
+
+On a Dynamic QR Code, the fee can be changed after creation with [`PUT /v2/in/pix/qrcodes/{id}`](/v2/api-reference/banking-api/receivables/qrcode-dynamic/update), which takes `fee` in cents at the top level of the body.
+
+---
+
+## How the fee is settled
+
+{/* TODO(v2): verify — how Trio nets its processing cost out of the fee is a business rule not described in the V2 spec */}
+
+Every receivable settled through Trio has a **processing cost** — the fee you pay to Trio for that receivable.
+
+The fee you charge on the receivable **must be greater than your Trio processing cost**. When the payer pays, Trio keeps its own processing cost out of the fee and passes the **remaining difference on to you**.
+
+```text
+Payer pays the receivable
+        │
+        ├── Receivable amount ───────────────────► you
+        │
+        └── Fee
+             │
+             ├── Trio processing cost ───────────► Trio
+             │
+             └── Difference (fee − Trio cost) ───► you
+```
+
+In other words, the fee lets you resell the cost of collecting the receivable: the payer covers your Trio cost plus a margin, and that margin is credited to you. It works as if the payer were **subletting the receivable** from you — they pay a bit more, and the surplus above your Trio cost becomes your revenue.
+
+<Note>
+The fee must be **greater than** the Trio processing cost for that receivable. If it is not, there is no difference left to pass on to you.
+</Note>
+
+---
+
+## Request example
+
+```json
+{
+  "amount": 10000,
+  "external_id": "qr-demo-2026-001",
+  "bank_account_id": "019f0000-1234-5678-9abc-000000000001",
+  "counterparty": {
+    "name": "Payer Name",
+    "tax_number": "12345678901"
+  },
+  "description": "Pedido 12345",
+  "options": {
+    "allow_change_the_amount_on_payment": false,
+    "show_qrcode_image": true,
+    "fee": 200
+  }
+}
+```
+
+The fee is independent from [split payments](/v2/guides/receivables/split-payments) — you can use either on its own or both together.

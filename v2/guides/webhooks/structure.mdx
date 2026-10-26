@@ -1,0 +1,178 @@
+---
+title: "Structure"
+description: "How a V2 webhook is created, the structure of the notifications Trio sends and the main Cash In and Cash Out events."
+---
+
+Webhooks allow Trio to send automatic notifications to your system whenever an important event occurs, such as a successful Cash In or Cash Out transaction.
+
+Notifications are typically triggered when a transaction reaches a final state such as `settled` or `failed`.
+
+---
+
+## Creating a Webhook
+
+A webhook is created with `POST /v2/webhooks` ([Create Webhook](/v2/api-reference/banking-api/developers/webhooks/create-webhook)). The `api_version` field chooses the version of the event payloads sent to the webhook: `v100` (the default) or `v200`.
+
+```json
+{
+  "notification_url": "https://mynotificationurl.com/endpoint",
+  "notification_secret": "some_notification_secret",
+  "authentication_method": "url_secret",
+  "api_version": "v100",
+  "entity_id": "019a1c2e-5b7d-7f80-9a1b-2c3d4e5f6a7c",
+  "event_categories_allowed": [
+    {
+      "category": "boleto",
+      "types": ["settled", "created"]
+    }
+  ]
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `notification_url` | URL the events are sent to. |
+| `notification_secret` | Secret sent with every event, for `url_secret` webhooks. |
+| `authentication_method` | How Trio authenticates to the notification URL: `url_secret` or `oauth`. An `oauth` webhook sends `oauth_client_id`, `oauth_client_secret`, `oauth_url` and `oauth_scope` instead of `notification_secret`. |
+| `api_version` | Version of the event payloads sent to the webhook: `v100` (default) or `v200`. |
+| `entity_id` | Entity to limit the webhook to. |
+| `group_id` | Group of the entity to limit the webhook to. |
+| `event_categories_allowed` | Events to send to the webhook, as a list of `category` with its `types`. Empty or null sends every event; an empty `types` sends every type of the category. |
+
+The response returns the webhook with its generated `notification_key`. See [Authentication](/v2/webhooks/authentication) for how to verify the notifications you receive.
+
+---
+
+## Webhook Structure
+
+All webhook events sent by Trio follow the same JSON structure:
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec */}
+
+```json
+{
+  "ref_id": "",
+  "category": "",
+  "type": "",
+  "timestamp": "",
+  "data": {}
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `ref_id` | Unique identifier of the event. |
+| `category` | Main event category (example: `collecting_document`, `payment_document`). |
+| `type` | Event type within the category (example: `created`, `settled`, `failed`). |
+| `timestamp` | Event creation timestamp. |
+| `data` | Object containing transaction-specific information. |
+
+---
+
+## Available Event Categories
+
+The V2 API Reference names the following category in its webhook examples:
+
+| Category | Types |
+| --- | --- |
+| `boleto` | `created`, `settled` |
+
+{/* TODO(v2): verify — the V2 spec does not list the event categories; the table below is the V1 list and its names may differ in V2 (the spec example uses `boleto`, not `collecting_document`) */}
+
+The categories below are the ones documented for V1:
+
+| Category | Description |
+| --- | --- |
+| `collecting_document` | Cash In and deposit lifecycle events. |
+| `collecting_document_refund` | Deposit refund events. |
+| `payment_document` | Cash Out and payment lifecycle events. |
+| `payment_document_refund` | Payment refund events. |
+| `transfer_document` | Transfer lifecycle events. |
+| `recurrence` | Recurrence creation and update events. |
+| `recurrence_collection` | Recurring collection lifecycle events. |
+| `recurrence_collection_attempt` | Recurring collection attempt events. |
+
+---
+
+## Cash In Webhook Example
+
+Category: `collecting_document`\
+Type: `settled`
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload (it still carries virtual_account_id) */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta 002",
+      "tax_number": "45865162797606"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202501311822NX1S6J7KaOm",
+    "id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/in/0194bd99-65cd-5ee9-70f6-44d61ae5aa41",
+    "transaction_date": "2025-01-31T18:22:14.510717Z",
+    "type": "pix",
+    "virtual_account_id": "0194412c-c559-5452-942e-7f4b4975c666"
+  },
+  "timestamp": "2025-01-31T18:22:14.477163Z",
+  "type": "settled",
+  "category": "collecting_document",
+  "ref_id": "0194bd99-65cd-5ee9-70f6-44d61ae5aa41"
+}
+```
+
+This event indicates that a Cash In transaction was successfully processed and the funds are available in the bank account.
+
+---
+
+## Cash Out Webhook Example
+
+Category: `payment_document`\
+Type: `settled`
+
+{/* TODO(v2): verify — v200 event payload structure is not in the V2 spec; this is the V1 payload (it still carries virtual_account_id) */}
+
+```json
+{
+  "data": {
+    "amount": {
+      "amount": 100,
+      "currency": "BRL"
+    },
+    "counterparty": {
+      "company_id": "91978496-c904-40d0-9322-5f2838efb542",
+      "id": "29b6d0bc-7226-483b-99aa-aa815521ebb0",
+      "name": "Conta bancária 1 padrão",
+      "tax_number": "45865162797606"
+    },
+    "description": null,
+    "end_to_end_id": "E49931906202502031248GP6ibT9SHqT",
+    "external_id": "Pix Console 0194cbda-8c8c-ff83-9f1d-c3c50f5ec0df",
+    "id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "receipt_url": "https://receipts.sandbox.trio.com.br/019108db-d49f-c744-5b79-736a2849ddf5/out/0194cbda-a2ca-5ecd-9796-99be6b7f4485",
+    "transaction_date": "2025-02-03T12:48:21.405797Z",
+    "type": "pix",
+    "virtual_account_id": "019440cd-a30f-c102-ff8c-a9d4e6939d48"
+  },
+  "timestamp": "2025-02-03T12:48:10.954083Z",
+  "type": "settled",
+  "category": "payment_document",
+  "ref_id": "0194cbda-a2ca-5ecd-9796-99be6b7f4485"
+}
+```
+
+This event indicates that a Cash Out transaction was successfully processed and the funds were debited from the bank account.
+
+---
+
+These are the primary webhook events used in most integrations.
+
+For the complete list of supported webhook events, access [Events](/v2/webhooks/events/overview).

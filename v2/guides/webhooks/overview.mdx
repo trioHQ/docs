@@ -1,10 +1,21 @@
 ---
 title: "Webhooks"
-description: "Practical webhook handling for V2."
+description: "Practical webhook handling for V2: creating a webhook, the notification structure and the event categories."
 ---
 
-{/* v1 counterpart: guides/webhook.mdx. Start from it and change what differs in V2. */}
+Webhooks let Trio notify your application when something happens, such as a payment settling or an onboarding being approved, so you do not have to poll the API. On the V2 API a webhook is registered with `POST /v2/webhooks`, chooses which event categories it receives and which payload version (`api_version`) Trio sends to it.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+<CardGroup cols={2}>
+  <Card title="First webhook" href="/v2/guides/creating-your-first-webhook">
+    Register a notification URL in the Trio App and receive your first event.
+  </Card>
+  <Card title="Structure" href="/v2/guides/webhooks/structure">
+    The notification envelope, the available event categories and payload examples.
+  </Card>
+  <Card title="Webhook documentation" href="/v2/webhooks/introduction">
+    Authentication, content and structure, and the reference of every event.
+  </Card>
+  <Card title="API reference" href="/v2/api-reference/banking-api/developers/webhooks/create-webhook">
+    Create, list, read, replace and delete webhooks through the API.
+  </Card>
+</CardGroup>

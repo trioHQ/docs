@@ -1,10 +1,21 @@
 ---
 title: "Payments"
-description: "Cash-out guides for V2."
+description: "Cash-out guides for V2: paying Pix keys, QR codes and bank accounts from your accounts."
 ---
 
-{/* v1 counterpart: guides/cash-out.mdx. Start from it and change what differs in V2. */}
+**Payments**, or cash-out, are the transfers that leave your bank accounts. On the V2 API a payment is debited from the `bank_account_id` you inform and produces an **out document** whose status you can follow through webhooks or by reading the document.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+<CardGroup cols={2}>
+  <Card title="Cash out" href="/v2/guides/payments/cash-out">
+    Pay a Pix key, a copy-and-paste code or a bank account, synchronously or asynchronously.
+  </Card>
+  <Card title="Pix transfer reference" href="/v2/api-reference/banking-api/payments/transfer-pix/generate-pix-payment">
+    Key checks, BR code checks and the Pix payment endpoints.
+  </Card>
+  <Card title="Boleto, utility, tax and DARF" href="/v2/api-reference/banking-api/payments/boleto/pay-boleto">
+    Check and pay boletos, utility bills, taxes and DARFs.
+  </Card>
+  <Card title="Out documents" href="/v2/api-reference/banking-api/documents/payments/list-payments">
+    List, read and search the documents created by your payments.
+  </Card>
+</CardGroup>

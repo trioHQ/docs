@@ -1,10 +1,21 @@
 ---
 title: "Boleto"
-description: "Boleto issuance and payment guides for V2."
+description: "Boleto issuance guides for V2: document and wallet types, creating a boleto and best practices."
 ---
 
-{/* v1 counterpart: guides/boleto-types.mdx, guides/create-boleto.mdx. Start from it and change what differs in V2. */}
+A **boleto** is a bank slip your customer can pay at any bank, and on Trio it is also a hybrid: every boleto carries a Pix QR code that settles instantly. On the V2 API a boleto is issued against a `bank_account_id`, can carry discounts, fines, interest and split rules, and becomes an **in document** when it is paid.
 
-<Note>
-  This page belongs to the V2 documentation and has not been written yet.
-</Note>
+<CardGroup cols={2}>
+  <Card title="Create boleto" href="/v2/guides/boleto/create-boleto">
+    The full request body: charge, payer, due date, discounts, fine and interest.
+  </Card>
+  <Card title="Invoice and wallet types" href="/v2/guides/boleto/boleto-types">
+    Every `invoice_type` and `wallet_type` value and when to use each.
+  </Card>
+  <Card title="Boas práticas sobre Boleto (PT-BR)" href="/v2/guides/boleto/best-practices">
+    Boleto híbrido, dados do pagador, ciclo de vida, webhooks e vencimento versus expiração.
+  </Card>
+  <Card title="API reference" href="/v2/api-reference/banking-api/receivables/boletos/post">
+    Create, list, update, cancel, recreate and protest boletos.
+  </Card>
+</CardGroup>
